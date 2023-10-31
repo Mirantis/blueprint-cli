@@ -15,7 +15,7 @@
 ### Install on Kind
 
 1. Install `Kind`: https://kind.sigs.k8s.io/docs/user/quick-start/
-2. Install Boundless CLI binary: 
+2. Install Boundless CLI binary:
    ```shell
    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/mirantis/boundless/main/script/install.sh)"
    ```
@@ -34,7 +34,7 @@
    export KUBECONFIG=./kubeconfig
    kubectl get pods
    ```
-   Note: `bctl` will create a `kubeconfig` file in the current directory. 
+   Note: `bctl` will create a `kubeconfig` file in the current directory.
    Use this file to connect to the cluster.
 6. Update the cluster by modifying `blueprint.yaml` and then running:
    ```shell
@@ -109,7 +109,7 @@ There are `terraform` scripts in the `example/` directory that can be used to cr
    export KUBECONFIG=./kubeconfig
    kubectl get pods
    ```
-   Note: `bctl` will create a `kubeconfig` file in the current directory. 
+   Note: `bctl` will create a `kubeconfig` file in the current directory.
    Use this file to connect to the cluster.
 6. Update the cluster by modifying `blueprint.yaml` and then running:
    ```shell
