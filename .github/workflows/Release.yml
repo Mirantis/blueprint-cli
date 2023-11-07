@@ -1,0 +1,21 @@
+name: Release
+
+on:
+  release:
+    types: [prereleased]
+
+jobs:
+  vet:
+    uses: ./.github/workflows/vet.yml
+  unit-test:
+      uses: ./.github/workflows/unit.yml
+  build:
+    uses: ./.github/workflows/build.yml
+    secrets: inherit
+  e2e:
+    uses: ./.github/workflows/e2e.yml
+  release:
+    if: ${{ always() && contains(join(needs.*.result, ','), 'success') }} # if all `needs` jobs are successful
+    needs: [vet, unit-test, e2e, build]
+    uses: ./.github/workflows/build-and-publish.yml
+    secrets: inherit

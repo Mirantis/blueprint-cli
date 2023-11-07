@@ -1,9 +1,7 @@
-name: Release CLI Binary
+name: Build and Publish
 
 on:
-  push:
-    tags:
-      - "*"
+  workflow_call:
 
 jobs:
   build-binaries:
