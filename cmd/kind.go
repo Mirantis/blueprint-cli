@@ -12,6 +12,6 @@ func installKindCluster(name string, kubeconfig string) error {
 		return fmt.Errorf("failed to create kind cluster %w", err)
 	}
 
-	log.Debug("kubeconfig file for kind cluster: %s", kubeconfig)
+	log.Debugf("kubeconfig file for kind cluster: %s", kubeconfig)
 	return nil
 }

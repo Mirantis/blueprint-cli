@@ -33,3 +33,11 @@ reset:
 .PHONY: build-charts
 build-charts:
 	@cd ./charts && make build
+
+.PHONY: test
+test:  ## Run tests.
+	@go test ./... -coverprofile cover.out
+
+.PHONY: vet
+vet: ## Run go vet against code.
+	@go vet ./...

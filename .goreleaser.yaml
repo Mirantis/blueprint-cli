@@ -43,6 +43,17 @@ archives:
         format: zip
     files:
       - none*
+
+snapshot:
+  # Allows you to change the name of the generated snapshot
+  #
+  # Note that some pipes require this to be semantic version compliant (nfpm,
+  # for example).
+  #
+  # Default is `{{ .Version }}-SNAPSHOT-{{.ShortCommit}}`.
+  # Templates: allowed
+  name_template: 'bctl-{{ .Version }}-{{.ShortCommit}}'
+
 release:
   # release to the public repository
   github:
