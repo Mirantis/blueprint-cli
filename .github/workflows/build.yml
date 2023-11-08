@@ -1,10 +1,11 @@
-name: Build Binary
+name: Build
 
 on:
   workflow_call:
 
 jobs:
-  build:
+  linux:
+    if: ${{ github.event_name == 'pull_request' }} # only build separate for PRs
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -21,17 +22,62 @@ jobs:
           go-version: ${{ env.GO_VERSION }}
 
       - name: Build the binary
+        env:
+          GOOS: linux
+          GITHUB_TOKEN: ${{ secrets.PUBLIC_REPO_TOKEN }}
         uses: goreleaser/goreleaser-action@v5
         with:
-          version: latest
-          args: --snapshot
-        env:
-          GITHUB_TOKEN: ${{ secrets.PUBLIC_REPO_TOKEN }}
+          version: v1.21.2 # Last checked, 1.22.0 broke the build arg. Check before upgrading
+          args: build --snapshot --single-target --clean
 
-      - name: Upload the binary
-        if: ${{ github.event_name == 'release' || github.event_name == 'push'}} # release or push to main
-        uses: actions/upload-artifact@v3
+  windows:
+    if: ${{ github.event_name == 'pull_request' }} # only build separate for PRs
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Load environment
+        uses: c-py/action-dotenv-to-setenv@v4
         with:
-          name: ${{ env.BINARY }}
-          retention-days: 1
-          path: /bin/${{ env.BINARY }}.tar
+          env-file: .github/development.env
+
+      - name: Setup Go ${{ env.GO_VERSION }}
+        uses: actions/setup-go@v4
+        with:
+          go-version: ${{ env.GO_VERSION }}
+
+      - name: Build the binary
+        env:
+          GOOS: windows
+          GITHUB_TOKEN: ${{ secrets.PUBLIC_REPO_TOKEN }}
+        uses: goreleaser/goreleaser-action@v5
+        with:
+          version: v1.21.2 # Last checked, 1.22.0 broke the build arg. Check before upgrading
+          args: build --snapshot --single-target --clean
+
+  mac:
+    if: ${{ github.event_name == 'pull_request' }} # only build separate for PRs
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Load environment
+        uses: c-py/action-dotenv-to-setenv@v4
+        with:
+          env-file: .github/development.env
+
+      - name: Setup Go ${{ env.GO_VERSION }}
+        uses: actions/setup-go@v4
+        with:
+          go-version: ${{ env.GO_VERSION }}
+
+      - name: Build the binary
+        env:
+          GOOS: darwin
+          GITHUB_TOKEN: ${{ secrets.PUBLIC_REPO_TOKEN }}
+        uses: goreleaser/goreleaser-action@v5
+        with:
+          version: v1.21.2 # Last checked, 1.22.0 broke the build arg. Check before upgrading
+          args: build --snapshot --single-target --clean

@@ -3,16 +3,17 @@
 default:  build
 
 BIN_DIR := $(shell pwd)/bin
+VERSION := dev-$(shell git rev-parse --short HEAD)
 
 .PHONY: build
 build:  ## build locally
 	@go mod download
-	@CGO_ENABLED=1 go build -o ${BIN_DIR}/bctl ./
+	@CGO_ENABLED=1 go build -ldflags "-X 'boundless-cli/version.Version=${VERSION}'" -o ${BIN_DIR}/bctl ./
 
 .PHONY: install
 install:  ## install locally
 	@go mod download
-	@CGO_ENABLED=1 go build -o ${GOPATH}/bin/bctl ./
+	@CGO_ENABLED=1 go build -ldflags "-X 'boundless-cli/version.Version=${VERSION}'" -o ${GOPATH}/bin/bctl ./
 
 .PHONY: init
 init:

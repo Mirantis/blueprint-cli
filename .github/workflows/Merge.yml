@@ -1,8 +1,9 @@
-name: Release
+name: Merge
 
 on:
-  release:
-    types: [prereleased]
+  push:
+    branches:
+      - main
 
 jobs:
   vet:

@@ -1,0 +1,56 @@
+name: Build and Publish to github
+
+on:
+  workflow_call:
+
+jobs:
+  build-and-publish:
+    name: Build and publish
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out code into the Go module directory
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0 # See: https://goreleaser.com/ci/actions/
+
+      - name: Load environment
+        uses: c-py/action-dotenv-to-setenv@v4
+        with:
+          env-file: .github/development.env
+
+      - name: Setup Go ${{ env.GO_VERSION }}
+        uses: actions/setup-go@v4
+        with:
+          go-version: ${{ env.GO_VERSION }}
+
+      - name: Build dev binary
+        if: ${{ github.event_name == 'push' }}
+        uses: goreleaser/goreleaser-action@v5
+        with:
+          version: latest
+          args: --snapshot --clean
+        env:
+          GITHUB_TOKEN: ${{ secrets.PUBLIC_REPO_TOKEN }}
+
+      - name: Publish binaries
+        if: ${{ github.event_name == 'push' }} && startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v1
+        with:
+          name: dev
+          tag_name: dev
+          body: "This is the dev build that always represents the latest commit on the main branch. These binaries change frequiently and are not meant for production use."
+          token: ${{ secrets.PUBLIC_REPO_TOKEN }}
+          repository: mirantis/boundless
+          files: |
+            **/*.tar.gz
+            **/*.zip
+
+      - name: Build and publish release binary
+        if: ${{ github.event_name == 'release' }}
+        uses: goreleaser/goreleaser-action@v5
+        with:
+          version: latest
+          args: --clean
+        env:
+          GITHUB_TOKEN: ${{ secrets.PUBLIC_REPO_TOKEN }}
