@@ -1,9 +1,5 @@
 name: Build and Publish to github
 
-# This makes it so the default token can push to the private releases page
-permissions:
-  contents: write
-
 on:
   workflow_call:
 

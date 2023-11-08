@@ -1,5 +1,9 @@
 name: Release
 
+# This makes it so the default token can push to the private releases page
+permissions:
+  contents: write
+
 on:
   release:
     types: [prereleased]

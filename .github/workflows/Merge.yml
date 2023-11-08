@@ -1,5 +1,9 @@
 name: Merge
 
+# This makes it so the default token can push to the private releases page
+permissions:
+  contents: write
+
 on:
   push:
     branches:
