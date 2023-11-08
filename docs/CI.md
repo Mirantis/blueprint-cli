@@ -8,15 +8,12 @@ CI for a PR will trigger whenever a PR is opened, reopened, or pushed. The jobs 
 
 - 'vet' - Check the code changes and make sure they adhere to the standard Golang style guide
 - 'test' - Run the unit tests on the code changes
-- 'build' - Build a binary containing the code changes
+- 'build' - Build the binaries for linux, windows, and mac
 
 ## Merging to main
 
-Merging to main runs many of the same tests as a PR to verify that merging the code didn't introduce any new issues. Merging will also run integration tests to verify that the code works with the rest of the system as these tests require more setup and take longer to run. The binary from the build can be found in the artifacts list on the action's page.
-
-TODO: code coverage
-TODO: If you merge a change into main and an issue is found, you will be notified on slack that you have broken main and need to fix it.
+Merging to main runs many of the same tests as a PR to verify that merging the code didn't introduce any new issues. Merging will also run integration tests to verify that the code works with the rest of the system as these tests require more setup and take longer to run. The binaries created are pushed to the repo's releases page under the dev tag. The dev release is always updated with the latest code on main.
 
 ## Releases
 
-A release is triggered when a pre-release is created in the github repo. This will run EVERYTHING from scratch. Starting from zero may take more time but this ensures that nothing slips by us before sending out the release. This includes any static code analysis, unit tests, integration tests, and building the binaries. If everything passes, The binary will be uploaded to the release page. This process is documented in [Creating a release](docs/creating-a-release.md).
+A release is triggered when a pre-release is created in the github repo. This will run EVERYTHING from scratch. Starting from zero may take more time but this ensures that nothing slips by us before sending out the release. This includes any static code analysis, unit tests, integration tests, and building the binaries. If everything passes, the binaries will be uploaded to the release page. This process is documented in [Creating a release](docs/creating-a-release.md).

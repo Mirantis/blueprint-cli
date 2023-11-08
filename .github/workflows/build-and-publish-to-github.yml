@@ -41,7 +41,7 @@ jobs:
           tag_name: dev
           body: "This is the dev build that always represents the latest commit on the main branch. These binaries change frequiently and are not meant for production use."
           token: ${{ secrets.PUBLIC_REPO_TOKEN }}
-          repository: mirantis/boundless
+          repository: mirantis/boundless-cli
           files: |
             **/*.tar.gz
             **/*.zip
@@ -54,3 +54,12 @@ jobs:
           args: --clean
         env:
           GITHUB_TOKEN: ${{ secrets.PUBLIC_REPO_TOKEN }}
+
+      - name: Publish binaries
+        if: ${{ github.event_name == 'release' }}
+        uses: softprops/action-gh-release@v1
+        with:
+          token: ${{ secrets.PUBLIC_REPO_TOKEN }}
+          files: |
+            **/*.tar.gz
+            **/*.zip
