@@ -33,3 +33,6 @@ k0sctl.yaml
 blueprint.yaml
 
 dist/
+
+# Ignore generated doc files
+docs/website/public/

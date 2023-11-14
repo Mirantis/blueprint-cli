@@ -42,3 +42,7 @@ test:  ## Run tests.
 .PHONY: vet
 vet: ## Run go vet against code.
 	@go vet ./...
+
+.PHONY: docs
+docs: ## Run docs locally
+	hugo server  --buildDrafts --disableFastRender --source docs/website/
