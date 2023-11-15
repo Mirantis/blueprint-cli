@@ -15,9 +15,7 @@ layout: hextra-home
 {{< /hextra/hero-subtitle >}}
 </div>
 
-<div class="mb-6">
-{{< hextra/hero-button text="Get Started" link="docs" >}}
-</div>
+{{< hextra/hero-button text="Get Started" link="docs/getting-started" >}}
 
 <div class="mt-6"></div>
 
