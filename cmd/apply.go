@@ -3,73 +3,89 @@ package cmd
 import (
 	"fmt"
 
-	log "github.com/sirupsen/logrus"
-	"github.com/urfave/cli/v2"
+	"github.com/rs/zerolog/log"
+	"github.com/spf13/cobra"
+
+	"boundless-cli/internal/boundless"
+	"boundless-cli/internal/distro"
+	"boundless-cli/internal/k0sctl"
+	"boundless-cli/internal/k8s"
 )
 
-var cmdApply = &cli.Command{
-	Name:  "apply",
-	Usage: "apply a cluster",
-	Flags: []cli.Flag{
-		configFlag,
-		debugFlag,
-		traceFlag,
-		redactFlag,
-	},
-	Before: actions(initLogging),
-	Action: applyWrapper,
-}
+var (
+	blueprintConfig string
+)
 
-func applyWrapper(c *cli.Context) error {
-	// read the blueprint config
-	config, err := initBlueprint(c)
-	if err != nil {
-		return err
+// applyCmd represents the apply command
+func applyCmd() *cobra.Command {
+
+	cmd := &cobra.Command{
+		Use:     "apply",
+		Short:   "Apply the blueprints to the cluster",
+		Args:    cobra.NoArgs,
+		PreRunE: actions(loadBlueprint, loadKubeConfig),
+		Run: func(cmd *cobra.Command, args []string) {
+			err := applyFunc()
+			if err != nil {
+				return
+			}
+		},
 	}
 
-	if config.Spec.Kubernetes != nil {
-		log.Infof("Installing Kubernetes distribution: %s", config.Spec.Kubernetes.Provider)
-		switch config.Spec.Kubernetes.Provider {
-		case "k0s":
-			k0sctlConfigPath, err := getK0sctlConfigPath(c)
-			if err = installK0s(k0sctlConfigPath); err != nil {
+	flags := cmd.Flags()
+	addConfigFlags(flags)
+	addKubeFlags(flags)
+	return cmd
+}
+
+func applyFunc() error {
+	var err error
+
+	if blueprint.Spec.Kubernetes != nil {
+		log.Info().Msgf("Installing Kubernetes distribution: %s", blueprint.Spec.Kubernetes.Provider)
+
+		// TODO (ranyodh): Refactor the follow to use provider interface
+		switch blueprint.Spec.Kubernetes.Provider {
+		case distro.ProviderK0s:
+			k0sctlConfigPath, err := k0sctl.GetConfigPath(blueprint)
+			if err = distro.InstallK0s(k0sctlConfigPath, kubeConfig); err != nil {
 				return err
 			}
-		case "kind":
-			log.Infof("Installing Kubernetes distribution: %s", "kind")
-			if err = installKindCluster(config.Metadata.Name, KubeConfigFile); err != nil {
+		case distro.ProviderKind:
+			if err = distro.InstallKind(blueprint.Metadata.Name, kubeConfig); err != nil {
 				return err
 			}
 		default:
-			return fmt.Errorf("invalid Kubernetes distribution provider: %s", config.Spec.Kubernetes.Provider)
+			return fmt.Errorf("invalid Kubernetes distribution provider: %s", blueprint.Spec.Kubernetes.Provider)
 		}
 	}
 
-	log.Infof("Waiting for nodes to be ready")
-	if err := WaitForNodes(); err != nil {
+	// TODO (ranyodh): The following should be moved to distro specific types
+	// create the k8sClient
+	k8sClient, err := k8s.GetClient(kubeConfig)
+	if err := k8s.WaitForNodes(k8sClient); err != nil {
 		return fmt.Errorf("failed to wait for nodes: %w", err)
 	}
 
-	log.Info("Installing Boundless Operator")
-	log.Debugf("Installing Boundless Operator using manifest file: %s", BoundlessManifestUrl)
-	err = kubectlApply(BoundlessManifestUrl)
+	log.Info().Msgf("Installing Boundless Operator")
+	log.Debug().Msgf("Installing Boundless Operator using manifest file: %s", boundless.ManifestUrl)
+	err = k8s.Apply(boundless.ManifestUrl, kubeConfig)
 	if err != nil {
 		return fmt.Errorf("failed to install Boundless Operator: %w", err)
 	}
 
-	log.Infof("Waiting for all pods to be ready")
-	if err := WaitForPods(); err != nil {
+	if err := k8s.WaitForPods(k8sClient, boundless.NamespaceBoundless); err != nil {
 		return fmt.Errorf("failed to wait for pods: %w", err)
 	}
 
 	// install components
-	log.Info("Applying Boundless Operator resource")
-	err = installComponents(config)
+	log.Info().Msgf("Applying Boundless Operator resource")
+	err = boundless.ApplyBlueprint(kubeConfig, blueprint)
 	if err != nil {
 		return fmt.Errorf("failed to install components: %w", err)
 	}
 
-	log.Info("Finished installing Boundless Operator")
+	log.Info().Msgf("Finished installing Boundless Operator")
 
 	return nil
 }

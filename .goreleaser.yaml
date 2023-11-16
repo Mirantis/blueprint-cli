@@ -24,9 +24,7 @@ builds:
       - -trimpath
       - -mod=vendor
     ldflags:
-      - -s
-      - -w
-      - -X 'boundless-cli/version.Version=v{{.Version}}'
+      - -s -w -X boundless-cli/cmd.version=v{{.Version}} -X boundless-cli/cmd.date={{.Date}}
 
 archives:
   - format: tar.gz

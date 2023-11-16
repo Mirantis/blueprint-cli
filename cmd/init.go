@@ -5,82 +5,94 @@ import (
 	"os"
 	"os/exec"
 
-	"github.com/urfave/cli/v2"
+	"github.com/k0sproject/dig"
+	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v2"
 
-	"boundless-cli/pkg/config"
+	"boundless-cli/internal/types"
 )
 
-var cmdInit = &cli.Command{
-	Name:  "init",
-	Usage: "create a blueprint",
-	Flags: []cli.Flag{
-		&cli.BoolFlag{
-			Name:  "version",
-			Usage: "Include a skeleton k0s config section",
-		},
-		&cli.BoolFlag{
-			Name:  "k0s",
-			Usage: "Include a skeleton k0s config section",
-		},
-		&cli.StringFlag{
-			Name:    "cluster-name",
-			Usage:   "Cluster name",
-			Aliases: []string{"n"},
-			Value:   "k0s-cluster",
-		},
-		&cli.IntFlag{
-			Name:    "controller-count",
-			Usage:   "The number of controllers to create when addresses are given",
-			Aliases: []string{"C"},
-			Value:   1,
-		},
-		&cli.StringFlag{
-			Name:    "user",
-			Usage:   "Host user when addresses given",
-			Aliases: []string{"u"},
-		},
-		&cli.StringFlag{
-			Name:    "key-path",
-			Usage:   "Host key path when addresses given",
-			Aliases: []string{"i"},
-		},
-		&cli.BoolFlag{
-			Name:  "kind",
-			Usage: "Create a kind cluster",
-		},
-	},
-	Before: actions(initLogging),
-	Action: initWrapper,
-}
+var isKind bool
 
-func initWrapper(c *cli.Context) error {
-	isKind := c.Bool("kind")
-	if isKind {
-		return encode(config.ConvertToClusterWithKind("kind-cluster", DefaultComponents))
+func initCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "init",
+		Short: "Install a blueprint file",
+		RunE:  initFunc,
 	}
 
-	cmd := exec.Command("k0sctl", argInsert("init", c.Args().Slice())...)
-	cmd.Stdin = os.Stdin
-	cmd.Stderr = os.Stderr
+	// @TODO This should be a subcommand of init
+	// bctl init kind
+	// bctl init k0s (default)
+	cmd.Flags().BoolVar(&isKind, "kind", false, "Install a kind cluster")
+	cmd.Flags()
+
+	return cmd
+}
+
+func initFunc(cmd *cobra.Command, args []string) error {
+	if isKind {
+		return encode(types.ConvertToClusterWithKind("boundless-cluster", defaultComponents))
+	}
+
+	// @TODO Include pFlags for k0sctl init
+	cmd2 := exec.Command("k0sctl", "init")
+	cmd2.Stdin = os.Stdin
+	cmd2.Stderr = os.Stderr
 
 	buf := new(bytes.Buffer)
-	cmd.Stdout = buf
-	err := cmd.Run()
+	cmd2.Stdout = buf
+	err := cmd2.Run()
 	if err != nil {
 		return err
 	}
 
-	cfg := buf.Bytes()
-	k0sConfig, err := config.ParseK0sCluster(cfg)
+	k0sConfig, err := types.ParseK0sCluster(buf.Bytes())
 	if err != nil {
 		return err
 	}
 
-	return encode(config.ConvertToClusterWithK0s(k0sConfig, DefaultComponents))
+	return encode(types.ConvertToClusterWithK0s(k0sConfig, defaultComponents))
 }
 
-func encode(blueprint config.Blueprint) error {
+func encode(blueprint types.Blueprint) error {
 	encoder := yaml.NewEncoder(os.Stdout)
 	return encoder.Encode(&blueprint)
+}
+
+var defaultComponents = types.Components{
+	Core: &types.Core{
+		Ingress: &types.CoreComponent{
+			Enabled:  true,
+			Provider: "ingress-nginx",
+			Config: dig.Mapping{
+				"controller": dig.Mapping{
+					"service": dig.Mapping{
+						"type": "NodePort",
+						"nodePorts": dig.Mapping{
+							"http":  30000,
+							"https": 30001,
+						},
+					},
+				},
+			},
+		},
+	},
+	// TODO (ranyodh): Replace this with a proper addon
+	Addons: []types.Addons{
+		{
+			Name:      "example-server",
+			Kind:      "HelmAddon",
+			Enabled:   true,
+			Namespace: "default",
+			Chart: types.Chart{
+				Name:    "nginx",
+				Repo:    "https://charts.bitnami.com/bitnami",
+				Version: "15.1.1",
+				Values: `"service":
+  "type": "ClusterIP"
+`,
+			},
+		},
+	},
 }

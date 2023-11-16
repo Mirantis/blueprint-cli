@@ -3,30 +3,41 @@ package cmd
 import (
 	"fmt"
 
-	log "github.com/sirupsen/logrus"
-	"github.com/urfave/cli/v2"
+	"github.com/rs/zerolog/log"
+	"github.com/spf13/cobra"
+
+	"boundless-cli/internal/boundless"
 )
 
-var cmdUpdate = &cli.Command{
-	Name:  "update",
-	Usage: "update a cluster",
-	Flags: []cli.Flag{
-		configFlag,
-		debugFlag,
-	},
-	Before: actions(initLogging),
-	Action: func(c *cli.Context) error {
-		// read the cluster config
-		cfg, err := initBlueprint(c)
-		if err != nil {
-			return err
-		}
+// updateCmd represents the apply command
+func updateCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:     "update",
+		Short:   "Update the blueprints to the cluster",
+		Args:    cobra.NoArgs,
+		PreRunE: actions(loadBlueprint, loadKubeConfig),
+		Run: func(cmd *cobra.Command, args []string) {
+			err := updateFunc(cmd)
+			if err != nil {
+				return
+			}
+		},
+	}
 
-		log.Info("Updating Components")
-		err = installComponents(cfg)
-		if err != nil {
-			return fmt.Errorf("failed to update components: %w", err)
-		}
-		return nil
-	},
+	flags := cmd.Flags()
+	addConfigFlags(flags)
+	addKubeFlags(flags)
+	
+	return cmd
+}
+
+func updateFunc(cmd *cobra.Command) error {
+	// install components
+	log.Info().Msgf("Applying Boundless Operator resource")
+	if err := boundless.ApplyBlueprint(kubeConfig, blueprint); err != nil {
+		return fmt.Errorf("failed to install components: %w", err)
+	}
+
+	log.Info().Msgf("Finished installing Boundless Operator")
+	return nil
 }
