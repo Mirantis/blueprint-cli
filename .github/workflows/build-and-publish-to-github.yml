@@ -30,7 +30,7 @@ jobs:
         uses: dev-drprasad/delete-tag-and-release@v1.0
         with:
           tag_name: dev
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ secrets.PAT_CI_DOCKER_EE_MKE }}
           delete_release: true
           repo: mirantis/boundless-cli
 
@@ -40,20 +40,19 @@ jobs:
           version: latest
           args: --snapshot --clean
         env:
-          GITHUB_TOKEN: ${{ secrets.PUBLIC_REPO_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.PAT_CI_DOCKER_EE_MKE }}
 
-    # Since the temp PAT isn't working, I'm disabling this so the jobs don't show up failed
-      # - name: Publish dev binaries
-      #   uses: softprops/action-gh-release@v1
-      #   with:
-      #     name: dev
-      #     tag_name: dev
-      #     body: "This is the dev build that always represents the latest commit on the main branch. These binaries change frequiently and are not meant for production use."
-      #     token: ${{ secrets.PUBLIC_REPO_TOKEN }}
-      #     repository: mirantis/boundless-cli
-      #     files: |
-      #       **/*.tar.gz
-      #       **/*.zip
+      - name: Publish dev binaries
+        uses: softprops/action-gh-release@v1
+        with:
+          name: dev
+          tag_name: dev
+          body: "This is the dev build that always represents the latest commit on the main branch. These binaries change frequiently and are not meant for production use."
+          token: ${{ secrets.PAT_CI_DOCKER_EE_MKE }}
+          repository: mirantis/boundless-cli
+          files: |
+            **/*.tar.gz
+            **/*.zip
 
   build-and-publish-release:
     name: Build and publish release
@@ -82,13 +81,12 @@ jobs:
         version: latest
         args: --clean
       env:
-        GITHUB_TOKEN: ${{ secrets.PUBLIC_REPO_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.PAT_CI_DOCKER_EE_MKE }}
 
-    # Since the temp PAT isn't working, I'm disabling this so the jobs don't show up failed
-    # - name: Publish binaries to private repo
-    #   uses: softprops/action-gh-release@v1
-    #   with:
-    #     token: ${{ secrets.PUBLIC_REPO_TOKEN }}
-    #     files: |
-    #       **/*.tar.gz
-    #       **/*.zip
+    - name: Publish binaries to private repo
+      uses: softprops/action-gh-release@v1
+      with:
+        token: ${{ secrets.PAT_CI_DOCKER_EE_MKE }}
+        files: |
+          **/*.tar.gz
+          **/*.zip

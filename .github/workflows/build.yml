@@ -24,7 +24,7 @@ jobs:
       - name: Build the binary
         env:
           GOOS: linux
-          GITHUB_TOKEN: ${{ secrets.PUBLIC_REPO_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.PAT_CI_DOCKER_EE_MKE }}
         uses: goreleaser/goreleaser-action@v5
         with:
           version: v1.21.2 # Last checked, 1.22.0 broke the build arg. Check before upgrading
@@ -50,7 +50,7 @@ jobs:
       - name: Build the binary
         env:
           GOOS: windows
-          GITHUB_TOKEN: ${{ secrets.PUBLIC_REPO_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.PAT_CI_DOCKER_EE_MKE }}
         uses: goreleaser/goreleaser-action@v5
         with:
           version: v1.21.2 # Last checked, 1.22.0 broke the build arg. Check before upgrading
@@ -76,7 +76,7 @@ jobs:
       - name: Build the binary
         env:
           GOOS: darwin
-          GITHUB_TOKEN: ${{ secrets.PUBLIC_REPO_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.PAT_CI_DOCKER_EE_MKE }}
         uses: goreleaser/goreleaser-action@v5
         with:
           version: v1.21.2 # Last checked, 1.22.0 broke the build arg. Check before upgrading
