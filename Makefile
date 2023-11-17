@@ -8,13 +8,12 @@ VERSION := dev-$(shell git rev-parse --short HEAD)
 .PHONY: build
 build:  ## build locally
 	@go mod download
-	@CGO_ENABLED=1 go build -ldflags "-X 'boundless-cli/cmd.version=${VERSION}'" -o ${BIN_DIR}/bctl ./
-	@CGO_ENABLED=0 go build -o ${BIN_DIR}/bctl ./
+	@CGO_ENABLED=0 go build -ldflags "-X 'boundless-cli/cmd.version=${VERSION}'" -o ${BIN_DIR}/bctl ./
 
 .PHONY: install
 install:  ## install locally
 	@go mod download
-	@CGO_ENABLED=1 go build -ldflags "-X 'boundless-cli/cmd.version=${VERSION}'" -o ${GOPATH}/bin/bctl ./
+	@CGO_ENABLED=0 go build -ldflags "-X 'boundless-cli/cmd.version=${VERSION}'" -o ${GOPATH}/bin/bctl ./
 
 .PHONY: init
 init:
