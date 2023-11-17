@@ -1,6 +1,14 @@
 # This is an example .goreleaser.yml file with some sensible defaults.
 # Make sure to check the documentation at https://goreleaser.com
 
+# Leave this with the commented command to stop the default tidy from running
+#
+# We would rather have CI fail and let the developer fix the issue than to have
+# goreleaser fix it for us and not know about it.
+before:
+  hooks:
+    #- go mod tidy
+
 builds:
   - binary: bctl
     env:
