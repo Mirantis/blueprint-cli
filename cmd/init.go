@@ -17,7 +17,7 @@ var isKind bool
 func initCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "init",
-		Short: "Install a blueprint file",
+		Short: "Creates a blueprint file template",
 		RunE:  runInit,
 	}
 
@@ -78,7 +78,6 @@ var defaultComponents = types.Components{
 			},
 		},
 	},
-	// TODO (ranyodh): Replace this with a proper addon
 	Addons: []types.Addons{
 		{
 			Name:      "example-server",

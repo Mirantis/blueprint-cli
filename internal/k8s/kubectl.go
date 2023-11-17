@@ -19,7 +19,6 @@ func Apply(path string, kc *KubeConfig) error {
 
 	log.Debug().Msgf("kubeconfig file: %q with context : %q", kc.GetConfigPath(), contextName)
 	cmd := exec.Command("kubectl", "apply", "-f", path, "--kubeconfig", kc.GetConfigPath(), "--context", contextName)
-	//cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 
 	err = cmd.Run()
