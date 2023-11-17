@@ -12,33 +12,25 @@ import (
 	"boundless-cli/internal/k8s"
 )
 
-var (
-	blueprintConfig string
-)
-
-// applyCmd represents the apply command
 func applyCmd() *cobra.Command {
-
 	cmd := &cobra.Command{
 		Use:     "apply",
 		Short:   "Apply the blueprints to the cluster",
 		Args:    cobra.NoArgs,
 		PreRunE: actions(loadBlueprint, loadKubeConfig),
-		Run: func(cmd *cobra.Command, args []string) {
-			err := applyFunc()
-			if err != nil {
-				return
-			}
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return runApply()
 		},
 	}
 
 	flags := cmd.Flags()
 	addConfigFlags(flags)
 	addKubeFlags(flags)
+
 	return cmd
 }
 
-func applyFunc() error {
+func runApply() error {
 	var err error
 
 	if blueprint.Spec.Kubernetes != nil {

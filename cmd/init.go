@@ -18,7 +18,7 @@ func initCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "init",
 		Short: "Install a blueprint file",
-		RunE:  initFunc,
+		RunE:  runInit,
 	}
 
 	// @TODO This should be a subcommand of init
@@ -30,7 +30,7 @@ func initCmd() *cobra.Command {
 	return cmd
 }
 
-func initFunc(cmd *cobra.Command, args []string) error {
+func runInit(cmd *cobra.Command, args []string) error {
 	if isKind {
 		return encode(types.ConvertToClusterWithKind("boundless-cluster", defaultComponents))
 	}

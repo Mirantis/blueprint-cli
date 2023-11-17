@@ -13,9 +13,9 @@ func resetCmd() *cobra.Command {
 		Use:     "reset",
 		Short:   "Reset the cluster",
 		Args:    cobra.NoArgs,
-		PreRunE: actions(loadBlueprint, loadKubeConfig),
+		PreRunE: actions(loadBlueprint),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			return resetFunc()
+			return runReset()
 		},
 	}
 
@@ -25,7 +25,7 @@ func resetCmd() *cobra.Command {
 	return cmd
 }
 
-func resetFunc() error {
+func runReset() error {
 	switch blueprint.Spec.Kubernetes.Provider {
 	case "k0s":
 		path, err := k0sctl.GetConfigPath(blueprint)

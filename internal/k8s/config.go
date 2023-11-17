@@ -2,6 +2,7 @@ package k8s
 
 import (
 	"fmt"
+	"os"
 
 	"k8s.io/cli-runtime/pkg/genericclioptions"
 	restclient "k8s.io/client-go/rest"
@@ -26,6 +27,19 @@ func NewConfig(f *genericclioptions.ConfigFlags) *KubeConfig {
 	}
 }
 
+// TryLoad attempts to create a kube client and returns an error if it fails.
+func (c *KubeConfig) TryLoad() error {
+	_, err := c.RESTConfig()
+	if err != nil {
+		if os.IsNotExist(err) {
+			return fmt.Errorf("kubeconfig file %q does not exist", c.GetConfigPath())
+		}
+		return fmt.Errorf("unable to load kubeconfig from %q: %w", c.GetConfigPath(), err)
+	}
+	return nil
+
+}
+
 func (c *KubeConfig) RESTConfig() (*restclient.Config, error) {
 	return c.clientConfig().ClientConfig()
 }
@@ -42,8 +56,6 @@ func (c *KubeConfig) MergeConfig(newConfig clientcmdapi.Config) error {
 	}
 
 	merge(&cfg, &newConfig)
-	cfg.CurrentContext = newConfig.CurrentContext
-
 	acc := c.ConfigAccess()
 	return clientcmd.ModifyConfig(acc, cfg, true)
 }

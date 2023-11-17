@@ -6,6 +6,7 @@ import (
 	"github.com/rs/zerolog/log"
 
 	"boundless-cli/internal/k8s"
+	"boundless-cli/internal/types"
 	"boundless-cli/internal/utils"
 )
 
@@ -27,4 +28,8 @@ func ResetKind(name string) error {
 	}
 
 	return nil
+}
+
+func GetKubeConfigContextKind(blueprint types.Blueprint) string {
+	return "kind-" + blueprint.Metadata.Name
 }

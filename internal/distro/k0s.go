@@ -10,6 +10,7 @@ import (
 	"k8s.io/client-go/tools/clientcmd"
 
 	"boundless-cli/internal/k8s"
+	"boundless-cli/internal/types"
 	"boundless-cli/internal/utils"
 )
 
@@ -37,6 +38,10 @@ func ResetK0s(k0sConfig string) error {
 	}
 
 	return nil
+}
+
+func GetKubeConfigContextK0s(blueprint types.Blueprint) string {
+	return "kind-" + blueprint.Metadata.Name
 }
 
 func writeK0sKubeConfig(k0sctlConfig string, kubeConfig *k8s.KubeConfig) error {

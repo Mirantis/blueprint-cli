@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/rs/zerolog"
@@ -11,6 +12,7 @@ import (
 
 	"github.com/mattn/go-colorable"
 
+	"boundless-cli/internal/distro"
 	"boundless-cli/internal/k8s"
 	"boundless-cli/internal/types"
 	"boundless-cli/internal/utils"
@@ -22,8 +24,9 @@ const (
 )
 
 var (
-	pFlags    *PersistenceFlags
-	kubeFlags *genericclioptions.ConfigFlags
+	pFlags        *PersistenceFlags
+	blueprintFlag string
+	kubeFlags     = genericclioptions.NewConfigFlags(k8s.UsePersistentConfig)
 
 	blueprint  types.Blueprint
 	kubeConfig *k8s.KubeConfig
@@ -65,18 +68,36 @@ func Execute() {
 }
 
 func loadBlueprint(cmd *cobra.Command, args []string) error {
-	// load the blueprint file
 	var err error
-	if blueprint, err = utils.LoadBlueprint(blueprintConfig); err != nil {
-		return err
+	log.Info().Msgf("Loading blueprint from %q", blueprintFlag)
+	if blueprint, err = utils.LoadBlueprint(blueprintFlag); err != nil {
+		return fmt.Errorf("failed to load blueprint file at %q: %w", blueprintFlag, err)
 	}
 	return nil
 }
 
+// loadKubeConfig loads the kubeconfig file
+// This function should be added as a pre-run hook for all commands that connects to the cluster
 func loadKubeConfig(cmd *cobra.Command, args []string) error {
 	// TODO (ranyodh): check if kubeconfig file is present
 	// TODO (ranyodh): if multiple contexts are present, ensure we load the one that is created by bctl
+
+	// unless context flag is passed, explicitly set the context to use for kubeconfig
+	if kubeFlags.Context == nil || *kubeFlags.Context == "" {
+		switch blueprint.Spec.Kubernetes.Provider {
+		case distro.ProviderKind:
+			kubeFlags.Context = strPtr(distro.GetKubeConfigContextKind(blueprint))
+		case distro.ProviderK0s:
+			kubeFlags.Context = strPtr(distro.GetKubeConfigContextK0s(blueprint))
+		}
+	}
 	kubeConfig = k8s.NewConfig(kubeFlags)
+
+	log.Info().Msgf("Loading kubeconfig from %q", kubeConfig.GetConfigPath())
+	// Try to load kubeconfig file here, and fail early if it is not present
+	if err := kubeConfig.TryLoad(); err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -84,7 +105,9 @@ func setupLogger() {
 	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stdout, PartsExclude: []string{zerolog.TimestampFieldName}})
 
 	if pFlags.Debug {
-		zerolog.SetGlobalLevel(zerolog.DebugLevel)
+		log.Logger = log.Level(zerolog.DebugLevel)
+	} else {
+		log.Logger = log.Level(zerolog.InfoLevel)
 	}
 }
 
@@ -93,12 +116,14 @@ func runHelp(cmd *cobra.Command, args []string) {
 }
 
 func addConfigFlags(flags *pflag.FlagSet) {
-	flags.StringVarP(&blueprintConfig, "config", "", DefaultConfigFilename, "Path to the blueprint file")
+	flags.StringVarP(&blueprintFlag, "config", "c", DefaultConfigFilename, "Path to the blueprint file")
 }
 
 func addKubeFlags(flags *pflag.FlagSet) {
-	kubeFlags = genericclioptions.NewConfigFlags(k8s.UsePersistentConfig)
+	log.Debug().Msg("Adding kubeconfig flags")
 
+	// Exposing certain flags from k8s.io/cli-runtime/pkg/genericclioptions
+	// To expose all flags, use kubeFlags.AddFlags(flags)
 	flags.StringVar(kubeFlags.KubeConfig, "kubeconfig", "", "Path to the kubeconfig file to use for CLI requests")
 	flags.StringVar(kubeFlags.Timeout, "request-timeout", "", "The length of time to wait before giving up on a single server request")
 	flags.StringVar(kubeFlags.Context, "context", "", "The name of the kubeconfig context to use")
@@ -116,4 +141,8 @@ func addKubeFlags(flags *pflag.FlagSet) {
 	flags.StringVar(kubeFlags.CertFile, "client-certificate", "", "Path to a client certificate file for TLS")
 
 	flags.StringVar(kubeFlags.BearerToken, "token", "", "Bearer token for authentication to the API server")
+}
+
+func strPtr(s string) *string {
+	return &s
 }

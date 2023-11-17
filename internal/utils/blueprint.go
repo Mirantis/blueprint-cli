@@ -14,7 +14,6 @@ func LoadBlueprint(path string) (types.Blueprint, error) {
 		path = DefaultBlueprintPath
 	}
 
-	log.Info().Msgf("Loading blueprint from %q", path)
 	content, err := ReadFile(path)
 	if err != nil {
 		return types.Blueprint{}, err

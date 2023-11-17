@@ -16,26 +16,23 @@ func updateCmd() *cobra.Command {
 		Short:   "Update the blueprints to the cluster",
 		Args:    cobra.NoArgs,
 		PreRunE: actions(loadBlueprint, loadKubeConfig),
-		Run: func(cmd *cobra.Command, args []string) {
-			err := updateFunc(cmd)
-			if err != nil {
-				return
-			}
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return runUpdate(cmd)
 		},
 	}
 
 	flags := cmd.Flags()
 	addConfigFlags(flags)
 	addKubeFlags(flags)
-	
+
 	return cmd
 }
 
-func updateFunc(cmd *cobra.Command) error {
+func runUpdate(cmd *cobra.Command) error {
 	// install components
 	log.Info().Msgf("Applying Boundless Operator resource")
 	if err := boundless.ApplyBlueprint(kubeConfig, blueprint); err != nil {
-		return fmt.Errorf("failed to install components: %w", err)
+		return fmt.Errorf("failed to update components: %w", err)
 	}
 
 	log.Info().Msgf("Finished installing Boundless Operator")
