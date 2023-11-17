@@ -69,7 +69,7 @@ func Execute() {
 
 func loadBlueprint(cmd *cobra.Command, args []string) error {
 	var err error
-	log.Info().Msgf("Loading blueprint from %q", blueprintFlag)
+	log.Debug().Msgf("Loading blueprint from %q", blueprintFlag)
 	if blueprint, err = utils.LoadBlueprint(blueprintFlag); err != nil {
 		return fmt.Errorf("failed to load blueprint file at %q: %w", blueprintFlag, err)
 	}
@@ -93,7 +93,14 @@ func loadKubeConfig(cmd *cobra.Command, args []string) error {
 	}
 	kubeConfig = k8s.NewConfig(kubeFlags)
 
-	log.Info().Msgf("Loading kubeconfig from %q", kubeConfig.GetConfigPath())
+	// TODO (ranyodh): remove this hack
+	// This is a hack to ensure that the kubeconfig file is not loaded for apply command
+	// because the cluster is not yet created at this point
+	if cmd.Name() == "apply" {
+		return nil
+	}
+
+	log.Debug().Msgf("Loading kubeconfig from %q", kubeConfig.GetConfigPath())
 	// Try to load kubeconfig file here, and fail early if it is not present
 	if err := kubeConfig.TryLoad(); err != nil {
 		return err
@@ -120,8 +127,6 @@ func addConfigFlags(flags *pflag.FlagSet) {
 }
 
 func addKubeFlags(flags *pflag.FlagSet) {
-	log.Debug().Msg("Adding kubeconfig flags")
-
 	// Exposing certain flags from k8s.io/cli-runtime/pkg/genericclioptions
 	// To expose all flags, use kubeFlags.AddFlags(flags)
 	flags.StringVar(kubeFlags.KubeConfig, "kubeconfig", "", "Path to the kubeconfig file to use for CLI requests")

@@ -41,7 +41,7 @@ func ResetK0s(k0sConfig string) error {
 }
 
 func GetKubeConfigContextK0s(blueprint types.Blueprint) string {
-	return "kind-" + blueprint.Metadata.Name
+	return blueprint.Metadata.Name
 }
 
 func writeK0sKubeConfig(k0sctlConfig string, kubeConfig *k8s.KubeConfig) error {
@@ -53,7 +53,7 @@ func writeK0sKubeConfig(k0sctlConfig string, kubeConfig *k8s.KubeConfig) error {
 
 	err := c.Run()
 	if err != nil {
-		return fmt.Errorf("failed to write kubeconfig: %w", err)
+		return fmt.Errorf("failed to generate kubeconfig: %w", err)
 	}
 
 	configClient, err := clientcmd.NewClientConfigFromBytes(buf.Bytes())

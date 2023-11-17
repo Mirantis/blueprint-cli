@@ -52,6 +52,10 @@ func runApply() error {
 		}
 	}
 
+	if err = kubeConfig.TryLoad(); err != nil {
+		return err
+	}
+
 	// TODO (ranyodh): The following should be moved to distro specific types
 	// create the k8sClient
 	k8sClient, err := k8s.GetClient(kubeConfig)

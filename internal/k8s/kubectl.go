@@ -1,6 +1,7 @@
 package k8s
 
 import (
+	"fmt"
 	"os"
 	"os/exec"
 
@@ -10,12 +11,18 @@ import (
 // Apply applies a kubernetes manifest
 // TODO (ranyodh): use client-go instead of kubectl and remove kubectl dependency
 func Apply(path string, kc *KubeConfig) error {
-	log.Debug().Msgf("kubeconfig file: %s", kc.GetConfigPath())
-	cmd := exec.Command("kubectl", "apply", "-f", path, "--kubeconfig", kc.GetConfigPath())
+
+	contextName, err := kc.CurrentContextName()
+	if err != nil {
+		return fmt.Errorf("failed to get current context name: %v", err)
+	}
+
+	log.Debug().Msgf("kubeconfig file: %q with context : %q", kc.GetConfigPath(), contextName)
+	cmd := exec.Command("kubectl", "apply", "-f", path, "--kubeconfig", kc.GetConfigPath(), "--context", contextName)
 	//cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 
-	err := cmd.Run()
+	err = cmd.Run()
 	if err != nil {
 		return err
 	}

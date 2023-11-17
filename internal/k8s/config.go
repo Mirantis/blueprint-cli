@@ -50,14 +50,17 @@ func (c *KubeConfig) clientConfig() clientcmd.ClientConfig {
 
 // MergeConfig merges a new config into the existing config and writes it back to disk.
 func (c *KubeConfig) MergeConfig(newConfig clientcmdapi.Config) error {
-	cfg, err := c.clientConfig().RawConfig()
+	// if config file doesn't exist, just write the new config
+	if _, err := os.Stat(c.GetConfigPath()); err != nil {
+		return clientcmd.ModifyConfig(c.ConfigAccess(), newConfig, true)
+	}
+
+	existingConfig, err := c.clientConfig().RawConfig()
 	if err != nil {
 		return err
 	}
-
-	merge(&cfg, &newConfig)
-	acc := c.ConfigAccess()
-	return clientcmd.ModifyConfig(acc, cfg, true)
+	merge(&existingConfig, &newConfig)
+	return clientcmd.ModifyConfig(c.ConfigAccess(), existingConfig, true)
 }
 
 // DelContext remove a given context from the configuration.
@@ -73,19 +76,19 @@ func (c *KubeConfig) DelContext(n string) error {
 }
 
 // merge kind config into an existing config
-func merge(existing, cfg *clientcmdapi.Config) {
+func merge(existing, new *clientcmdapi.Config) {
 	// insert or append cluster entry
-	for name, cluster := range cfg.Clusters {
+	for name, cluster := range new.Clusters {
 		existing.Clusters[name] = cluster
 	}
 
 	// insert or append user entry
-	for name, info := range cfg.AuthInfos {
+	for name, info := range new.AuthInfos {
 		existing.AuthInfos[name] = info
 	}
 
 	// insert or append context entry
-	for name, context := range cfg.Contexts {
+	for name, context := range new.Contexts {
 		existing.Contexts[name] = context
 	}
 }

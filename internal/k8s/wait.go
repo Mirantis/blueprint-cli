@@ -42,7 +42,7 @@ func waitForPods(ctx context.Context, clientset kubernetes.Interface, namepsace 
 		allRunning := true
 		for _, pod := range pods.Items {
 			log.Debug().Msgf("pod %s is %s", pod.Name, pod.Status.Phase)
-			if pod.Status.Phase != v1.PodRunning {
+			if !podInPhase([]v1.PodPhase{v1.PodRunning, v1.PodSucceeded}, pod.Status.Phase) {
 				allRunning = false
 				break
 			}
@@ -50,6 +50,15 @@ func waitForPods(ctx context.Context, clientset kubernetes.Interface, namepsace 
 
 		return allRunning, nil
 	})
+}
+
+func podInPhase(strings []v1.PodPhase, s v1.PodPhase) bool {
+	for _, str := range strings {
+		if str == s {
+			return true
+		}
+	}
+	return false
 }
 
 func waitForNodes(ctx context.Context, clientset kubernetes.Interface) error {
