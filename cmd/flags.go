@@ -1,8 +1,8 @@
 package cmd
 
 const (
-	// DefaultConfigFilename represents the default blueprints filename.
-	DefaultConfigFilename = "blueprint.yaml"
+	// DefaultBlueprintFileName represents the default blueprint filename.
+	DefaultBlueprintFileName = "blueprint.yaml"
 )
 
 // PersistenceFlags represents configuration pFlags.

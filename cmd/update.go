@@ -13,7 +13,7 @@ import (
 func updateCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "update",
-		Short:   "Update the blueprints to the cluster",
+		Short:   "Update the blueprint to the cluster",
 		Args:    cobra.NoArgs,
 		PreRunE: actions(loadBlueprint, loadKubeConfig),
 		RunE: func(cmd *cobra.Command, args []string) error {

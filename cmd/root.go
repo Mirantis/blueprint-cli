@@ -116,7 +116,7 @@ func runHelp(cmd *cobra.Command, args []string) {
 }
 
 func addConfigFlags(flags *pflag.FlagSet) {
-	flags.StringVarP(&blueprintFlag, "config", "c", DefaultConfigFilename, "Path to the blueprint file")
+	flags.StringVarP(&blueprintFlag, "config", "c", DefaultBlueprintFileName, "Path to the blueprint file")
 }
 
 func addKubeFlags(flags *pflag.FlagSet) {

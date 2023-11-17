@@ -15,7 +15,7 @@ import (
 func applyCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "apply",
-		Short:   "Apply the blueprints to the cluster",
+		Short:   "Apply the blueprint to the cluster",
 		Args:    cobra.NoArgs,
 		PreRunE: actions(loadBlueprint, loadKubeConfig),
 		RunE: func(cmd *cobra.Command, args []string) error {
