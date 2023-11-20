@@ -121,8 +121,8 @@ github.com/mattn/go-isatty v0.0.19/go.mod h1:W+V8PltTTMOvKvAeJH7IuucS94S2C6jfK/D
 github.com/matttproud/golang_protobuf_extensions v1.0.4 h1:mmDVorXM7PCGKw94cs5zkfA9PSy5pEvNWRP0ET0TIVo=
 github.com/matttproud/golang_protobuf_extensions/v2 v2.0.0 h1:jWpvCLoY8Z/e3VKvlsiIGKtc+UG6U5vzxaoagmhXfyg=
 github.com/matttproud/golang_protobuf_extensions/v2 v2.0.0/go.mod h1:QUyp042oQthUoa9bqDv0ER0wrtXnBruoNd7aNjkbP+k=
-github.com/mirantis/boundless-operator v0.0.0-20231031165445-5ad193465b03 h1:jz+zcqtZKhTGgYOVPpa3uy5pRyWgMEBc4gMZvbN8/84=
-github.com/mirantis/boundless-operator v0.0.0-20231031165445-5ad193465b03/go.mod h1:BTIanEv7vpqaH6WcnSMVaPn4LHQugcQLFX4rtw46vzI=
+github.com/mirantis/boundless-operator v0.0.0-20231120184220-43910c5eebca h1:UWoD3zK/VqkI5qXO4Gotznf+3bW86nbTaBHCfcUnPRs=
+github.com/mirantis/boundless-operator v0.0.0-20231120184220-43910c5eebca/go.mod h1:BTIanEv7vpqaH6WcnSMVaPn4LHQugcQLFX4rtw46vzI=
 github.com/modern-go/concurrent v0.0.0-20180228061459-e0a39a4cb421/go.mod h1:6dJC0mAP4ikYIbvyc7fijjWJddQyLn8Ig3JB5CqoB9Q=
 github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd h1:TRLaZ9cD/w8PVh93nsPXa1VrQ6jlwL5oN8l14QlcNfg=
 github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd/go.mod h1:6dJC0mAP4ikYIbvyc7fijjWJddQyLn8Ig3JB5CqoB9Q=

@@ -17,6 +17,11 @@ import (
 	"boundless-cli/internal/types"
 )
 
+const (
+	kindManifest = "manifest"
+	kindChart    = "chart"
+)
+
 // ApplyBlueprint applies a Blueprint object to the cluster
 func ApplyBlueprint(kubeConfig *k8s.KubeConfig, cluster types.Blueprint) error {
 	components := cluster.Spec.Components
@@ -29,7 +34,7 @@ func ApplyBlueprint(kubeConfig *k8s.KubeConfig, cluster types.Blueprint) error {
 			return fmt.Errorf("failed to convert ingress config to yaml: %w", err)
 		}
 
-		core.Ingress = v1alpha1.IngressSpec{
+		core.Ingress = &v1alpha1.IngressSpec{
 			Enabled:  components.Core.Ingress.Enabled,
 			Provider: components.Core.Ingress.Provider,
 			Config:   ingressConfig,
@@ -39,19 +44,35 @@ func ApplyBlueprint(kubeConfig *k8s.KubeConfig, cluster types.Blueprint) error {
 	// install/update addons
 	var addons []v1alpha1.AddonSpec
 	for _, addon := range components.Addons {
-		addons = append(addons, v1alpha1.AddonSpec{
-			Name:      addon.Name,
-			Kind:      addon.Kind,
-			Enabled:   addon.Enabled,
-			Namespace: addon.Namespace,
-			Chart: v1alpha1.Chart{
-				Name:    addon.Chart.Name,
-				Repo:    addon.Chart.Repo,
-				Version: addon.Chart.Version,
-				Set:     addon.Chart.Set,
-				Values:  addon.Chart.Values,
-			},
-		})
+		log.Debug().Msgf("Installing addon using: %s", addon.Kind)
+		if addon.Kind == kindChart {
+			addons = append(addons, v1alpha1.AddonSpec{
+				Name:      addon.Name,
+				Kind:      addon.Kind,
+				Enabled:   addon.Enabled,
+				Namespace: addon.Namespace,
+				Chart: v1alpha1.ChartInfo{
+					Name:    addon.Chart.Name,
+					Repo:    addon.Chart.Repo,
+					Version: addon.Chart.Version,
+					Set:     addon.Chart.Set,
+					Values:  addon.Chart.Values,
+				},
+			})
+		} else if addon.Kind == kindManifest {
+			addons = append(addons, v1alpha1.AddonSpec{
+				Name:      addon.Name,
+				Kind:      addon.Kind,
+				Enabled:   addon.Enabled,
+				Namespace: addon.Namespace,
+				Manifest: v1alpha1.ManifestInfo{
+					URL: addon.Manifest.URL,
+				},
+			})
+		} else {
+			return fmt.Errorf("unknown addon kind: %w", err)
+		}
+
 	}
 
 	c := v1alpha1.Blueprint{
@@ -61,7 +82,7 @@ func ApplyBlueprint(kubeConfig *k8s.KubeConfig, cluster types.Blueprint) error {
 		},
 		Spec: v1alpha1.BlueprintSpec{
 			Components: v1alpha1.Component{
-				Core:   core,
+				Core:   &core,
 				Addons: addons,
 			},
 		},

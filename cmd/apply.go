@@ -25,7 +25,9 @@ func applyCmd() *cobra.Command {
 
 	flags := cmd.Flags()
 	addConfigFlags(flags)
+	addCustomBOPFlag(flags)
 	addKubeFlags(flags)
+	cmd.Flags().MarkHidden("bop")
 
 	return cmd
 }
@@ -64,8 +66,17 @@ func runApply() error {
 	}
 
 	log.Info().Msgf("Installing Boundless Operator")
-	log.Debug().Msgf("Installing Boundless Operator using manifest file: %s", boundless.ManifestUrl)
-	err = k8s.Apply(boundless.ManifestUrl, kubeConfig)
+
+	var file string
+	// Check if the user provided custom bop manifest
+	if customBOPFlag != "" {
+		log.Debug().Msgf("Installing Boundless Operator using custom manifest file: %q", customBOPFlag)
+		file = customBOPFlag
+	} else {
+		log.Debug().Msgf("Installing Boundless Operator using manifest file: %s", boundless.ManifestUrl)
+		file = boundless.ManifestUrl
+	}
+	err = k8s.Apply(file, kubeConfig)
 	if err != nil {
 		return fmt.Errorf("failed to install Boundless Operator: %w", err)
 	}

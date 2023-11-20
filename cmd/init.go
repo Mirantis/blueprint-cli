@@ -84,7 +84,7 @@ var defaultComponents = types.Components{
 			Kind:      "HelmAddon",
 			Enabled:   true,
 			Namespace: "default",
-			Chart: types.Chart{
+			Chart: types.ChartInfo{
 				Name:    "nginx",
 				Repo:    "https://charts.bitnami.com/bitnami",
 				Version: "15.1.1",
