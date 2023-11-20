@@ -10,6 +10,16 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # This needs to be done first so that the tag is removed in the following steps
+      - name: Delete tag and release
+        continue-on-error: true
+        uses: dev-drprasad/delete-tag-and-release@v1.0
+        with:
+          tag_name: dev
+          github_token: ${{ secrets.PAT_CI_DOCKER_EE_MKE }}
+          delete_release: true
+          repo: mirantis/boundless-cli
+
       - name: Check out code into the Go module directory
         uses: actions/checkout@v3
         with:
@@ -24,15 +34,6 @@ jobs:
         uses: actions/setup-go@v4
         with:
           go-version: ${{ env.GO_VERSION }}
-
-      - name: Delete tag and release
-        continue-on-error: true
-        uses: dev-drprasad/delete-tag-and-release@v1.0
-        with:
-          tag_name: dev
-          github_token: ${{ secrets.PAT_CI_DOCKER_EE_MKE }}
-          delete_release: true
-          repo: mirantis/boundless-cli
 
       - name: Build dev binaries
         uses: goreleaser/goreleaser-action@v5
