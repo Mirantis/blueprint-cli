@@ -81,7 +81,7 @@ var defaultComponents = types.Components{
 	Addons: []types.Addons{
 		{
 			Name:      "example-server",
-			Kind:      "HelmAddon",
+			Kind:      "chart",
 			Enabled:   true,
 			Namespace: "default",
 			Chart: types.Chart{
