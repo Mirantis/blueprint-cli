@@ -47,6 +47,7 @@ type CoreComponent struct {
 	Config   dig.Mapping `yaml:"config,omitempty"`
 }
 
+// Addons defines the desired state of Addon
 type Addons struct {
 	Name      string       `yaml:"name"`
 	Kind      string       `yaml:"kind"`
@@ -56,6 +57,7 @@ type Addons struct {
 	Manifest  ManifestInfo `json:"manifest,omitempty"`
 }
 
+// ChartInfo defines the desired state of chart
 type ChartInfo struct {
 	Name    string                        `yaml:"name"`
 	Repo    string                        `yaml:"repo"`
@@ -64,6 +66,7 @@ type ChartInfo struct {
 	Values  string                        `yaml:"values,omitempty"`
 }
 
+// ManifestInfo defines the desired state of manifest
 type ManifestInfo struct {
 	URL string `json:"url"`
 }
