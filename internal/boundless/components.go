@@ -70,7 +70,7 @@ func ApplyBlueprint(kubeConfig *k8s.KubeConfig, cluster types.Blueprint) error {
 				},
 			})
 		} else {
-			return fmt.Errorf("unknown addon kind")
+			return fmt.Errorf("unknown addon kind. Please use either chart or manifest.")
 		}
 
 	}
