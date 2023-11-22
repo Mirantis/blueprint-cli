@@ -6,6 +6,7 @@ import (
 
 	"github.com/mirantis/boundless-operator/api/v1alpha1"
 	"k8s.io/apimachinery/pkg/runtime"
+
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
@@ -21,7 +22,8 @@ func CreateOrUpdate(config *KubeConfig, obj client.Object) error {
 	if err != nil {
 		return err
 	}
-	kubeClient, err := client.New(restConfig, client.Options{Scheme: scheme})
+
+	kubeClient, err := client.New(restConfig, client.Options{Scheme: scheme, WarningHandler: client.WarningHandlerOptions{SuppressWarnings: true}})
 	if err != nil {
 		return fmt.Errorf("failed to create kubernetes client: %v", err)
 	}

@@ -4,7 +4,7 @@ import (
 	"k8s.io/client-go/kubernetes"
 )
 
-// GetClient returns a handle to api server or die.
+// GetClient returns a handle to api server.
 func GetClient(config *KubeConfig) (kubernetes.Interface, error) {
 	cfg, err := config.RESTConfig()
 	if err != nil {
