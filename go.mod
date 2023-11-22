@@ -9,7 +9,7 @@ require (
 	github.com/k0sproject/dig v0.2.0
 	github.com/k3s-io/helm-controller v0.15.4
 	github.com/mattn/go-colorable v0.1.13
-	github.com/mirantis/boundless-operator v0.0.0-20231120184220-43910c5eebca
+	github.com/mirantis/boundless-operator v0.0.0-20231122183226-555df480ecb2
 	github.com/rs/zerolog v1.31.0
 	github.com/spf13/cobra v1.7.0
 	github.com/spf13/pflag v1.0.5
@@ -31,7 +31,6 @@ require (
 	github.com/fsnotify/fsnotify v1.7.0 // indirect
 	github.com/go-errors/errors v1.4.2 // indirect
 	github.com/go-logr/logr v1.3.0 // indirect
-	github.com/go-logr/zapr v1.2.4 // indirect
 	github.com/go-openapi/jsonpointer v0.20.0 // indirect
 	github.com/go-openapi/jsonreference v0.20.2 // indirect
 	github.com/go-openapi/swag v0.22.4 // indirect
@@ -64,7 +63,6 @@ require (
 	github.com/prometheus/procfs v0.12.0 // indirect
 	github.com/xlab/treeprint v1.2.0 // indirect
 	go.starlark.net v0.0.0-20230525235612-a134d8f9ddca // indirect
-	go.uber.org/multierr v1.11.0 // indirect
 	go.uber.org/zap v1.26.0 // indirect
 	golang.org/x/exp v0.0.0-20231006140011-7918f672742d // indirect
 	golang.org/x/net v0.17.0 // indirect

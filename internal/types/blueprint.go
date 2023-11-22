@@ -49,12 +49,12 @@ type CoreComponent struct {
 
 // Addons defines the desired state of Addon
 type Addons struct {
-	Name      string       `yaml:"name"`
-	Kind      string       `yaml:"kind"`
-	Enabled   bool         `yaml:"enabled"`
-	Namespace string       `yaml:"namespace,omitempty"`
-	Chart     ChartInfo    `json:"chart,omitempty"`
-	Manifest  ManifestInfo `json:"manifest,omitempty"`
+	Name      string        `yaml:"name"`
+	Kind      string        `yaml:"kind"`
+	Enabled   bool          `yaml:"enabled"`
+	Namespace string        `yaml:"namespace,omitempty"`
+	Chart     *ChartInfo    `json:"chart,omitempty"`
+	Manifest  *ManifestInfo `json:"manifest,omitempty"`
 }
 
 // ChartInfo defines the desired state of chart

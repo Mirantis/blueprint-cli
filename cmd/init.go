@@ -84,7 +84,7 @@ var defaultComponents = types.Components{
 			Kind:      "chart",
 			Enabled:   true,
 			Namespace: "default",
-			Chart: types.ChartInfo{
+			Chart: &types.ChartInfo{
 				Name:    "nginx",
 				Repo:    "https://charts.bitnami.com/bitnami",
 				Version: "15.1.1",

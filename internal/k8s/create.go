@@ -7,16 +7,13 @@ import (
 	"github.com/mirantis/boundless-operator/api/v1alpha1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
-	logf "sigs.k8s.io/controller-runtime/pkg/log"
-	"sigs.k8s.io/controller-runtime/pkg/log/zap"
 )
 
 // CreateOrUpdate creates or updates a kubernetes object
 func CreateOrUpdate(config *KubeConfig, obj client.Object) error {
-	// TODO (ranyodh): This is a temporary hack to use the kube client
-	// Should be replaced with our own logger
-	logf.SetLogger(zap.New())
-
+	// TODO (ranyodh): This is currently using in-cluster client. We should switch to:
+	// - either a dynamic client,
+	// - or generate a client in the `boundless-operator` to be used here
 	scheme := runtime.NewScheme()
 	_ = v1alpha1.AddToScheme(scheme)
 

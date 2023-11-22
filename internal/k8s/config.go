@@ -60,6 +60,7 @@ func (c *KubeConfig) MergeConfig(newConfig clientcmdapi.Config) error {
 		return err
 	}
 	merge(&existingConfig, &newConfig)
+	existingConfig.CurrentContext = newConfig.CurrentContext
 	return clientcmd.ModifyConfig(c.ConfigAccess(), existingConfig, true)
 }
 
