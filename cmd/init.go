@@ -9,6 +9,7 @@ import (
 	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v2"
 
+	"boundless-cli/internal/boundless"
 	"boundless-cli/internal/types"
 )
 
@@ -81,7 +82,7 @@ var defaultComponents = types.Components{
 	Addons: []types.Addons{
 		{
 			Name:      "example-server",
-			Kind:      "chart",
+			Kind:      boundless.AddonKindChart,
 			Enabled:   true,
 			Namespace: "default",
 			Chart: &types.ChartInfo{

@@ -18,8 +18,8 @@ import (
 )
 
 const (
-	addonKindManifest = "ManifestAddon"
-	addonKindChart    = "HelmAddon"
+	AddonKindManifest = "manifest"
+	AddonKindChart    = "chart"
 )
 
 // ApplyBlueprint applies a Blueprint object to the cluster
@@ -45,7 +45,7 @@ func ApplyBlueprint(kubeConfig *k8s.KubeConfig, cluster types.Blueprint) error {
 	var addons []v1alpha1.AddonSpec
 	for _, addon := range components.Addons {
 		log.Debug().Msgf("Installing %q addon", addon.Kind)
-		if addon.Kind == addonKindChart {
+		if addon.Kind == AddonKindChart {
 			addons = append(addons, v1alpha1.AddonSpec{
 				Name:      addon.Name,
 				Kind:      addon.Kind,
@@ -59,7 +59,7 @@ func ApplyBlueprint(kubeConfig *k8s.KubeConfig, cluster types.Blueprint) error {
 					Values:  addon.Chart.Values,
 				},
 			})
-		} else if addon.Kind == addonKindManifest {
+		} else if addon.Kind == AddonKindManifest {
 			addons = append(addons, v1alpha1.AddonSpec{
 				Name:      addon.Name,
 				Kind:      addon.Kind,
@@ -70,7 +70,7 @@ func ApplyBlueprint(kubeConfig *k8s.KubeConfig, cluster types.Blueprint) error {
 				},
 			})
 		} else {
-			return fmt.Errorf("unknown addon kind. Please use either %q or %q'", addonKindChart, addonKindManifest)
+			return fmt.Errorf("unknown addon kind %q (valid values: %s|%s)", addon.Kind, AddonKindChart, AddonKindManifest)
 		}
 
 	}
