@@ -12,6 +12,8 @@ import (
 	"boundless-cli/internal/k8s"
 )
 
+var operatorUri string
+
 func applyCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "apply",
@@ -25,9 +27,7 @@ func applyCmd() *cobra.Command {
 
 	flags := cmd.Flags()
 	addBlueprintFileFlags(flags)
-	addCustomBOPFlag(flags)
 	addKubeFlags(flags)
-	cmd.Flags().MarkHidden("bop")
 
 	return cmd
 }
@@ -65,19 +65,10 @@ func runApply() error {
 		return fmt.Errorf("failed to wait for nodes: %w", err)
 	}
 
+	// @todo: display the version of the operator
 	log.Info().Msgf("Installing Boundless Operator")
-
-	var file string
-	// Check if the user provided custom bop manifest
-	if customBOPFlag != "" {
-		log.Debug().Msgf("Installing Boundless Operator using custom manifest file: %q", customBOPFlag)
-		file = customBOPFlag
-	} else {
-		log.Debug().Msgf("Installing Boundless Operator using manifest file: %s", boundless.ManifestUrl)
-		file = boundless.ManifestUrl
-	}
-	err = k8s.Apply(file, kubeConfig)
-	if err != nil {
+	log.Trace().Msgf("Installing boundless operator using manifest file: %s", operatorUri)
+	if err = k8s.ApplyYaml(operatorUri, kubeConfig); err != nil {
 		return fmt.Errorf("failed to install Boundless Operator: %w", err)
 	}
 

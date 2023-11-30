@@ -26,7 +26,6 @@ const (
 var (
 	pFlags        *PersistenceFlags
 	blueprintFlag string
-	customBOPFlag string
 	kubeFlags     = genericclioptions.NewConfigFlags(k8s.UsePersistentConfig)
 
 	blueprint  types.Blueprint
@@ -138,10 +137,6 @@ func addBlueprintFileFlags(flags *pflag.FlagSet) {
 	_ = flags.MarkDeprecated("config", "use --file (or -f)")
 
 	flags.StringVarP(&blueprintFlag, "file", "f", DefaultBlueprintFileName, "Path to the blueprint file")
-}
-
-func addCustomBOPFlag(flags *pflag.FlagSet) {
-	flags.StringVarP(&customBOPFlag, "bop", "b", "", "Path to the custom bop manifest")
 }
 
 func addKubeFlags(flags *pflag.FlagSet) {

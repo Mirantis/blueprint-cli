@@ -4,9 +4,8 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/mirantis/boundless-operator/api/v1alpha1"
+	operatorv1alpha1 "github.com/mirantis/boundless-operator/api/v1alpha1"
 	"k8s.io/apimachinery/pkg/runtime"
-
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
@@ -16,7 +15,7 @@ func CreateOrUpdate(config *KubeConfig, obj client.Object) error {
 	// - either a dynamic client,
 	// - or generate a client in the `boundless-operator` to be used here
 	scheme := runtime.NewScheme()
-	_ = v1alpha1.AddToScheme(scheme)
+	_ = operatorv1alpha1.AddToScheme(scheme)
 
 	restConfig, err := config.RESTConfig()
 	if err != nil {
@@ -28,11 +27,11 @@ func CreateOrUpdate(config *KubeConfig, obj client.Object) error {
 		return fmt.Errorf("failed to create kubernetes client: %v", err)
 	}
 
-	existing := &v1alpha1.Blueprint{}
+	existing := &operatorv1alpha1.Blueprint{}
 	err = kubeClient.Get(context.Background(), client.ObjectKeyFromObject(obj), existing)
 	if err != nil {
 		if client.IgnoreNotFound(err) != nil {
-			return fmt.Errorf("failed to get cluster object: %v", err)
+			return fmt.Errorf("failed to get existing blueprints: %v", err)
 		}
 	}
 	if existing.Name != "" {
