@@ -11,6 +11,7 @@ import (
 
 // ReadURI reads the content of a URI.
 // The URI argument can be a file path or a URL.
+// @TODO: Make this function testable by injecting a reader for file and http requests.
 func ReadURI(uri string) ([]byte, error) {
 	u, err := url.Parse(uri)
 	if err != nil {

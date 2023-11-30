@@ -15,6 +15,7 @@ import (
 
 // ApplyYaml applies a yaml manifest to the cluster from the URI. The URI can be a file path or a URL
 // It creates CRDs first and then other objects
+// @TODO: Make this function testable by passing a "uri reader" and kubernetes clients
 func ApplyYaml(uri string, kc *KubeConfig) error {
 	var err error
 	var client kubernetes.Interface
