@@ -68,7 +68,7 @@ func runApply() error {
 	// @todo: display the version of the operator
 	log.Info().Msgf("Installing Boundless Operator")
 	log.Trace().Msgf("Installing boundless operator using manifest file: %s", operatorUri)
-	if err = k8s.ApplyYaml(operatorUri, kubeConfig); err != nil {
+	if err = k8s.ApplyYaml(kubeConfig, operatorUri); err != nil {
 		return fmt.Errorf("failed to install Boundless Operator: %w", err)
 	}
 

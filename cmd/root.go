@@ -52,6 +52,7 @@ func init() {
 		applyCmd(),
 		updateCmd(),
 		resetCmd(),
+		upgradeCmd(),
 	)
 
 	pFlags = NewPersistenceFlags()
