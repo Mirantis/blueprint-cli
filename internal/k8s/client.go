@@ -7,7 +7,7 @@ import (
 	"k8s.io/client-go/kubernetes"
 )
 
-// GetClient returns a handle to api server.
+// GetClient returns a kubernetes client
 func GetClient(config *KubeConfig) (*kubernetes.Clientset, error) {
 	cfg, err := config.RESTConfig()
 	if err != nil {
@@ -17,6 +17,7 @@ func GetClient(config *KubeConfig) (*kubernetes.Clientset, error) {
 	return kubernetes.NewForConfig(cfg)
 }
 
+// GetDynamicClient returns a dynamic kubernetes client
 func GetDynamicClient(config *KubeConfig) (*dynamic.DynamicClient, error) {
 	cfg, err := config.RESTConfig()
 	if err != nil {
