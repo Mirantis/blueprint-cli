@@ -30,7 +30,7 @@ func ApplyYaml(kc *KubeConfig, uri string) error {
 
 	objs, err := readYamlManifest(uri)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to read manifest from %q: %w", uri, err)
 	}
 
 	// separate out the CRDs and other objects
@@ -41,14 +41,14 @@ func ApplyYaml(kc *KubeConfig, uri string) error {
 	ctx := context.Background()
 	for _, o := range crds {
 		if err = createOrUpdateObject(ctx, client, dynamicClient, &o); err != nil {
-			return err
+			return fmt.Errorf("failed to apply crds resources from manifest at %q: %w", uri, err)
 		}
 	}
 
 	// create other objects
 	for _, o := range others {
 		if err = createOrUpdateObject(ctx, client, dynamicClient, &o); err != nil {
-			return err
+			return fmt.Errorf("failed to apply resources from manifest at %q: %w", uri, err)
 		}
 	}
 	return nil

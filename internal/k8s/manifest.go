@@ -18,7 +18,7 @@ func readYamlManifest(uri string) ([]unstructured.Unstructured, error) {
 	log.Debug().Msgf("Reading YAML manifest from %q", uri)
 	b, err := utils.ReadURI(uri)
 	if err != nil {
-		return nil, fmt.Errorf("failed to read YAML manifest from %q: %w", uri, err)
+		return nil, err
 	}
 
 	return decodeObjects(b)
