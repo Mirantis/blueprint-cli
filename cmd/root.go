@@ -39,7 +39,7 @@ var (
 		PersistentPreRun: func(cmd *cobra.Command, args []string) {
 			setupLogger()
 		},
-		Run:          runHelp,
+		RunE:         runHelp,
 		SilenceUsage: true,
 	}
 
@@ -56,7 +56,7 @@ func init() {
 	)
 
 	pFlags = NewPersistenceFlags()
-	rootCmd.PersistentFlags().BoolVarP(&pFlags.Debug, "debug", "d", false, " Enable debug logging (default: false)")
+	rootCmd.PersistentFlags().StringVarP(&pFlags.LogLevel, "logLevel", "l", DefaultLogLevel, "Specify a log level (info, warn, debug, trace, error)")
 
 	// TODO (ranyodh): Add support for the other k0sctl commands
 }
@@ -80,9 +80,6 @@ func loadBlueprint(cmd *cobra.Command, args []string) error {
 // loadKubeConfig loads the kubeconfig file
 // This function should be added as a pre-run hook for all commands that connects to the cluster
 func loadKubeConfig(cmd *cobra.Command, args []string) error {
-	// TODO (ranyodh): check if kubeconfig file is present
-	// TODO (ranyodh): if multiple contexts are present, ensure we load the one that is created by bctl
-
 	// unless context flag is passed, explicitly set the context to use for kubeconfig
 	if kubeFlags.Context == nil || *kubeFlags.Context == "" {
 		switch blueprint.Spec.Kubernetes.Provider {
@@ -111,20 +108,35 @@ func loadKubeConfig(cmd *cobra.Command, args []string) error {
 
 func setupLogger() {
 	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stdout, PartsExclude: []string{zerolog.TimestampFieldName}})
+	zerolog.SetGlobalLevel(parseLevel(pFlags.LogLevel))
+}
 
-	if pFlags.Debug {
-		log.Logger = log.Level(zerolog.DebugLevel)
-	} else {
-		log.Logger = log.Level(zerolog.InfoLevel)
+func runHelp(cmd *cobra.Command, args []string) error {
+	return cmd.Help()
+}
+
+func parseLevel(level string) zerolog.Level {
+	switch level {
+	case "trace":
+		return zerolog.TraceLevel
+	case "debug":
+		return zerolog.DebugLevel
+	case "warn":
+		return zerolog.WarnLevel
+	case "error":
+		return zerolog.ErrorLevel
+	case "fatal":
+		return zerolog.FatalLevel
+	default:
+		return zerolog.InfoLevel
 	}
 }
 
-func runHelp(cmd *cobra.Command, args []string) {
-	cmd.Help()
-}
-
 func addConfigFlags(flags *pflag.FlagSet) {
+	// @todo ranyodh: remove before private beta
 	flags.StringVarP(&blueprintFlag, "config", "c", DefaultBlueprintFileName, "Path to the blueprint file")
+	_ = flags.MarkDeprecated("config", "Deprecated (will be remove in future): Use --file or -f")
+	flags.StringVarP(&blueprintFlag, "file", "f", DefaultBlueprintFileName, "Path to the blueprint file")
 }
 
 func addCustomBOPFlag(flags *pflag.FlagSet) {
@@ -140,11 +152,11 @@ func addKubeFlags(flags *pflag.FlagSet) {
 	flags.StringVar(kubeFlags.ClusterName, "cluster", "", "The name of the kubeconfig cluster to use")
 	flags.StringVar(kubeFlags.AuthInfoName, "user", "", "The name of the kubeconfig user to use")
 
-	// as pFlags
+	// as flags
 	flags.StringVar(kubeFlags.Impersonate, "as", "", "Username to impersonate for the operation")
 	flags.StringArrayVar(kubeFlags.ImpersonateGroup, "as-group", []string{}, "Group to impersonate for the operation")
 
-	// cert pFlags
+	// cert flags
 	flags.BoolVar(kubeFlags.Insecure, "insecure-skip-tls-verify", false, "If true, the server's caCertFile will not be checked for validity")
 	flags.StringVar(kubeFlags.CAFile, "certificate-authority", "", "Path to a cert file for the certificate authority")
 	flags.StringVar(kubeFlags.KeyFile, "client-key", "", "Path to a client key file for TLS")
