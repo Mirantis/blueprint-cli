@@ -4,14 +4,14 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/mattn/go-colorable"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 	"k8s.io/cli-runtime/pkg/genericclioptions"
 
-	"github.com/mattn/go-colorable"
-
+	"boundless-cli/internal/boundless"
 	"boundless-cli/internal/distro"
 	"boundless-cli/internal/k8s"
 	"boundless-cli/internal/types"
@@ -26,7 +26,7 @@ const (
 var (
 	pFlags        *PersistenceFlags
 	blueprintFlag string
-	kubeFlags     = genericclioptions.NewConfigFlags(k8s.UsePersistentConfig)
+	operatorUri   string
 
 	blueprint  types.Blueprint
 	kubeConfig *k8s.KubeConfig
@@ -42,7 +42,8 @@ var (
 		SilenceUsage: true,
 	}
 
-	out = colorable.NewColorableStdout()
+	kubeFlags = genericclioptions.NewConfigFlags(k8s.UsePersistentConfig)
+	out       = colorable.NewColorableStdout()
 )
 
 func init() {
@@ -130,6 +131,10 @@ func parseLevel(level string) zerolog.Level {
 	default:
 		return zerolog.InfoLevel
 	}
+}
+
+func addOperatorUriFlag(flags *pflag.FlagSet) {
+	flags.StringVarP(&operatorUri, "operator-uri", "", boundless.ManifestUrlLatest, "URL or path to the Boundless Operator manifest file")
 }
 
 func addBlueprintFileFlags(flags *pflag.FlagSet) {

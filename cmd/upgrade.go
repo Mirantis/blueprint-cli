@@ -6,7 +6,6 @@ import (
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
 
-	"boundless-cli/internal/boundless"
 	"boundless-cli/internal/k8s"
 )
 
@@ -23,9 +22,8 @@ func upgradeCmd() *cobra.Command {
 	}
 
 	flags := cmd.Flags()
-	flags.StringVarP(&operatorUri, "operator-uri", "", boundless.ManifestUrlLatest, "URL or path to the Boundless Operator manifest file")
-
-	addConfigFlags(flags)
+	addOperatorUriFlag(flags)
+	addBlueprintFileFlags(flags)
 	addKubeFlags(flags)
 	return cmd
 }

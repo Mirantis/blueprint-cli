@@ -12,8 +12,6 @@ import (
 	"boundless-cli/internal/k8s"
 )
 
-var operatorUri string
-
 func applyCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "apply",
@@ -26,7 +24,7 @@ func applyCmd() *cobra.Command {
 	}
 
 	flags := cmd.Flags()
-	flags.StringVarP(&operatorUri, "operator-uri", "", boundless.ManifestUrlLatest, "URL or path to the Boundless Operator manifest file")
+	addOperatorUriFlag(flags)
 	addBlueprintFileFlags(flags)
 	addKubeFlags(flags)
 
