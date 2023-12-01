@@ -37,6 +37,8 @@ func CreateOrUpdate(config *KubeConfig, obj client.Object) error {
 	}
 	if existing.Name != "" {
 		obj.SetResourceVersion(existing.GetResourceVersion())
+		obj.SetFinalizers(existing.GetFinalizers())
+
 		err = kubeClient.Update(context.Background(), obj)
 		if err != nil {
 			return fmt.Errorf("failed to update cluster object: %v", err)

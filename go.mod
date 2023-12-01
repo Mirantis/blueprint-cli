@@ -9,7 +9,7 @@ require (
 	github.com/k0sproject/dig v0.2.0
 	github.com/k3s-io/helm-controller v0.15.4
 	github.com/mattn/go-colorable v0.1.13
-	github.com/mirantis/boundless-operator v0.0.0-20231122183226-555df480ecb2
+	github.com/mirantis/boundless-operator v0.0.0-20231129231129-8d3325b89228
 	github.com/rs/zerolog v1.31.0
 	github.com/spf13/cobra v1.7.0
 	github.com/spf13/pflag v1.0.5
