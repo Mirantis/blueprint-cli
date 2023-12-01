@@ -24,7 +24,7 @@ func applyCmd() *cobra.Command {
 	}
 
 	flags := cmd.Flags()
-	addConfigFlags(flags)
+	addBlueprintFileFlags(flags)
 	addCustomBOPFlag(flags)
 	addKubeFlags(flags)
 	cmd.Flags().MarkHidden("bop")

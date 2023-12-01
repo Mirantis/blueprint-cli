@@ -27,7 +27,7 @@ For a cluster with an external Kubernetes provider, this will remove Boundless O
 	}
 
 	flags := cmd.Flags()
-	addConfigFlags(flags)
+	addBlueprintFileFlags(flags)
 	addKubeFlags(flags)
 	return cmd
 }

@@ -22,7 +22,7 @@ func updateCmd() *cobra.Command {
 	}
 
 	flags := cmd.Flags()
-	addConfigFlags(flags)
+	addBlueprintFileFlags(flags)
 	addKubeFlags(flags)
 
 	return cmd

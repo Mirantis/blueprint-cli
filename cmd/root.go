@@ -132,7 +132,7 @@ func parseLevel(level string) zerolog.Level {
 	}
 }
 
-func addConfigFlags(flags *pflag.FlagSet) {
+func addBlueprintFileFlags(flags *pflag.FlagSet) {
 	// @todo ranyodh: remove deprecated`config` flag before 1.0.0
 	flags.StringVarP(&blueprintFlag, "config", "c", DefaultBlueprintFileName, "Path to the blueprint file")
 	_ = flags.MarkDeprecated("config", "use --file (or -f)")
