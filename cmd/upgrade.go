@@ -24,7 +24,7 @@ func upgradeCmd() *cobra.Command {
 
 	flags := cmd.Flags()
 	flags.StringVarP(&operatorUri, "operator-uri", "", boundless.ManifestUrlLatest, "URL or path to the Boundless Operator manifest file")
-	
+
 	addConfigFlags(flags)
 	addKubeFlags(flags)
 	return cmd
@@ -33,7 +33,7 @@ func upgradeCmd() *cobra.Command {
 func runUpgrade(cmd *cobra.Command) error {
 	log.Info().Msgf("Upgrading Boundless Operator using manifest file %q", operatorUri)
 	if err := k8s.ApplyYaml(kubeConfig, operatorUri); err != nil {
-		return fmt.Errorf("failed to upgrade operator: %w", err)
+		return fmt.Errorf("failed to upgrade boundless operator: %w", err)
 	}
 
 	log.Info().Msgf("Finished updating Boundless Operator")

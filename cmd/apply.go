@@ -26,6 +26,7 @@ func applyCmd() *cobra.Command {
 	}
 
 	flags := cmd.Flags()
+	flags.StringVarP(&operatorUri, "operator-uri", "", boundless.ManifestUrlLatest, "URL or path to the Boundless Operator manifest file")
 	addBlueprintFileFlags(flags)
 	addKubeFlags(flags)
 
