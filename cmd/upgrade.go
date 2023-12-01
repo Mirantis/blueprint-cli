@@ -24,10 +24,7 @@ func upgradeCmd() *cobra.Command {
 
 	flags := cmd.Flags()
 	flags.StringVarP(&operatorUri, "operator-uri", "", boundless.ManifestUrlLatest, "URL or path to the Boundless Operator manifest file")
-	if err := cmd.MarkFlagRequired("operator-uri"); err != nil {
-		log.Fatal().Err(err).Msg("Failed to mark flag as required")
-	}
-
+	
 	addConfigFlags(flags)
 	addKubeFlags(flags)
 	return cmd
