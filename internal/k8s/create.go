@@ -37,6 +37,7 @@ func CreateOrUpdate(config *KubeConfig, obj client.Object) error {
 	}
 	if existing.Name != "" {
 		obj.SetResourceVersion(existing.GetResourceVersion())
+		// @TODO add support for .Patch() or merge exisiting and obj.
 		obj.SetFinalizers(existing.GetFinalizers())
 
 		err = kubeClient.Update(context.Background(), obj)
