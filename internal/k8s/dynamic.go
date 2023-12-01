@@ -72,15 +72,16 @@ func createOrUpdateObject(ctx context.Context, client kubernetes.Interface, dyna
 	namespace := obj.GetNamespace()
 	objName := obj.GetName()
 
-	log.Trace().Msgf("Creating/updating %q of kind %q", objName, obj.GetKind())
 	existing, err := dynamicClient.Resource(gvr).Namespace(namespace).Get(ctx, objName, metav1.GetOptions{})
 	if errors.IsNotFound(err) {
+		log.Trace().Msgf("Creating %q of kind %q", objName, obj.GetKind())
 		_, err = dynamicClient.Resource(gvr).Namespace(namespace).Create(ctx, obj, metav1.CreateOptions{})
 		if err != nil {
 			return fmt.Errorf("failed to create resource: %q", err)
 		}
 		log.Trace().Msgf("Created %q of kind %q", objName, obj.GetKind())
 	} else {
+		log.Trace().Msgf("Updating %q of kind %q", objName, obj.GetKind())
 		obj.SetResourceVersion(existing.GetResourceVersion())
 		_, err = dynamicClient.Resource(gvr).Namespace(namespace).Update(ctx, obj, metav1.UpdateOptions{})
 		if err != nil {

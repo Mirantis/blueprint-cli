@@ -3,6 +3,7 @@ package k8s
 import (
 	"bytes"
 	"fmt"
+	"io"
 
 	"github.com/rs/zerolog/log"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
@@ -31,7 +32,7 @@ func decodeObjects(data []byte) ([]unstructured.Unstructured, error) {
 	var o unstructured.Unstructured
 	for {
 		if err := decoder.Decode(&o); err != nil {
-			if err.Error() != "EOF" {
+			if err != io.EOF {
 				return objs, fmt.Errorf("error decoding yaml manifest file: %s", err)
 			}
 			break

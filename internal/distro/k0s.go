@@ -16,7 +16,7 @@ import (
 
 // InstallK0s installs k0s using k0sctl
 func InstallK0s(k0sConfig string, kubeConfig *k8s.KubeConfig) error {
-	log.Debug().Msgf("installing k0s with config: %q", k0sConfig)
+	log.Debug().Msgf("Installing k0s with config: %q", k0sConfig)
 	if err := utils.ExecCommand("k0sctl", "apply", "--config", k0sConfig, "--no-wait"); err != nil {
 		return fmt.Errorf("failed to install k0s: %w", err)
 	}
@@ -25,14 +25,14 @@ func InstallK0s(k0sConfig string, kubeConfig *k8s.KubeConfig) error {
 	if err := writeK0sKubeConfig(k0sConfig, kubeConfig); err != nil {
 		return fmt.Errorf("failed to write kubeconfig: %w", err)
 	}
-	log.Debug().Msgf("kubeconfig file for k0s cluster: %s", kubeConfig.GetConfigPath())
+	log.Trace().Msgf("kubeconfig file for k0s cluster: %s", kubeConfig.GetConfigPath())
 
 	return nil
 }
 
 // ResetK0s resets k0s using k0sctl
 func ResetK0s(k0sConfig string) error {
-	log.Debug().Msgf("resetting k0s with config: %q", k0sConfig)
+	log.Debug().Msgf("Resetting k0s with config: %q", k0sConfig)
 	if err := utils.ExecCommand("k0sctl", "reset", "--config", k0sConfig); err != nil {
 		return fmt.Errorf("failed to reset k0s: %w", err)
 	}

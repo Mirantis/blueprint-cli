@@ -12,7 +12,7 @@ import (
 
 func InstallKind(name string, k8scfg *k8s.KubeConfig) error {
 	kubeconfig := k8scfg.GetConfigPath()
-	log.Debug().Msgf("creating kind cluster %q with kubeconfig at: %s", name, kubeconfig)
+	log.Debug().Msgf("Creating kind cluster %q with kubeconfig at: %s", name, kubeconfig)
 	if err := utils.ExecCommand("kind", "create", "cluster", "-n", name, "--kubeconfig", kubeconfig); err != nil {
 		return fmt.Errorf("failed to create kind cluster %w", err)
 	}
@@ -22,7 +22,7 @@ func InstallKind(name string, k8scfg *k8s.KubeConfig) error {
 }
 
 func ResetKind(name string) error {
-	log.Debug().Msgf("deleting kind cluster %q", name)
+	log.Debug().Msgf("Deleting kind cluster %q", name)
 	if err := utils.ExecCommand("kind", "delete", "clusters", name); err != nil {
 		return fmt.Errorf("failed to delete kind cluster %w", err)
 	}

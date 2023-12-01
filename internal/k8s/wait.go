@@ -41,7 +41,7 @@ func waitForPods(ctx context.Context, clientset kubernetes.Interface, namepsace 
 
 		allRunning := true
 		for _, pod := range pods.Items {
-			log.Debug().Msgf("pod %s is %s", pod.Name, pod.Status.Phase)
+			log.Trace().Msgf("Pod %s is %s", pod.Name, pod.Status.Phase)
 			if !podInPhase([]v1.PodPhase{v1.PodRunning, v1.PodSucceeded}, pod.Status.Phase) {
 				allRunning = false
 				break
