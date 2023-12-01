@@ -68,6 +68,10 @@ func Execute() {
 	}
 }
 
+func runHelp(cmd *cobra.Command, args []string) error {
+	return cmd.Help()
+}
+
 func loadBlueprint(cmd *cobra.Command, args []string) error {
 	var err error
 	log.Debug().Msgf("Loading blueprint from %q", blueprintFlag)
@@ -111,10 +115,6 @@ func setupLogger() {
 	zerolog.SetGlobalLevel(parseLevel(pFlags.LogLevel))
 }
 
-func runHelp(cmd *cobra.Command, args []string) error {
-	return cmd.Help()
-}
-
 func parseLevel(level string) zerolog.Level {
 	switch level {
 	case "trace":
@@ -133,9 +133,10 @@ func parseLevel(level string) zerolog.Level {
 }
 
 func addConfigFlags(flags *pflag.FlagSet) {
-	// @todo ranyodh: remove before private beta
+	// @todo ranyodh: remove deprecated`config` flag before 1.0.0
 	flags.StringVarP(&blueprintFlag, "config", "c", DefaultBlueprintFileName, "Path to the blueprint file")
 	_ = flags.MarkDeprecated("config", "use --file (or -f)")
+
 	flags.StringVarP(&blueprintFlag, "file", "f", DefaultBlueprintFileName, "Path to the blueprint file")
 }
 
