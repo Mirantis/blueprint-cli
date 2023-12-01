@@ -135,7 +135,7 @@ func parseLevel(level string) zerolog.Level {
 func addConfigFlags(flags *pflag.FlagSet) {
 	// @todo ranyodh: remove before private beta
 	flags.StringVarP(&blueprintFlag, "config", "c", DefaultBlueprintFileName, "Path to the blueprint file")
-	_ = flags.MarkDeprecated("config", "Deprecated (will be remove in future): Use --file or -f")
+	_ = flags.MarkDeprecated("config", "use --file (or -f)")
 	flags.StringVarP(&blueprintFlag, "file", "f", DefaultBlueprintFileName, "Path to the blueprint file")
 }
 
