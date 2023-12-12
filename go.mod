@@ -1,6 +1,6 @@
 module github.com/mirantiscontainers/boundless-cli
 
-go 1.21.3
+go 1.21
 
 require (
 	github.com/a8m/envsubst v1.4.2
