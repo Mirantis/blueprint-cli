@@ -5,11 +5,10 @@ import (
 	"fmt"
 	"io"
 
+	"github.com/mirantiscontainers/boundless-cli/internal/utils"
 	"github.com/rs/zerolog/log"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/util/yaml"
-
-	"boundless-cli/internal/utils"
 )
 
 // readYamlManifest reads a Kubernetes YAML manifest file containing multiple objects and returns the contents

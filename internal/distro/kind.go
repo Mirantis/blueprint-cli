@@ -5,9 +5,9 @@ import (
 
 	"github.com/rs/zerolog/log"
 
-	"boundless-cli/internal/k8s"
-	"boundless-cli/internal/types"
-	"boundless-cli/internal/utils"
+	"github.com/mirantiscontainers/boundless-cli/internal/k8s"
+	"github.com/mirantiscontainers/boundless-cli/internal/types"
+	"github.com/mirantiscontainers/boundless-cli/internal/utils"
 )
 
 func InstallKind(name string, k8scfg *k8s.KubeConfig) error {

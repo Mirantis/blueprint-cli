@@ -3,9 +3,8 @@ package cmd
 import (
 	"fmt"
 
+	"github.com/mirantiscontainers/boundless-cli/internal/color"
 	"github.com/spf13/cobra"
-
-	"boundless-cli/internal/color"
 )
 
 var (

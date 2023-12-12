@@ -18,7 +18,7 @@ jobs:
           tag_name: dev
           github_token: ${{ secrets.PAT_CI_DOCKER_EE_MKE }}
           delete_release: true
-          repo: mirantis/boundless-cli
+          repo: mirantiscontainers/boundless-cli
 
       - name: Check out code into the Go module directory
         uses: actions/checkout@v3
@@ -50,7 +50,7 @@ jobs:
           tag_name: dev
           body: "This is the dev build that always represents the latest commit on the main branch. These binaries change frequiently and are not meant for production use."
           token: ${{ secrets.PAT_CI_DOCKER_EE_MKE }}
-          repository: mirantis/boundless-cli
+          repository: mirantiscontainers/boundless-cli
           files: |
             **/*.tar.gz
             **/*.zip

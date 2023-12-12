@@ -6,11 +6,10 @@ import (
 	"os/exec"
 
 	"github.com/k0sproject/dig"
+	"github.com/mirantiscontainers/boundless-cli/internal/boundless"
+	"github.com/mirantiscontainers/boundless-cli/internal/types"
 	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v2"
-
-	"boundless-cli/internal/boundless"
-	"boundless-cli/internal/types"
 )
 
 var isKind bool

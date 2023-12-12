@@ -12,7 +12,7 @@ The release process is automated using github actions that trigger when a releas
   a. Run through all tests (lint, unit, integration)
   b. Build the release binaries
   c. Publish the binaries to the following repo's release pages
-    i. https://github.com/Mirantis/boundless/releases
-    i. https://github.com/Mirantis/boundless-cli/releases
+    i. https://github.com/mirantiscontainers/boundless/releases
+    i. https://github.com/mirantiscontainers/boundless-cli/releases
 4. Once CI finished, take a look at the binaries and make sure they look good
 5. Change the release from pre-release to latest on the github page

@@ -6,12 +6,12 @@ import (
 	"os"
 	"os/exec"
 
+	"github.com/mirantiscontainers/boundless-cli/internal/k8s"
+	"github.com/mirantiscontainers/boundless-cli/internal/types"
+	"github.com/mirantiscontainers/boundless-cli/internal/utils"
+
 	"github.com/rs/zerolog/log"
 	"k8s.io/client-go/tools/clientcmd"
-
-	"boundless-cli/internal/k8s"
-	"boundless-cli/internal/types"
-	"boundless-cli/internal/utils"
 )
 
 // InstallK0s installs k0s using k0sctl

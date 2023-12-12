@@ -5,7 +5,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"boundless-cli/internal/color"
+	"github.com/mirantiscontainers/boundless-cli/internal/color"
 )
 
 func TestColorize(t *testing.T) {

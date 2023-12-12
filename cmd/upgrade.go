@@ -3,10 +3,9 @@ package cmd
 import (
 	"fmt"
 
+	"github.com/mirantiscontainers/boundless-cli/internal/k8s"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
-
-	"boundless-cli/internal/k8s"
 )
 
 // updateCmd represents the apply command

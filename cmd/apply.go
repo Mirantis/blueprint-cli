@@ -3,13 +3,13 @@ package cmd
 import (
 	"fmt"
 
+	"github.com/mirantiscontainers/boundless-cli/internal/boundless"
+	"github.com/mirantiscontainers/boundless-cli/internal/distro"
+	"github.com/mirantiscontainers/boundless-cli/internal/k0sctl"
+	"github.com/mirantiscontainers/boundless-cli/internal/k8s"
+
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
-
-	"boundless-cli/internal/boundless"
-	"boundless-cli/internal/distro"
-	"boundless-cli/internal/k0sctl"
-	"boundless-cli/internal/k8s"
 )
 
 func applyCmd() *cobra.Command {

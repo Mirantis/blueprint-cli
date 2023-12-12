@@ -1,6 +1,6 @@
 package main
 
-import "boundless-cli/cmd"
+import "github.com/mirantiscontainers/boundless-cli/cmd"
 
 func main() {
 	cmd.Execute()

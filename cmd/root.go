@@ -5,17 +5,16 @@ import (
 	"os"
 
 	"github.com/mattn/go-colorable"
+	"github.com/mirantiscontainers/boundless-cli/internal/boundless"
+	"github.com/mirantiscontainers/boundless-cli/internal/distro"
+	"github.com/mirantiscontainers/boundless-cli/internal/k8s"
+	"github.com/mirantiscontainers/boundless-cli/internal/types"
+	"github.com/mirantiscontainers/boundless-cli/internal/utils"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 	"k8s.io/cli-runtime/pkg/genericclioptions"
-
-	"boundless-cli/internal/boundless"
-	"boundless-cli/internal/distro"
-	"boundless-cli/internal/k8s"
-	"boundless-cli/internal/types"
-	"boundless-cli/internal/utils"
 )
 
 const (

@@ -11,10 +11,9 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/util/yaml"
 
-	"github.com/mirantis/boundless-operator/api/v1alpha1"
-
-	"boundless-cli/internal/k8s"
-	"boundless-cli/internal/types"
+	"github.com/mirantiscontainers/boundless-cli/internal/k8s"
+	"github.com/mirantiscontainers/boundless-cli/internal/types"
+	"github.com/mirantiscontainers/boundless-operator/api/v1alpha1"
 )
 
 const (

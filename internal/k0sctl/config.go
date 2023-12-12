@@ -5,7 +5,7 @@ import (
 
 	"gopkg.in/yaml.v2"
 
-	"boundless-cli/internal/types"
+	"github.com/mirantiscontainers/boundless-cli/internal/types"
 )
 
 // GetConfigPath writes the k0sctl config file to a temporary file and returns the path to it

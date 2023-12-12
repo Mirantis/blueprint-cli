@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	operatorv1alpha1 "github.com/mirantis/boundless-operator/api/v1alpha1"
+	operatorv1alpha1 "github.com/mirantiscontainers/boundless-operator/api/v1alpha1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
