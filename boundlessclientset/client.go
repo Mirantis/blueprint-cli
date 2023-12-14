@@ -7,6 +7,7 @@ import (
 	"github.com/mirantiscontainers/boundless-operator/api/v1alpha1"
 )
 
+// TODO: generate the client code instead or use a dynamic client
 type BoundlessV1Alpha1Interface interface {
 	Addons(namespace string) v1alpha1.Addon
 }
@@ -33,13 +34,13 @@ func NewForConfig(c *rest.Config) (*BoundlessV1Alpha1Client, error) {
 func (c *BoundlessV1Alpha1Client) Addons(namespace string) AddonInterface {
 	return &addonClient{
 		restClient: c.restClient,
-		ns:         namespace,
+		namespace:  namespace,
 	}
 }
 
 func (c *BoundlessV1Alpha1Client) Manifests(namespace string) ManifestInterface {
 	return &manifestClient{
 		restClient: c.restClient,
-		ns:         namespace,
+		namespace:  namespace,
 	}
 }
