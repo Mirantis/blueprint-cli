@@ -16,7 +16,7 @@ jobs:
         uses: dev-drprasad/delete-tag-and-release@v1.0
         with:
           tag_name: dev
-          github_token: ${{ secrets.PAT_CI_DOCKER_EE_MKE }}
+          github_token: ${{ secrets.PAT_CI_BOUNDLESS }}
           delete_release: true
           repo: mirantiscontainers/boundless-cli
 
@@ -41,7 +41,7 @@ jobs:
           version: latest
           args: --snapshot --clean
         env:
-          GITHUB_TOKEN: ${{ secrets.PAT_CI_DOCKER_EE_MKE }}
+          GITHUB_TOKEN: ${{ secrets.PAT_CI_BOUNDLESS }}
 
       - name: Publish dev binaries
         uses: softprops/action-gh-release@v1
@@ -49,7 +49,7 @@ jobs:
           name: dev
           tag_name: dev
           body: "This is the dev build that always represents the latest commit on the main branch. These binaries change frequiently and are not meant for production use."
-          token: ${{ secrets.PAT_CI_DOCKER_EE_MKE }}
+          token: ${{ secrets.PAT_CI_BOUNDLESS }}
           repository: mirantiscontainers/boundless-cli
           files: |
             **/*.tar.gz
@@ -82,12 +82,12 @@ jobs:
         version: latest
         args: --clean
       env:
-        GITHUB_TOKEN: ${{ secrets.PAT_CI_DOCKER_EE_MKE }}
+        GITHUB_TOKEN: ${{ secrets.PAT_CI_BOUNDLESS }}
 
     - name: Publish binaries to private repo
       uses: softprops/action-gh-release@v1
       with:
-        token: ${{ secrets.PAT_CI_DOCKER_EE_MKE }}
+        token: ${{ secrets.PAT_CI_BOUNDLESS }}
         files: |
           **/*.tar.gz
           **/*.zip
