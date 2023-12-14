@@ -8,7 +8,7 @@ import (
 	"k8s.io/client-go/kubernetes/scheme"
 	"k8s.io/client-go/rest"
 
-	"github.com/mirantis/boundless-operator/api/v1alpha1"
+	"github.com/mirantiscontainers/boundless-operator/api/v1alpha1"
 )
 
 type AddonInterface interface {

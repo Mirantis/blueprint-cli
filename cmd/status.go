@@ -1,20 +1,22 @@
 package cmd
 
 import (
-	"boundless-cli/boundlessclientset"
-	"boundless-cli/internal/boundless"
-	"boundless-cli/internal/k8s"
-	"boundless-cli/internal/utils"
 	"context"
 	"fmt"
-	"github.com/mirantis/boundless-operator/api/v1alpha1"
+	"strings"
+
 	"github.com/spf13/cobra"
 	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/kubernetes/scheme"
 	"k8s.io/client-go/tools/clientcmd"
-	"strings"
+
+	"github.com/mirantiscontainers/boundless-cli/boundlessclientset"
+	"github.com/mirantiscontainers/boundless-cli/internal/boundless"
+	"github.com/mirantiscontainers/boundless-cli/internal/k8s"
+	"github.com/mirantiscontainers/boundless-cli/internal/utils"
+	"github.com/mirantiscontainers/boundless-operator/api/v1alpha1"
 )
 
 const (

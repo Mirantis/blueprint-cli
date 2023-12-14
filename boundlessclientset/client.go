@@ -1,9 +1,10 @@
 package boundlessclientset
 
 import (
-	"github.com/mirantis/boundless-operator/api/v1alpha1"
 	"k8s.io/client-go/kubernetes/scheme"
 	"k8s.io/client-go/rest"
+
+	"github.com/mirantiscontainers/boundless-operator/api/v1alpha1"
 )
 
 type BoundlessV1Alpha1Interface interface {
