@@ -56,7 +56,7 @@ snapshot:
 release:
   # release to the public repository
   github:
-    owner: mirantis
+    owner: mirantiscontainers
     name: boundless
   name_template: "bctl-v{{.Version}}"
 
