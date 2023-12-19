@@ -45,7 +45,7 @@ func runApply() error {
 				return err
 			}
 		case distro.ProviderKind:
-			if err = distro.InstallKind(blueprint.Metadata.Name, kubeConfig); err != nil {
+			if err = distro.InstallKind(blueprint.Metadata.Name, kubeConfig, blueprint.Spec.Kubernetes.ConfigPath); err != nil {
 				return err
 			}
 		default:
