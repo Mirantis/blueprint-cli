@@ -8,6 +8,12 @@ The release binary, docker images, documentation, and source code in this repo a
 
 The public repo for the Boundless Controller is located at [mirantiscontainers/boundless](https://github.com/mirantiscontainers/boundless). When a release is created in mirantiscontainers/boundless-cli, it will push the generated binary to the public repo. The public repo will then create a release with the binary and documentation. Much of the documentation for working with the Boundless Controller can be found in the public repo.
 
+## Documentation/Examples
+
+The only documentation or examples in this repo should be if we need something special for our development setup (avoiding) or internal to Mirantis. These can be found in the docs folder.
+
+All other documentation and examples should be located in the [public repo](https://github.com/MirantisContainers/boundless).
+
 ## Releases
 
 Information on creating a release can be found in the [release documentation](docs/creating-a-release.md).
