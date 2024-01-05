@@ -79,6 +79,12 @@ func loadBlueprint(cmd *cobra.Command, args []string) error {
 	if blueprint, err = utils.LoadBlueprint(blueprintFlag); err != nil {
 		return fmt.Errorf("failed to load blueprint file at %q: %w", blueprintFlag, err)
 	}
+
+	// Validate the blueprint
+	if err := blueprint.Validate(); err != nil {
+		return err
+	}
+
 	return nil
 }
 

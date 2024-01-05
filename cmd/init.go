@@ -78,7 +78,7 @@ var defaultComponents = types.Components{
 			},
 		},
 	},
-	Addons: []types.Addons{
+	Addons: []types.Addon{
 		{
 			Name:      "example-server",
 			Kind:      boundless.AddonKindChart,
