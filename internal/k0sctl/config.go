@@ -1,7 +1,6 @@
 package k0sctl
 
 import (
-	"fmt"
 	"os"
 
 	"gopkg.in/yaml.v2"
@@ -12,7 +11,6 @@ import (
 // GetConfigPath writes the k0sctl config file to a temporary file and returns the path to it
 func GetConfigPath(blueprint types.Blueprint) (string, error) {
 	k0sctlConfig := types.ConvertToK0s(blueprint)
-	fmt.Println(k0sctlConfig)
 
 	data, err := yaml.Marshal(k0sctlConfig)
 	if err != nil {
