@@ -30,7 +30,7 @@ func (b *Blueprint) Validate() error {
 	if b.Kind == "" {
 		return fmt.Errorf("kind field cannot be left blank")
 	}
-	if slices.Contains(blueprintKinds, b.Kind) {
+	if !slices.Contains(blueprintKinds, b.Kind) {
 		return fmt.Errorf("invalid cluster kind: %s", b.Kind)
 	}
 
@@ -102,11 +102,12 @@ func (k *Kubernetes) Validate() error {
 	if k.Provider == "" {
 		return fmt.Errorf("kubernetes.provider field cannot be left blank")
 	}
-	if slices.Contains(providerKinds, k.Provider) {
+	if !slices.Contains(providerKinds, k.Provider) {
 		return fmt.Errorf("invalid kubernetes.provider: %s", k.Provider)
 	}
 
 	// Version checks
+	// The version can be left empty, but if it's not, it must be a valid k0s semver
 	if k.Version != "" {
 		// This regex gives us semver with an optional "+k0s.0"
 		re, _ := regexp.Compile(`/^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$/gm`)
@@ -158,7 +159,7 @@ type CoreComponent struct {
 	Config   dig.Mapping `yaml:"config,omitempty"`
 }
 
-var addonKinds = []string{"chart", "manifest"}
+var addonKinds = []string{"chart", "Chart", "manifest", "Manifest"}
 
 // Addon defines the desired state of an Addon
 type Addon struct {
@@ -182,7 +183,7 @@ func (a *Addon) Validate() error {
 	if a.Kind == "" {
 		return fmt.Errorf("addons.kind field cannot be left blank")
 	}
-	if slices.Contains(addonKinds, a.Kind) {
+	if !slices.Contains(addonKinds, a.Kind) {
 		return fmt.Errorf("%s addons.kind field is an invalid kind: %s", a.Name, a.Kind)
 	}
 
