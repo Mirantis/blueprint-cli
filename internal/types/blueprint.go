@@ -110,7 +110,7 @@ func (k *Kubernetes) Validate() error {
 	// The version can be left empty, but if it's not, it must be a valid k0s semver
 	if k.Version != "" {
 		// This regex gives us semver with an optional "+k0s.0"
-		re, _ := regexp.Compile(`/^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$/gm`)
+		re, _ := regexp.Compile(`^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:\+(k[0-9a-zA-Z-]s+(?:\.[0-9a-zA-Z-]+)*))?$`)
 		if !re.MatchString(k.Version) {
 			return fmt.Errorf("invalid kubernetes.version: %s", k.Version)
 		}

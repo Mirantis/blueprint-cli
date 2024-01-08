@@ -14,11 +14,7 @@ type Metadata struct {
 
 // Validate checks the Metadata structure and its children
 func (m *Metadata) Validate() error {
-
-	// Name checks
-	if m.Name == "" {
-		return fmt.Errorf("metadata.name field cannot be left empty. Remove it completely to not use a name")
-	}
+	// This is just a placeholder for now
 
 	return nil
 }
@@ -50,7 +46,7 @@ func (h *Host) Validate() error {
 
 	// Role checks
 	if h.Role == "" {
-		return fmt.Errorf("hosts.role field cannot be left empty")
+		return fmt.Errorf("hosts.role field cannot be left blank")
 	}
 	if !slices.Contains(nodeRoles, h.Role) {
 		return fmt.Errorf("invalid hosts.role: %s", h.Role)
@@ -73,7 +69,6 @@ func (sh *SSHHost) Validate() error {
 	if sh.Address == "" {
 		return fmt.Errorf("hosts.ssh.address field cannot be left empty")
 	}
-
 	// This regex is for either valid hostnames or ip addresses
 	re, _ := regexp.Compile(`^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])$`)
 	if !re.MatchString(sh.Address) {
@@ -85,7 +80,7 @@ func (sh *SSHHost) Validate() error {
 		return fmt.Errorf("hosts.ssh.keypath field cannot be left empty")
 	}
 	if _, err := os.Stat(sh.KeyPath); errors.Is(err, os.ErrNotExist) {
-		return err
+		return fmt.Errorf("hosts.ssh.keypath does not exist: %s", sh.KeyPath)
 	}
 
 	// Port checks
