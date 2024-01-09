@@ -5,6 +5,7 @@ import (
 	"net/url"
 	"regexp"
 	"slices"
+	"strings"
 
 	"github.com/k0sproject/dig"
 	"k8s.io/apimachinery/pkg/util/intstr"
@@ -159,7 +160,7 @@ type CoreComponent struct {
 	Config   dig.Mapping `yaml:"config,omitempty"`
 }
 
-var addonKinds = []string{"chart", "Chart", "manifest", "Manifest"}
+var addonKinds = []string{"chart", "manifest"}
 
 // Addon defines the desired state of an Addon
 type Addon struct {
@@ -183,11 +184,20 @@ func (a *Addon) Validate() error {
 	if a.Kind == "" {
 		return fmt.Errorf("addons.kind field cannot be left blank")
 	}
-	if !slices.Contains(addonKinds, a.Kind) {
+	if !slices.Contains(addonKinds, strings.ToLower(a.Kind)) {
 		return fmt.Errorf("%s addons.kind field is an invalid kind: %s", a.Name, a.Kind)
+	}
+	if a.Chart != nil && a.Manifest != nil {
+		return fmt.Errorf("%s: addon cannot contain both a chart and a manifest", a.Name)
+	}
+	if a.Chart == nil && a.Manifest == nil {
+		return fmt.Errorf("%s: addon must contain a chart or manifest", a.Name)
 	}
 
 	// Chart checks
+	if strings.ToLower(a.Kind) == "chart" && a.Chart == nil {
+		return fmt.Errorf("%s: addon.kind specified as a chart but no chart information provided", a.Name)
+	}
 	if a.Chart != nil {
 		if err := a.Chart.Validate(); err != nil {
 			return err
@@ -195,6 +205,9 @@ func (a *Addon) Validate() error {
 	}
 
 	// Manifest checks
+	if strings.ToLower(a.Kind) == "manifest" && a.Manifest == nil {
+		return fmt.Errorf("%s: addon.kind specified as a manifest but no manifest information provided", a.Name)
+	}
 	if a.Manifest != nil {
 		if err := a.Manifest.Validate(); err != nil {
 			return err

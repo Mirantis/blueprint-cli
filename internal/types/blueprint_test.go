@@ -146,13 +146,15 @@ func TestAddonValidateName(t *testing.T) {
 			// Run the method under test
 			addon := Addon{
 				Name: tc.name,
-				Kind: addonKinds[0], // This is required for Validate() to work but not tested here
+				Kind: "manifest", // This is required for Validate() to work but not tested here
+				Manifest: &ManifestInfo{
+					URL: "https://charts.bitnami.com/bitnami", // This is required for Validate() to work but not tested here
+				},
 			}
 			actual := addon.Validate()
 
 			// Check the results
 			g.Expect(actual).Should(tc.want)
-
 		})
 	}
 }
@@ -163,8 +165,9 @@ func TestAddonValidateKind(t *testing.T) {
 		kind string
 		want types.GomegaMatcher
 	}{
-		"valid kind": {kind: addonKinds[0], want: BeNil()},
-		"no kind":    {kind: "", want: Equal(fmt.Errorf("addons.kind field cannot be left blank"))},
+		"valid lowercase kind": {kind: "manifest", want: BeNil()},
+		"valid uppercase kind": {kind: "Manifest", want: BeNil()},
+		"no kind":              {kind: "", want: Equal(fmt.Errorf("addons.kind field cannot be left blank"))},
 	}
 
 	for name, tc := range tests {
@@ -176,6 +179,54 @@ func TestAddonValidateKind(t *testing.T) {
 			addon := Addon{
 				Name: "Bob", // This is required for Validate() to work but not tested here
 				Kind: tc.kind,
+				Manifest: &ManifestInfo{
+					URL: "https://charts.bitnami.com/bitnami", // This is required for Validate() to work but not tested here
+				},
+			}
+			actual := addon.Validate()
+
+			// Check the results
+			g.Expect(actual).Should(tc.want)
+
+		})
+	}
+}
+
+// TestAddonValidateKindCount tests the proper addon structure when a kind is specified
+func TestAddonValidateKindCount(t *testing.T) {
+	tests := map[string]struct {
+		kind     string
+		manifest bool
+		chart    bool
+		want     types.GomegaMatcher
+	}{
+		"correct manifest":       {kind: "manifest", manifest: true, chart: false, want: BeNil()},
+		"correct chart":          {kind: "chart", manifest: false, chart: true, want: BeNil()},
+		"no addon structs":       {kind: "manifest", manifest: false, chart: false, want: Equal(fmt.Errorf("Super Cool Addon: addon must contain a chart or manifest"))},
+		"multiple addon structs": {kind: "manifest", manifest: true, chart: true, want: Equal(fmt.Errorf("Super Cool Addon: addon cannot contain both a chart and a manifest"))},
+	}
+
+	for name, tc := range tests {
+		t.Run(name, func(t *testing.T) {
+			// Set up the test environment
+			g := NewWithT(t)
+
+			// Run the method under test
+			addon := Addon{
+				Name: "Super Cool Addon", // This is required for Validate() to work but not tested here
+				Kind: tc.kind,
+			}
+			if tc.manifest {
+				addon.Manifest = &ManifestInfo{
+					URL: "https://charts.bitnami.com/bitnami", // This is required for ManifestInfo.Validate() to work but not tested here
+				}
+			}
+			if tc.chart {
+				addon.Chart = &ChartInfo{
+					Name:    "Fred",                               // This is required for ChartInfo.Validate() to work but not tested here
+					Repo:    "https://charts.bitnami.com/bitnami", // This is required for ChartInfo.Validate() to work but not tested here
+					Version: "1.2.3",                              // This is required for ChartInfo.Validate() to work but not tested here
+				}
 			}
 			actual := addon.Validate()
 
