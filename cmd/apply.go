@@ -5,7 +5,6 @@ import (
 
 	"github.com/mirantiscontainers/boundless-cli/internal/boundless"
 	"github.com/mirantiscontainers/boundless-cli/internal/distro"
-	"github.com/mirantiscontainers/boundless-cli/internal/k0sctl"
 	"github.com/mirantiscontainers/boundless-cli/internal/k8s"
 
 	"github.com/rs/zerolog/log"
@@ -32,25 +31,17 @@ func applyCmd() *cobra.Command {
 }
 
 func runApply() error {
-	var err error
+	log.Info().Msgf("Applying blueprint %s", blueprintFlag)
 
-	if blueprint.Spec.Kubernetes != nil {
-		log.Info().Msgf("Installing Kubernetes distribution: %s", blueprint.Spec.Kubernetes.Provider)
+	// Determine the distro
+	provider, err := distro.GetProvider(&blueprint, kubeConfig)
+	if err != nil {
+		return fmt.Errorf("failed to determine kubernetes provider: %w", err)
+	}
 
-		// TODO (ranyodh): Refactor the follow to use provider interface
-		switch blueprint.Spec.Kubernetes.Provider {
-		case distro.ProviderK0s:
-			k0sctlConfigPath, err := k0sctl.GetConfigPath(blueprint)
-			if err = distro.InstallK0s(k0sctlConfigPath, kubeConfig); err != nil {
-				return err
-			}
-		case distro.ProviderKind:
-			if err = distro.InstallKind(blueprint.Metadata.Name, kubeConfig); err != nil {
-				return err
-			}
-		default:
-			return fmt.Errorf("invalid Kubernetes distribution provider: %s", blueprint.Spec.Kubernetes.Provider)
-		}
+	// Install the distro
+	if err := provider.Install(); err != nil {
+		return fmt.Errorf("failed to install cluster: %w", err)
 	}
 
 	if err = kubeConfig.TryLoad(); err != nil {

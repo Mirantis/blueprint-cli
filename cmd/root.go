@@ -87,12 +87,14 @@ func loadBlueprint(cmd *cobra.Command, args []string) error {
 func loadKubeConfig(cmd *cobra.Command, args []string) error {
 	// unless context flag is passed, explicitly set the context to use for kubeconfig
 	if kubeFlags.Context == nil || *kubeFlags.Context == "" {
-		switch blueprint.Spec.Kubernetes.Provider {
-		case distro.ProviderKind:
-			kubeFlags.Context = strPtr(distro.GetKubeConfigContextKind(blueprint))
-		case distro.ProviderK0s:
-			kubeFlags.Context = strPtr(distro.GetKubeConfigContextK0s(blueprint))
+
+		// Determine the distro
+		provider, err := distro.GetProvider(&blueprint, kubeConfig)
+		if err != nil {
+			return fmt.Errorf("failed to determine kubernetes provider: %w", err)
 		}
+		context := provider.GetKubeConfigContext()
+		kubeFlags.Context = &context
 	}
 	kubeConfig = k8s.NewConfig(kubeFlags)
 

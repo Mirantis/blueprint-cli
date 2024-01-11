@@ -1,8 +1,10 @@
 package cmd
 
 import (
+	"fmt"
+
 	"github.com/mirantiscontainers/boundless-cli/internal/distro"
-	"github.com/mirantiscontainers/boundless-cli/internal/k0sctl"
+	"github.com/rs/zerolog/log"
 
 	"github.com/spf13/cobra"
 )
@@ -33,15 +35,18 @@ For a cluster with an external Kubernetes provider, this will remove Boundless O
 }
 
 func runReset() error {
-	switch blueprint.Spec.Kubernetes.Provider {
-	case "k0s":
-		path, err := k0sctl.GetConfigPath(blueprint)
-		if err != nil {
-			return err
-		}
-		return distro.ResetK0s(path)
-	case "kind":
-		return distro.ResetKind(blueprint.Metadata.Name)
+	log.Info().Msgf("Resetting blueprint %s", blueprintFlag)
+
+	// Determine the distro
+	provider, err := distro.GetProvider(&blueprint, kubeConfig)
+	if err != nil {
+		return fmt.Errorf("failed to determine kubernetes provider: %w", err)
 	}
+
+	// Reset the cluster
+	if err := provider.Reset(); err != nil {
+		return fmt.Errorf("failed to reset cluster: %w", err)
+	}
+
 	return nil
 }

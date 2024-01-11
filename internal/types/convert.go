@@ -38,7 +38,7 @@ func ParseCoreComponentManifests(data []byte) (v1.HelmChart, error) {
 	return helmChart, nil
 }
 
-func ConvertToK0s(cluster Blueprint) K0sCluster {
+func ConvertToK0s(cluster *Blueprint) K0sCluster {
 	return K0sCluster{
 		APIVersion: apiVersionK0s,
 		Kind:       "Cluster",

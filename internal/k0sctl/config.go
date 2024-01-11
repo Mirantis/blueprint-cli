@@ -9,7 +9,7 @@ import (
 )
 
 // GetConfigPath writes the k0sctl config file to a temporary file and returns the path to it
-func GetConfigPath(blueprint types.Blueprint) (string, error) {
+func GetConfigPath(blueprint *types.Blueprint) (string, error) {
 	k0sctlConfig := types.ConvertToK0s(blueprint)
 
 	data, err := yaml.Marshal(k0sctlConfig)
