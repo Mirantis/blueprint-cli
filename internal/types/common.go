@@ -5,9 +5,9 @@ type Metadata struct {
 }
 
 type Host struct {
-	SSH       SSHHost   `yaml:"ssh"`
-	Role      string    `yaml:"role"`
-	LocalHost LocalHost `yaml:"localhost"`
+	SSH       SSHHost    `yaml:"ssh"`
+	Role      string     `yaml:"role"`
+	LocalHost *LocalHost `yaml:"localhost"`
 }
 
 type SSHHost struct {
