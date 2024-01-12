@@ -168,8 +168,8 @@ type Addon struct {
 	Kind      string        `yaml:"kind"`
 	Enabled   bool          `yaml:"enabled"`
 	Namespace string        `yaml:"namespace,omitempty"`
-	Chart     *ChartInfo    `json:"chart,omitempty"`
-	Manifest  *ManifestInfo `json:"manifest,omitempty"`
+	Chart     *ChartInfo    `yaml:"chart,omitempty"`
+	Manifest  *ManifestInfo `yaml:"manifest,omitempty"`
 }
 
 // Validate checks the Addon structure and its children
@@ -248,7 +248,7 @@ func (ci *ChartInfo) Validate() error {
 
 // ManifestInfo defines the desired state of manifest
 type ManifestInfo struct {
-	URL string `json:"url"`
+	URL string `yaml:"url"`
 }
 
 // Validate checks the ManifestInfo structure and its children
