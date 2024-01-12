@@ -7,8 +7,8 @@ import (
 	"os/exec"
 
 	"github.com/mirantiscontainers/boundless-cli/internal/k8s"
-	"github.com/mirantiscontainers/boundless-cli/internal/types"
 	"github.com/mirantiscontainers/boundless-cli/internal/utils"
+	"github.com/mirantiscontainers/boundless-cli/pkg/types"
 	"gopkg.in/yaml.v2"
 
 	"github.com/rs/zerolog/log"

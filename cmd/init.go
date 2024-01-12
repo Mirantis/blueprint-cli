@@ -7,7 +7,7 @@ import (
 
 	"github.com/k0sproject/dig"
 	"github.com/mirantiscontainers/boundless-cli/internal/boundless"
-	"github.com/mirantiscontainers/boundless-cli/internal/types"
+	"github.com/mirantiscontainers/boundless-cli/pkg/types"
 	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v2"
 )

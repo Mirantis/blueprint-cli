@@ -12,7 +12,7 @@ import (
 	"k8s.io/apimachinery/pkg/util/yaml"
 
 	"github.com/mirantiscontainers/boundless-cli/internal/k8s"
-	"github.com/mirantiscontainers/boundless-cli/internal/types"
+	"github.com/mirantiscontainers/boundless-cli/pkg/types"
 	"github.com/mirantiscontainers/boundless-operator/api/v1alpha1"
 )
 
