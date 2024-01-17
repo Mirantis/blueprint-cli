@@ -43,7 +43,7 @@ func (k *K0s) Install() error {
 	kubeConfigPath := k.kubeConfig.GetConfigPath()
 	log.Debug().Msgf("Creating k0s cluster %q with kubeConfig at: %s", k.name, kubeConfigPath)
 
-	if err := utils.ExecCommand("k0sctl", "apply", "--config", k.k0sConfig, "--no-wait"); err != nil {
+	if err := utils.ExecCommand(fmt.Sprintf("k0sctl apply --config %s --no-wait", k.k0sConfig)); err != nil {
 		return fmt.Errorf("failed to install k0s: %w", err)
 	}
 
@@ -60,7 +60,7 @@ func (k *K0s) Install() error {
 func (k *K0s) Reset() error {
 	log.Debug().Msgf("Resetting k0s cluster: %s", k.name)
 
-	if err := utils.ExecCommand("k0sctl", "reset", "--config", k.k0sConfig); err != nil {
+	if err := utils.ExecCommand(fmt.Sprintf("k0sctl reset --config %s", k.k0sConfig)); err != nil {
 		return fmt.Errorf("failed to reset k0s: %w", err)
 	}
 
