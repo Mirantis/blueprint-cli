@@ -3,17 +3,27 @@
 default:  build
 
 BIN_DIR := $(shell pwd)/bin
-VERSION := dev-$(shell git rev-parse --short HEAD)
+
+# LDFLAGS
+VERSION := $(shell git tag --sort=committerdate | tail -1)
+COMMIT := $(shell git rev-parse HEAD)
+DATE := $(shell date -u '+%Y-%m-%d')
+LDFLAGS=-ldflags \
+				" \
+				-X github.com/mirantiscontainers/boundless-cli/cmd.version=${VERSION} \
+				-X github.com/mirantiscontainers/boundless-cli/cmd.commit=${COMMIT} \
+				-X github.com/mirantiscontainers/boundless-cli/cmd.date=${DATE} \
+				"
 
 .PHONY: build
 build:  ## build locally
 	@go mod download
-	@CGO_ENABLED=0 go build -ldflags "-X 'boundless-cli/cmd.version=${VERSION}'" -o ${BIN_DIR}/bctl ./
+	@CGO_ENABLED=0 go build ${LDFLAGS} -o ${BIN_DIR}/bctl ./
 
 .PHONY: install
 install:  ## install locally
 	@go mod download
-	@CGO_ENABLED=0 go build -ldflags "-X 'boundless-cli/cmd.version=${VERSION}'" -o ${GOPATH}/bin/bctl ./
+	@CGO_ENABLED=0 go build ${LDFLAGS} -o ${GOPATH}/bin/bctl ./
 
 .PHONY: init
 init:

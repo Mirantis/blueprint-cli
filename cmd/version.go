@@ -8,7 +8,7 @@ import (
 )
 
 var (
-	version, commit, date = "0.0.0-dev", "", ""
+	version, commit, date = "", "", "" // These are always injected at build time
 )
 
 func versionCmd() *cobra.Command {
