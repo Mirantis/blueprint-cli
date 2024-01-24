@@ -47,7 +47,7 @@ func runReset() error {
 
 	// Uninstall components
 	log.Info().Msgf("Reset Boundless Operator resources")
-	err = boundless.ResetBlueprint(provider.GetKubeConfig(), blueprint)
+	err = boundless.RemoveComponents(provider.GetKubeConfig(), blueprint)
 	if err != nil {
 		return fmt.Errorf("failed to reset components: %w", err)
 	}

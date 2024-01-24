@@ -67,8 +67,8 @@ func ApplyBlueprint(kubeConfig *k8s.KubeConfig, cluster types.Blueprint) error {
 	return nil
 }
 
-// ResetBlueprint resets a Blueprint object to the cluster
-func ResetBlueprint(kubeConfig *k8s.KubeConfig, cluster types.Blueprint) error {
+// RemoveComponents removes all components from the cluster
+func RemoveComponents(kubeConfig *k8s.KubeConfig, cluster types.Blueprint) error {
 	components := cluster.Spec.Components
 
 	var core = v1alpha1.Core{}

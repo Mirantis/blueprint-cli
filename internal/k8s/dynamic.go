@@ -54,8 +54,8 @@ func ApplyYaml(kc *KubeConfig, uri string) error {
 	return nil
 }
 
-// Removes the boundless operator and all the CRDs from a cluster
-func ResetYaml(kc *KubeConfig, uri string) error {
+// DeleteYamlObjects deletes all objects in the cluster that are specified in the yaml
+func DeleteYamlObjects(kc *KubeConfig, uri string) error {
 	var err error
 	var client kubernetes.Interface
 	var dynamicClient dynamic.Interface
