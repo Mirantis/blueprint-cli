@@ -54,7 +54,7 @@ func runReset() error {
 
 	log.Info().Msgf("Uninstalling Boundless Operator")
 	log.Trace().Msgf("Uninstalling boundless operator using manifest file: %s", operatorUri)
-	if err = k8s.ResetYaml(kubeConfig, operatorUri); err != nil {
+	if err = k8s.DeleteYamlObjects(kubeConfig, operatorUri); err != nil {
 		return fmt.Errorf("failed to uninstall Boundless Operator: %w", err)
 	}
 
