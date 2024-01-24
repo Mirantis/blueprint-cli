@@ -3,7 +3,9 @@ package cmd
 import (
 	"fmt"
 
+	"github.com/mirantiscontainers/boundless-cli/internal/boundless"
 	"github.com/mirantiscontainers/boundless-cli/internal/distro"
+	"github.com/mirantiscontainers/boundless-cli/internal/k8s"
 	"github.com/rs/zerolog/log"
 
 	"github.com/spf13/cobra"
@@ -22,7 +24,7 @@ For a cluster with kind, it will delete the cluster (same as 'kind delete cluste
 For a cluster with an external Kubernetes provider, this will remove Boundless Operator and all associated resources.
 `,
 		Args:    cobra.NoArgs,
-		PreRunE: actions(loadBlueprint),
+		PreRunE: actions(loadBlueprint, loadKubeConfig),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return runReset()
 		},
@@ -35,12 +37,25 @@ For a cluster with an external Kubernetes provider, this will remove Boundless O
 }
 
 func runReset() error {
-	log.Info().Msgf("Resetting blueprint %s", blueprintFlag)
+	log.Info().Msg("Resetting cluster")
 
 	// Determine the distro
 	provider, err := distro.GetProvider(&blueprint, kubeConfig)
 	if err != nil {
 		return fmt.Errorf("failed to determine kubernetes provider: %w", err)
+	}
+
+	// Uninstall components
+	log.Info().Msgf("Reset Boundless Operator resources")
+	err = boundless.ResetBlueprint(provider.GetKubeConfig(), blueprint)
+	if err != nil {
+		return fmt.Errorf("failed to reset components: %w", err)
+	}
+
+	log.Info().Msgf("Uninstalling Boundless Operator")
+	log.Trace().Msgf("Uninstalling boundless operator using manifest file: %s", operatorUri)
+	if err = k8s.ResetYaml(kubeConfig, operatorUri); err != nil {
+		return fmt.Errorf("failed to uninstall Boundless Operator: %w", err)
 	}
 
 	// Reset the cluster

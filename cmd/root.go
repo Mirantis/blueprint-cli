@@ -9,6 +9,7 @@ import (
 	"github.com/mirantiscontainers/boundless-cli/internal/distro"
 	"github.com/mirantiscontainers/boundless-cli/internal/k8s"
 	"github.com/mirantiscontainers/boundless-cli/internal/utils"
+	"github.com/mirantiscontainers/boundless-cli/pkg/constants"
 	"github.com/mirantiscontainers/boundless-cli/pkg/types"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
@@ -90,18 +91,41 @@ func loadBlueprint(cmd *cobra.Command, args []string) error {
 
 // loadKubeConfig loads the kubeconfig file
 // This function should be added as a pre-run hook for all commands that connects to the cluster
+// kubeconfig priority:
+// 1. Explicit file provided to bctl with --kubeconfig flag
+// 2. Blueprint kubeconfig location
+// 3. File from the environment variable KUBECONFIG
+// 4. File located at default location (e.g. ~/.kube/config)
 func loadKubeConfig(cmd *cobra.Command, args []string) error {
+
+	// Default to an existing cluster if the blueprint does not have a Kubernetes section
+	if blueprint.Spec.Kubernetes == nil {
+		log.Debug().Msg("No Kubernetes section found in blueprint, defaulting to an existing cluster")
+		blueprint.Spec.Kubernetes = &types.Kubernetes{
+			Provider: constants.ProviderExisting,
+		}
+	}
+
+	// Determine the distro
+	provider, err := distro.GetProvider(&blueprint, kubeConfig)
+	if err != nil {
+		return fmt.Errorf("failed to determine kubernetes provider: %w", err)
+	}
+
+	// If the kubeconfig flag is not used and the blueprint kubeconfig is not empty, use the kubeconfig from the blueprint
+	if kubeFlags.KubeConfig != nil && *kubeFlags.KubeConfig == "" && blueprint.Spec.Kubernetes.KubeConfig != "" {
+		log.Debug().Msg("Using kubeconfig file specified in blueprint")
+		kubeFlags.KubeConfig = strPtr(blueprint.Spec.Kubernetes.KubeConfig)
+	}
+
 	// unless context flag is passed, explicitly set the context to use for kubeconfig
 	if kubeFlags.Context == nil || *kubeFlags.Context == "" {
-
-		// Determine the distro
-		provider, err := distro.GetProvider(&blueprint, kubeConfig)
-		if err != nil {
-			return fmt.Errorf("failed to determine kubernetes provider: %w", err)
-		}
 		context := provider.GetKubeConfigContext()
 		kubeFlags.Context = &context
 	}
+
+	// The remaining kubeconfig options (3&4) are handled by the genericclioptions library
+
 	kubeConfig = k8s.NewConfig(kubeFlags)
 
 	// TODO (ranyodh): remove this hack

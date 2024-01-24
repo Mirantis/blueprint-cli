@@ -2,13 +2,17 @@ package distro
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/k0sproject/dig"
 	"github.com/rs/zerolog/log"
-	"sigs.k8s.io/kustomize/kyaml/yaml"
+	"gopkg.in/yaml.v2"
+	"k8s.io/client-go/kubernetes"
 
+	"github.com/mirantiscontainers/boundless-cli/internal/boundless"
 	"github.com/mirantiscontainers/boundless-cli/internal/k8s"
 	"github.com/mirantiscontainers/boundless-cli/internal/utils"
+	"github.com/mirantiscontainers/boundless-cli/pkg/constants"
 	"github.com/mirantiscontainers/boundless-cli/pkg/types"
 )
 
@@ -17,6 +21,7 @@ type Kind struct {
 	name       string
 	kindConfig dig.Mapping
 	kubeConfig *k8s.KubeConfig
+	client     *kubernetes.Clientset
 }
 
 // NewKindProvider returns a new kind provider
@@ -55,6 +60,29 @@ func (k *Kind) Install() error {
 	return nil
 }
 
+// SetupClient sets up the kubernets client for the distro
+func (k *Kind) SetupClient() error {
+	var err error
+	k.client, err = k8s.GetClient(k.kubeConfig)
+	if err != nil {
+		return fmt.Errorf("failed to create k8s client: %w", err)
+	}
+	return k.WaitForNodes()
+}
+
+// Exists checks if kind exists
+func (k *Kind) Exists() (bool, error) {
+	err := utils.ExecCommandQuietly("bash", "-c", fmt.Sprintf("kind get clusters | grep %s", k.name))
+	if err != nil && strings.Contains(err.Error(), "exit status 1") {
+		return false, nil
+	}
+	if err != nil {
+		return false, err
+	}
+
+	return true, nil
+}
+
 // Reset deletes the kind cluster
 func (k *Kind) Reset() error {
 	log.Debug().Msgf("Resetting kind cluster %q", k.name)
@@ -66,6 +94,35 @@ func (k *Kind) Reset() error {
 	return nil
 }
 
+// GetKubeConfigContext returns the kubeconfig context
 func (k *Kind) GetKubeConfigContext() string {
 	return "kind-" + k.name
+}
+
+// Type returns the type of the provider
+func (k *Kind) Type() string {
+	return constants.ProviderKind
+}
+
+// GetKubeConfig returns the kubeconfig
+func (k *Kind) GetKubeConfig() *k8s.KubeConfig {
+	return k.kubeConfig
+}
+
+// WaitForPods waits for pods to be ready
+func (k *Kind) WaitForPods() error {
+	if err := k8s.WaitForPods(k.client, boundless.NamespaceBoundless); err != nil {
+		return fmt.Errorf("failed to wait for pods: %w", err)
+	}
+
+	return nil
+}
+
+// WaitForNodes waits for nodes to be ready
+func (k *Kind) WaitForNodes() error {
+	if err := k8s.WaitForNodes(k.client); err != nil {
+		return fmt.Errorf("failed to wait for nodes: %w", err)
+	}
+
+	return nil
 }

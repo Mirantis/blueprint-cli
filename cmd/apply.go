@@ -6,6 +6,7 @@ import (
 	"github.com/mirantiscontainers/boundless-cli/internal/boundless"
 	"github.com/mirantiscontainers/boundless-cli/internal/distro"
 	"github.com/mirantiscontainers/boundless-cli/internal/k8s"
+	"github.com/mirantiscontainers/boundless-cli/pkg/constants"
 
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
@@ -39,20 +40,34 @@ func runApply() error {
 		return fmt.Errorf("failed to determine kubernetes provider: %w", err)
 	}
 
-	// Install the distro
-	if err := provider.Install(); err != nil {
-		return fmt.Errorf("failed to install cluster: %w", err)
+	exists, err := provider.Exists()
+	if err != nil {
+		return fmt.Errorf("failed to check if cluster exists: %w", err)
+	}
+	// If we are working with an unsupported provider, we need to make sure it exists
+	// If we are working with a supported provider, we need to make sure it does not exist
+	if provider.Type() != constants.ProviderExisting {
+		if exists {
+			return fmt.Errorf("cluster %q already exists", blueprint.Metadata.Name)
+		}
+
+		// Install the distro
+		if err := provider.Install(); err != nil {
+			return fmt.Errorf("failed to install cluster: %w", err)
+		}
+	} else {
+		if !exists {
+			return fmt.Errorf("cluster does not exist: %s", blueprint.Metadata.Name)
+		}
 	}
 
 	if err = kubeConfig.TryLoad(); err != nil {
 		return err
 	}
 
-	// TODO (ranyodh): The following should be moved to distro specific types
-	// create the k8sClient
-	k8sClient, err := k8s.GetClient(kubeConfig)
-	if err := k8s.WaitForNodes(k8sClient); err != nil {
-		return fmt.Errorf("failed to wait for nodes: %w", err)
+	// Setup the client
+	if err := provider.SetupClient(); err != nil {
+		return fmt.Errorf("failed to setup client: %w", err)
 	}
 
 	// @todo: display the version of the operator
@@ -62,7 +77,8 @@ func runApply() error {
 		return fmt.Errorf("failed to install Boundless Operator: %w", err)
 	}
 
-	if err := k8s.WaitForPods(k8sClient, boundless.NamespaceBoundless); err != nil {
+	// Wait for the pods to be ready
+	if err := provider.WaitForPods(); err != nil {
 		return fmt.Errorf("failed to wait for pods: %w", err)
 	}
 

@@ -11,8 +11,14 @@ import (
 // Provider is the interface for a distro provider
 type Provider interface {
 	Install() error
+	SetupClient() error
+	Exists() (bool, error)
 	Reset() error
 	GetKubeConfigContext() string
+	Type() string
+	GetKubeConfig() *k8s.KubeConfig
+	WaitForNodes() error
+	WaitForPods() error
 }
 
 // GetProvider returns a new provider
@@ -22,6 +28,8 @@ func GetProvider(blueprint *types.Blueprint, kubeConfig *k8s.KubeConfig) (Provid
 		return NewK0sProvider(blueprint, kubeConfig), nil
 	case constants.ProviderKind:
 		return NewKindProvider(blueprint, kubeConfig), nil
+	case constants.ProviderExisting:
+		return NewExistingProvider(blueprint, kubeConfig), nil
 	default:
 		return nil, fmt.Errorf("invalid kubernetes distribution provider: %s", blueprint.Spec.Kubernetes.Provider)
 	}

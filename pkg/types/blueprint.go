@@ -1,13 +1,16 @@
 package types
 
 import (
+	"errors"
 	"fmt"
 	"net/url"
+	"os"
 	"regexp"
 	"slices"
 	"strings"
 
 	"github.com/k0sproject/dig"
+	"github.com/mirantiscontainers/boundless-cli/pkg/constants"
 	"k8s.io/apimachinery/pkg/util/intstr"
 )
 
@@ -89,13 +92,14 @@ func (i *Infra) Validate() error {
 }
 
 type Kubernetes struct {
-	Provider string      `yaml:"provider"`
-	Version  string      `yaml:"version,omitempty"`
-	Config   dig.Mapping `yaml:"config,omitempty"`
-	Infra    *Infra      `yaml:"infra,omitempty"`
+	Provider   string      `yaml:"provider"`
+	Version    string      `yaml:"version,omitempty"`
+	Config     dig.Mapping `yaml:"config,omitempty"`
+	Infra      *Infra      `yaml:"infra,omitempty"`
+	KubeConfig string      `yaml:"kubeconfig,omitempty"`
 }
 
-var providerKinds = []string{"kind", "k0s"}
+var providerKinds = []string{constants.ProviderExisting, constants.ProviderKind, constants.ProviderK0s}
 
 // Validate checks the Kubernetes structure and its children
 func (k *Kubernetes) Validate() error {
@@ -121,6 +125,13 @@ func (k *Kubernetes) Validate() error {
 	if k.Infra != nil {
 		if err := k.Infra.Validate(); err != nil {
 			return err
+		}
+	}
+
+	// KubeConfig checks
+	if k.KubeConfig != "" {
+		if _, err := os.Stat(k.KubeConfig); errors.Is(err, os.ErrNotExist) {
+			return fmt.Errorf("kubernetes.kubeConfig file %q does not exist: %s", k.KubeConfig, err)
 		}
 	}
 

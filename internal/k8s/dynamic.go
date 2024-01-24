@@ -54,6 +54,35 @@ func ApplyYaml(kc *KubeConfig, uri string) error {
 	return nil
 }
 
+// Removes the boundless operator and all the CRDs from a cluster
+func ResetYaml(kc *KubeConfig, uri string) error {
+	var err error
+	var client kubernetes.Interface
+	var dynamicClient dynamic.Interface
+
+	if client, err = GetClient(kc); err != nil {
+		return fmt.Errorf("failed to get kubernetes client: %q", err)
+	}
+	if dynamicClient, err = GetDynamicClient(kc); err != nil {
+		return fmt.Errorf("failed to get kubernetes dynamic client: %q", err)
+	}
+
+	objs, err := readYamlManifest(uri)
+	if err != nil {
+		return fmt.Errorf("failed to read manifest from %q: %w", uri, err)
+	}
+
+	log.Info().Msgf("Deleting %d objects", len(objs))
+	ctx := context.Background()
+	for _, o := range objs {
+		if err = deleteObject(ctx, client, dynamicClient, &o); err != nil {
+			return fmt.Errorf("failed to reset obj resources from manifest at %q: %w", uri, err)
+		}
+	}
+
+	return nil
+}
+
 func splitCrdAndOthers(objs []unstructured.Unstructured) ([]unstructured.Unstructured, []unstructured.Unstructured) {
 	var crds []unstructured.Unstructured
 	var others []unstructured.Unstructured
@@ -89,6 +118,27 @@ func createOrUpdateObject(ctx context.Context, client kubernetes.Interface, dyna
 		}
 		log.Trace().Msgf("Updated %q of kind %q", objName, obj.GetKind())
 	}
+
+	return nil
+}
+
+func deleteObject(ctx context.Context, client kubernetes.Interface, dynamicClient dynamic.Interface, obj *unstructured.Unstructured) error {
+	gvr, _ := getResource(client, obj)
+	namespace := obj.GetNamespace()
+	objName := obj.GetName()
+
+	_, err := dynamicClient.Resource(gvr).Namespace(namespace).Get(ctx, objName, metav1.GetOptions{})
+	if errors.IsNotFound(err) {
+		log.Trace().Msgf("%q was not found. No changes made", objName)
+		return nil
+	}
+
+	log.Trace().Msgf("Deleting %q of kind %q", objName, obj.GetKind())
+	err = dynamicClient.Resource(gvr).Namespace(namespace).Delete(ctx, obj.GetName(), metav1.DeleteOptions{})
+	if err != nil {
+		return fmt.Errorf("failed to delete resource: %q", err)
+	}
+	log.Trace().Msgf("Deleted %q of kind %q", objName, obj.GetKind())
 
 	return nil
 }

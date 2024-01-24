@@ -40,10 +40,93 @@ func ApplyBlueprint(kubeConfig *k8s.KubeConfig, cluster types.Blueprint) error {
 		}
 	}
 
-	// install/update addons
+	// Get the list of addons
+	addons, err := getAddons(&components)
+	if err != nil {
+		return err
+	}
+
+	c := v1alpha1.Blueprint{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      cluster.Metadata.Name,
+			Namespace: v1.NamespaceDefault,
+		},
+		Spec: v1alpha1.BlueprintSpec{
+			Components: v1alpha1.Component{
+				Core:   &core,
+				Addons: addons,
+			},
+		},
+	}
+
+	log.Info().Msg("Applying Blueprint")
+	if err := k8s.CreateOrUpdate(kubeConfig, &c); err != nil {
+		return fmt.Errorf("failed to create/update Blueprint object: %v", err)
+	}
+
+	return nil
+}
+
+// ResetBlueprint resets a Blueprint object to the cluster
+func ResetBlueprint(kubeConfig *k8s.KubeConfig, cluster types.Blueprint) error {
+	components := cluster.Spec.Components
+
+	var core = v1alpha1.Core{}
+	if components.Core != nil && components.Core.Ingress != nil {
+		ingressConfig, err := yamlValues(components.Core.Ingress.Config)
+		if err != nil {
+			return fmt.Errorf("failed to convert ingress config to yaml: %w", err)
+		}
+
+		core.Ingress = &v1alpha1.IngressSpec{
+			Enabled:  components.Core.Ingress.Enabled,
+			Provider: components.Core.Ingress.Provider,
+			Config:   ingressConfig,
+		}
+	}
+
+	// Get the list of addons
+	addons, err := getAddons(&components)
+	if err != nil {
+		return err
+	}
+
+	c := v1alpha1.Blueprint{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      cluster.Metadata.Name,
+			Namespace: v1.NamespaceDefault,
+		},
+		Spec: v1alpha1.BlueprintSpec{
+			Components: v1alpha1.Component{
+				Core:   &core,
+				Addons: addons,
+			},
+		},
+	}
+
+	log.Info().Msg("Resetting Blueprint")
+	if err := k8s.Delete(kubeConfig, &c); err != nil {
+		return fmt.Errorf("failed to reset Blueprint object: %v", err)
+	}
+
+	return nil
+}
+
+func yamlValues(values dig.Mapping) (string, error) {
+	valuesYaml := new(bytes.Buffer)
+
+	encoder := yamlDecoder.NewEncoder(valuesYaml)
+	err := encoder.Encode(&values)
+	if err != nil {
+		return "", err
+	}
+	return valuesYaml.String(), nil
+}
+
+func getAddons(components *types.Components) ([]v1alpha1.AddonSpec, error) {
 	var addons []v1alpha1.AddonSpec
+
 	for _, addon := range components.Addons {
-		log.Debug().Msgf("Installing %q addon", addon.Kind)
 		if addon.Kind == AddonKindChart {
 			addons = append(addons, v1alpha1.AddonSpec{
 				Name:      addon.Name,
@@ -69,41 +152,11 @@ func ApplyBlueprint(kubeConfig *k8s.KubeConfig, cluster types.Blueprint) error {
 				},
 			})
 		} else {
-			return fmt.Errorf("unknown addon kind %q (valid values: %s|%s)", addon.Kind, AddonKindChart, AddonKindManifest)
+			return nil, fmt.Errorf("unknown addon kind %q (valid values: %s|%s)", addon.Kind, AddonKindChart, AddonKindManifest)
 		}
-
 	}
 
-	c := v1alpha1.Blueprint{
-		ObjectMeta: metav1.ObjectMeta{
-			Name:      cluster.Metadata.Name,
-			Namespace: v1.NamespaceDefault,
-		},
-		Spec: v1alpha1.BlueprintSpec{
-			Components: v1alpha1.Component{
-				Core:   &core,
-				Addons: addons,
-			},
-		},
-	}
-
-	log.Info().Msg("Applying Blueprint")
-	if err := k8s.CreateOrUpdate(kubeConfig, &c); err != nil {
-		return fmt.Errorf("failed to create/update Blueprint object: %v", err)
-	}
-
-	return nil
-}
-
-func yamlValues(values dig.Mapping) (string, error) {
-	valuesYaml := new(bytes.Buffer)
-
-	encoder := yamlDecoder.NewEncoder(valuesYaml)
-	err := encoder.Encode(&values)
-	if err != nil {
-		return "", err
-	}
-	return valuesYaml.String(), nil
+	return addons, nil
 }
 
 func jsonValues(values dig.Mapping) (string, error) {
