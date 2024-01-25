@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/mirantiscontainers/boundless-cli/internal/utils"
+	"github.com/mirantiscontainers/boundless-cli/pkg/utils"
 	"github.com/rs/zerolog/log"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/util/yaml"

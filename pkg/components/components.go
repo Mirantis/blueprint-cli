@@ -1,4 +1,4 @@
-package boundless
+package components
 
 import (
 	"bytes"
@@ -11,14 +11,10 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/util/yaml"
 
-	"github.com/mirantiscontainers/boundless-cli/internal/k8s"
+	"github.com/mirantiscontainers/boundless-cli/pkg/constants"
+	"github.com/mirantiscontainers/boundless-cli/pkg/k8s"
 	"github.com/mirantiscontainers/boundless-cli/pkg/types"
 	"github.com/mirantiscontainers/boundless-operator/api/v1alpha1"
-)
-
-const (
-	AddonKindManifest = "manifest"
-	AddonKindChart    = "chart"
 )
 
 // ApplyBlueprint applies a Blueprint object to the cluster
@@ -127,7 +123,7 @@ func getAddons(components *types.Components) ([]v1alpha1.AddonSpec, error) {
 	var addons []v1alpha1.AddonSpec
 
 	for _, addon := range components.Addons {
-		if addon.Kind == AddonKindChart {
+		if addon.Kind == constants.AddonChart {
 			addons = append(addons, v1alpha1.AddonSpec{
 				Name:      addon.Name,
 				Kind:      addon.Kind,
@@ -141,7 +137,7 @@ func getAddons(components *types.Components) ([]v1alpha1.AddonSpec, error) {
 					Values:  addon.Chart.Values,
 				},
 			})
-		} else if addon.Kind == AddonKindManifest {
+		} else if addon.Kind == constants.AddonManifest {
 			addons = append(addons, v1alpha1.AddonSpec{
 				Name:      addon.Name,
 				Kind:      addon.Kind,
@@ -152,7 +148,7 @@ func getAddons(components *types.Components) ([]v1alpha1.AddonSpec, error) {
 				},
 			})
 		} else {
-			return nil, fmt.Errorf("unknown addon kind %q (valid values: %s|%s)", addon.Kind, AddonKindChart, AddonKindManifest)
+			return nil, fmt.Errorf("unknown addon kind %q (valid values: %s|%s)", addon.Kind, constants.AddonChart, constants.AddonManifest)
 		}
 	}
 

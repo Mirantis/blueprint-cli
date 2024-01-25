@@ -6,7 +6,7 @@ import (
 	"os/exec"
 
 	"github.com/k0sproject/dig"
-	"github.com/mirantiscontainers/boundless-cli/internal/boundless"
+	"github.com/mirantiscontainers/boundless-cli/pkg/constants"
 	"github.com/mirantiscontainers/boundless-cli/pkg/types"
 	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v2"
@@ -81,7 +81,7 @@ var defaultComponents = types.Components{
 	Addons: []types.Addon{
 		{
 			Name:      "example-server",
-			Kind:      boundless.AddonKindChart,
+			Kind:      constants.AddonChart,
 			Enabled:   true,
 			Namespace: "default",
 			Chart: &types.ChartInfo{

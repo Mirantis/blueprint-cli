@@ -13,9 +13,9 @@ import (
 	"k8s.io/client-go/tools/clientcmd"
 
 	"github.com/mirantiscontainers/boundless-cli/boundlessclientset"
-	"github.com/mirantiscontainers/boundless-cli/internal/boundless"
-	"github.com/mirantiscontainers/boundless-cli/internal/k8s"
-	"github.com/mirantiscontainers/boundless-cli/internal/utils"
+	"github.com/mirantiscontainers/boundless-cli/pkg/constants"
+	"github.com/mirantiscontainers/boundless-cli/pkg/k8s"
+	"github.com/mirantiscontainers/boundless-cli/pkg/utils"
 	"github.com/mirantiscontainers/boundless-operator/api/v1alpha1"
 )
 
@@ -57,7 +57,7 @@ func runStatus() error {
 		panic(err)
 	}
 
-	operatorDeployment, err := k8sclient.AppsV1().Deployments(boundless.NamespaceBoundless).Get(context.TODO(), boundlessOperatorDeployment, metav1.GetOptions{})
+	operatorDeployment, err := k8sclient.AppsV1().Deployments(constants.NamespaceBoundless).Get(context.TODO(), boundlessOperatorDeployment, metav1.GetOptions{})
 	if err != nil {
 		if errors.IsNotFound(err) {
 			fmt.Println("No boundless operator installation detected")
@@ -68,7 +68,7 @@ func runStatus() error {
 		utils.PrintDeploymentStatus(*operatorDeployment)
 	}
 
-	helmController, err := k8sclient.AppsV1().Deployments(boundless.NamespaceBoundless).Get(context.TODO(), helmControllerDeployment, metav1.GetOptions{})
+	helmController, err := k8sclient.AppsV1().Deployments(constants.NamespaceBoundless).Get(context.TODO(), helmControllerDeployment, metav1.GetOptions{})
 	if err != nil {
 		if errors.IsNotFound(err) {
 			fmt.Println("No helm controller detected - Chart addons may not function")
@@ -107,7 +107,7 @@ func getAddons() (*v1alpha1.AddonList, error) {
 		return nil, err
 	}
 
-	addonList, err := clientSet.Addons(boundless.NamespaceBoundless).List(metav1.ListOptions{})
+	addonList, err := clientSet.Addons(constants.NamespaceBoundless).List(metav1.ListOptions{})
 	if err != nil {
 		return nil, err
 	}
@@ -122,7 +122,7 @@ func getAddon(addonName string) (*v1alpha1.Addon, error) {
 		return nil, err
 	}
 
-	addon, err := clientSet.Addons(boundless.NamespaceBoundless).Get(addonName, metav1.GetOptions{})
+	addon, err := clientSet.Addons(constants.NamespaceBoundless).Get(addonName, metav1.GetOptions{})
 	if err != nil {
 		return nil, err
 	}
@@ -179,7 +179,7 @@ func runAddonSpecificStatus(providedAddonName string) error {
 
 	var eventMsgs []string
 
-	eventList, err := k8sclient.EventsV1().Events(boundless.NamespaceBoundless).List(context.TODO(), metav1.ListOptions{})
+	eventList, err := k8sclient.EventsV1().Events(constants.NamespaceBoundless).List(context.TODO(), metav1.ListOptions{})
 	if err != nil {
 		panic(err)
 	}
@@ -208,7 +208,7 @@ func printManifestResources(providedAddon v1alpha1.Addon, k8sclient *kubernetes.
 		panic(err)
 	}
 
-	manifest, err := clientSet.Manifests(boundless.NamespaceBoundless).Get(providedAddon.Spec.Name, metav1.GetOptions{})
+	manifest, err := clientSet.Manifests(constants.NamespaceBoundless).Get(providedAddon.Spec.Name, metav1.GetOptions{})
 	if err != nil {
 		panic(err)
 	}

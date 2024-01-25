@@ -1,5 +1,7 @@
 package cmd
 
+import "github.com/mirantiscontainers/boundless-cli/pkg/constants"
+
 // PersistenceFlags represents configuration pFlags.
 type PersistenceFlags struct {
 	LogLevel string
@@ -7,6 +9,6 @@ type PersistenceFlags struct {
 
 func NewPersistenceFlags() *PersistenceFlags {
 	return &PersistenceFlags{
-		LogLevel: DefaultLogLevel,
+		LogLevel: constants.DefaultLogLevel,
 	}
 }

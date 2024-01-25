@@ -3,8 +3,8 @@ package distro
 import (
 	"fmt"
 
-	"github.com/mirantiscontainers/boundless-cli/internal/k8s"
 	"github.com/mirantiscontainers/boundless-cli/pkg/constants"
+	"github.com/mirantiscontainers/boundless-cli/pkg/k8s"
 	"github.com/mirantiscontainers/boundless-cli/pkg/types"
 )
 

@@ -14,4 +14,10 @@ const (
 	ProviderKind = "kind"
 	// ProviderExisting is the name of an existing unofficial distro
 	ProviderExisting = "existing"
+
+	// addons
+	// AddonManifest is the name of the manifest addon
+	AddonManifest = "manifest"
+	// AddonChart is the name of the chart addon
+	AddonChart = "chart"
 )

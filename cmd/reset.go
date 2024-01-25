@@ -3,9 +3,9 @@ package cmd
 import (
 	"fmt"
 
-	"github.com/mirantiscontainers/boundless-cli/internal/boundless"
-	"github.com/mirantiscontainers/boundless-cli/internal/distro"
-	"github.com/mirantiscontainers/boundless-cli/internal/k8s"
+	"github.com/mirantiscontainers/boundless-cli/pkg/components"
+	"github.com/mirantiscontainers/boundless-cli/pkg/distro"
+	"github.com/mirantiscontainers/boundless-cli/pkg/k8s"
 	"github.com/rs/zerolog/log"
 
 	"github.com/spf13/cobra"
@@ -47,7 +47,7 @@ func runReset() error {
 
 	// Uninstall components
 	log.Info().Msgf("Reset Boundless Operator resources")
-	err = boundless.RemoveComponents(provider.GetKubeConfig(), blueprint)
+	err = components.RemoveComponents(provider.GetKubeConfig(), blueprint)
 	if err != nil {
 		return fmt.Errorf("failed to reset components: %w", err)
 	}

@@ -4,11 +4,10 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/mirantiscontainers/boundless-cli/internal/boundless"
-	"github.com/mirantiscontainers/boundless-cli/internal/k8s"
-	"github.com/mirantiscontainers/boundless-cli/internal/utils"
 	"github.com/mirantiscontainers/boundless-cli/pkg/constants"
+	"github.com/mirantiscontainers/boundless-cli/pkg/k8s"
 	"github.com/mirantiscontainers/boundless-cli/pkg/types"
+	"github.com/mirantiscontainers/boundless-cli/pkg/utils"
 	"github.com/rs/zerolog/log"
 	"k8s.io/client-go/kubernetes"
 )
@@ -47,7 +46,7 @@ func (e *Existing) WaitForNodes() error {
 
 // WaitForPods waits for pods to be ready
 func (e *Existing) WaitForPods() error {
-	if err := k8s.WaitForPods(e.client, boundless.NamespaceBoundless); err != nil {
+	if err := k8s.WaitForPods(e.client, constants.NamespaceBoundless); err != nil {
 		return fmt.Errorf("failed to wait for pods: %w", err)
 	}
 

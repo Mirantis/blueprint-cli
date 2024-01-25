@@ -3,7 +3,7 @@ package cmd
 import (
 	"fmt"
 
-	"github.com/mirantiscontainers/boundless-cli/internal/boundless"
+	"github.com/mirantiscontainers/boundless-cli/pkg/components"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
 )
@@ -29,7 +29,7 @@ func updateCmd() *cobra.Command {
 
 func runUpdate(cmd *cobra.Command) error {
 	log.Info().Msgf("Applying Boundless Operator resources")
-	if err := boundless.ApplyBlueprint(kubeConfig, blueprint); err != nil {
+	if err := components.ApplyBlueprint(kubeConfig, blueprint); err != nil {
 		return fmt.Errorf("failed to update components: %w", err)
 	}
 

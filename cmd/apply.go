@@ -3,10 +3,10 @@ package cmd
 import (
 	"fmt"
 
-	"github.com/mirantiscontainers/boundless-cli/internal/boundless"
-	"github.com/mirantiscontainers/boundless-cli/internal/distro"
-	"github.com/mirantiscontainers/boundless-cli/internal/k8s"
+	"github.com/mirantiscontainers/boundless-cli/pkg/components"
 	"github.com/mirantiscontainers/boundless-cli/pkg/constants"
+	"github.com/mirantiscontainers/boundless-cli/pkg/distro"
+	"github.com/mirantiscontainers/boundless-cli/pkg/k8s"
 
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
@@ -84,7 +84,7 @@ func runApply() error {
 
 	// install components
 	log.Info().Msgf("Applying Boundless Operator resource")
-	err = boundless.ApplyBlueprint(kubeConfig, blueprint)
+	err = components.ApplyBlueprint(kubeConfig, blueprint)
 	if err != nil {
 		return fmt.Errorf("failed to install components: %w", err)
 	}

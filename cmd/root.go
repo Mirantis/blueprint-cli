@@ -5,12 +5,11 @@ import (
 	"os"
 
 	"github.com/mattn/go-colorable"
-	"github.com/mirantiscontainers/boundless-cli/internal/boundless"
-	"github.com/mirantiscontainers/boundless-cli/internal/distro"
-	"github.com/mirantiscontainers/boundless-cli/internal/k8s"
-	"github.com/mirantiscontainers/boundless-cli/internal/utils"
 	"github.com/mirantiscontainers/boundless-cli/pkg/constants"
+	"github.com/mirantiscontainers/boundless-cli/pkg/distro"
+	"github.com/mirantiscontainers/boundless-cli/pkg/k8s"
 	"github.com/mirantiscontainers/boundless-cli/pkg/types"
+	"github.com/mirantiscontainers/boundless-cli/pkg/utils"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
@@ -58,7 +57,7 @@ func init() {
 	)
 
 	pFlags = NewPersistenceFlags()
-	rootCmd.PersistentFlags().StringVarP(&pFlags.LogLevel, "logLevel", "l", DefaultLogLevel, "Specify a log level (info, warn, debug, trace, error)")
+	rootCmd.PersistentFlags().StringVarP(&pFlags.LogLevel, "logLevel", "l", constants.DefaultLogLevel, "Specify a log level (info, warn, debug, trace, error)")
 
 	// TODO (ranyodh): Add support for the other k0sctl commands
 }
@@ -166,15 +165,15 @@ func parseLevel(level string) zerolog.Level {
 }
 
 func addOperatorUriFlag(flags *pflag.FlagSet) {
-	flags.StringVarP(&operatorUri, "operator-uri", "", boundless.ManifestUrlLatest, "URL or path to the Boundless Operator manifest file")
+	flags.StringVarP(&operatorUri, "operator-uri", "", constants.ManifestUrlLatest, "URL or path to the Boundless Operator manifest file")
 }
 
 func addBlueprintFileFlags(flags *pflag.FlagSet) {
 	// @todo ranyodh: remove deprecated `config` flag before 1.0.0
-	flags.StringVarP(&blueprintFlag, "config", "c", DefaultBlueprintFileName, "Path to the blueprint file")
+	flags.StringVarP(&blueprintFlag, "config", "c", constants.DefaultBlueprintFileName, "Path to the blueprint file")
 	_ = flags.MarkDeprecated("config", "use --file (or -f)")
 
-	flags.StringVarP(&blueprintFlag, "file", "f", DefaultBlueprintFileName, "Path to the blueprint file")
+	flags.StringVarP(&blueprintFlag, "file", "f", constants.DefaultBlueprintFileName, "Path to the blueprint file")
 }
 
 func addKubeFlags(flags *pflag.FlagSet) {
