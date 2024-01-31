@@ -144,7 +144,9 @@ func getAddons(components *types.Components) ([]v1alpha1.AddonSpec, error) {
 				Enabled:   addon.Enabled,
 				Namespace: addon.Namespace,
 				Manifest: &v1alpha1.ManifestInfo{
-					URL: addon.Manifest.URL,
+					URL:           addon.Manifest.URL,
+					FailurePolicy: addon.Manifest.FailurePolicy,
+					Timeout:       addon.Manifest.Timeout,
 				},
 			})
 		} else {

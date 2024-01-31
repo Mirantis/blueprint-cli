@@ -259,7 +259,9 @@ func (ci *ChartInfo) Validate() error {
 
 // ManifestInfo defines the desired state of manifest
 type ManifestInfo struct {
-	URL string `yaml:"url"`
+	URL           string `yaml:"url"`
+	FailurePolicy string `yaml:"failurePolicy,omitempty"`
+	Timeout       string `yaml:"timeout,omitempty"`
 }
 
 // Validate checks the ManifestInfo structure and its children
