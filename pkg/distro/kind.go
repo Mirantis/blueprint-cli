@@ -59,6 +59,10 @@ func (k *Kind) Install() error {
 	return nil
 }
 
+func (k *Kind) Update() error {
+	return nil
+}
+
 // SetupClient sets up the kubernets client for the distro
 func (k *Kind) SetupClient() error {
 	var err error
@@ -123,5 +127,15 @@ func (k *Kind) WaitForNodes() error {
 		return fmt.Errorf("failed to wait for nodes: %w", err)
 	}
 
+	return nil
+}
+
+// NeedsUpgrade returns false for Kind
+func (k *Kind) NeedsUpgrade(blueprint *types.Blueprint) (bool, error) {
+	return false, nil
+}
+
+// ValidateProviderUpgrade returns nil for Kind
+func (k *Kind) ValidateProviderUpgrade(blueprint *types.Blueprint) error {
 	return nil
 }

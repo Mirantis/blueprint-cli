@@ -7,15 +7,16 @@ import (
 	"os/exec"
 	"strings"
 
-	"github.com/mirantiscontainers/boundless-cli/pkg/constants"
 	"github.com/mirantiscontainers/boundless-cli/pkg/k8s"
-	"github.com/mirantiscontainers/boundless-cli/pkg/types"
 	"github.com/mirantiscontainers/boundless-cli/pkg/utils"
-	"gopkg.in/yaml.v2"
+	"github.com/mirantiscontainers/boundless-cli/pkg/constants"
+	"github.com/mirantiscontainers/boundless-cli/pkg/types"
 
+	"gopkg.in/yaml.v2"
 	"github.com/rs/zerolog/log"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
+	"github.com/k0sproject/version"
 )
 
 // K0s is the k0s provider
@@ -57,6 +58,15 @@ func (k *K0s) Install() error {
 	}
 	log.Trace().Msgf("kubeconfig file for k0s cluster: %s", kubeConfigPath)
 
+	return nil
+}
+
+// Update updates k0s using k0sctl
+func (k *K0s) Update() error {
+	if err := utils.ExecCommand(fmt.Sprintf("k0sctl apply --config %s --no-wait", k.k0sConfig)); err != nil {
+
+		return fmt.Errorf("failed to update k0s: %w", err)
+	}
 	return nil
 }
 
@@ -187,4 +197,109 @@ func writeToTempFile(k0sctlConfig []byte) (string, error) {
 	}
 
 	return tmpfile.Name(), nil
+}
+
+// getInstalledVersion returns version of k0s on the first controller node
+func (k *K0s) getInstalledVersion(blueprint *types.Blueprint) (string, error) {
+
+	controller := k.getControllerHosts(blueprint)[0]
+
+	key, err := utils.ReadFile(controller.SSH.KeyPath)
+	if err != nil {
+		return "", err
+	}
+
+	// k0sctl has no apparent way to get version of k0s previously installed so get the k0s version directly on the first controller node
+	stdout, stderr, err := utils.RemoteCommand(controller.SSH.User, controller.SSH.Address, string(key), "sudo k0s version")
+	if err != nil {
+		return stderr, err
+	}
+
+	return stdout, nil
+}
+
+func (k *K0s) getControllerHosts(blueprint *types.Blueprint) []types.Host {
+	var hosts []types.Host
+
+	for _, host := range blueprint.Spec.Kubernetes.Infra.Hosts {
+		if host.Role == "controller" {
+			hosts = append(hosts, host)
+			break
+		}
+	}
+	return hosts
+}
+
+// NeedsUpgrade checks if an upgrade of the provider is required
+// return true if the providedVersion is greater than the installed Version
+// return false is the versions are equal
+// throw an error if the providedVersion is lower than the installed Version (don't support downgrade)
+func (k *K0s) NeedsUpgrade(blueprint *types.Blueprint) (bool, error) {
+	installedVersion, err := k.getInstalledVersion(blueprint)
+	if err != nil {
+		return false, fmt.Errorf("failed to get installed k0s version: %w", err)
+	}
+
+	installed := version.MustParse(installedVersion)
+	provided := version.MustParse(blueprint.Spec.Kubernetes.Version)
+
+	if provided.GreaterThan(installed) {
+		return true, nil
+	}
+	if installed.GreaterThan(provided) {
+		return false, fmt.Errorf("downgrade version detected - cannot downgrade provider versions")
+	}
+
+	return false, nil
+}
+
+// ValidateProviderUpgrade does some validation that the controller nodes will be able to run the new version of k0s proposed in the blueprint
+// First download new version of k0s binary and place in tmp folder
+// Use new binary to run k0s config validate which validates config will work on new version
+// In some k0s upgrade scenarios (such as previously existing config fields that have been removed in newer version) it requires user to update the node configs
+func (k *K0s) ValidateProviderUpgrade(blueprint *types.Blueprint) error {
+	controllers := k.getControllerHosts(blueprint)
+
+	defer func() {
+		// cleanup the temp k0s binaries used to validate each controller
+		for _, controller := range controllers {
+			key, err := utils.ReadFile(controller.SSH.KeyPath)
+			if err != nil {
+				log.Warn().Msgf("failed to read ssh key during cleanup for host %s", controller.SSH.Address)
+			}
+
+			_, cleanupErr, err := utils.RemoteCommand(controller.SSH.User, controller.SSH.Address, string(key), "sudo rm -f /tmp/k0s")
+			if err != nil {
+				log.Warn().Msgf("failed to clean up temp k0s binary for host %s : %s", controller.SSH.Address, cleanupErr)
+			}
+		}
+	}()
+
+	for _, controller := range controllers {
+		key, err := utils.ReadFile(controller.SSH.KeyPath)
+		if err != nil {
+			return err
+		}
+
+		log.Info().Msg("Downloading new version of k0s binary")
+		downloadCmd := fmt.Sprintf("curl -sSLf https://get.k0s.sh | sed -e 's;k0sInstallPath=/usr/local/bin;k0sInstallPath=/tmp;' | sudo K0S_VERSION=v%s sh", blueprint.Spec.Kubernetes.Version)
+
+		_, downloadErr, err := utils.RemoteCommand(controller.SSH.User, controller.SSH.Address, string(key), downloadCmd)
+		if err != nil {
+			log.Error().Msgf("failed to install new version of k0s binary on host %s : %s", controller.SSH.Address, downloadErr)
+			return err
+		}
+
+		log.Info().Msg("Validating existing config with new version of k0s binary")
+		validateCmd := fmt.Sprintf("sudo /tmp/k0s config validate --config /etc/k0s/k0s.yaml")
+		_, validateErr, err := utils.RemoteCommand(controller.SSH.User, controller.SSH.Address, string(key), validateCmd)
+		if err != nil {
+			log.Error().Msgf("validation of new provider version failed on host %s : %s", controller.SSH.Address, validateErr)
+			return err
+		}
+	}
+
+	log.Info().Msg("New provider version successfully validated")
+	return nil
+
 }

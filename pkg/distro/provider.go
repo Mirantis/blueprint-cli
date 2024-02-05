@@ -11,6 +11,7 @@ import (
 // Provider is the interface for a distro provider
 type Provider interface {
 	Install() error
+	Update() error
 	SetupClient() error
 	Exists() (bool, error)
 	Reset() error
@@ -19,6 +20,8 @@ type Provider interface {
 	GetKubeConfig() *k8s.KubeConfig
 	WaitForNodes() error
 	WaitForPods() error
+	NeedsUpgrade(blueprint *types.Blueprint) (bool, error)
+	ValidateProviderUpgrade(blueprint *types.Blueprint) error
 }
 
 // GetProvider returns a new provider

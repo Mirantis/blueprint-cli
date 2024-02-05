@@ -72,6 +72,9 @@ github.com/google/uuid
 # github.com/gregjones/httpcache v0.0.0-20180305231024-9cad4c3443a7
 ## explicit
 github.com/gregjones/httpcache
+# github.com/hashicorp/go-version v1.6.0
+## explicit
+github.com/hashicorp/go-version
 # github.com/imdario/mergo v0.3.15
 ## explicit; go 1.13
 github.com/imdario/mergo
@@ -87,6 +90,9 @@ github.com/json-iterator/go
 # github.com/k0sproject/dig v0.2.0
 ## explicit; go 1.15
 github.com/k0sproject/dig
+# github.com/k0sproject/version v0.6.0
+## explicit; go 1.17
+github.com/k0sproject/version
 # github.com/k3s-io/helm-controller v0.15.4
 ## explicit; go 1.19
 github.com/k3s-io/helm-controller/pkg/apis/helm.cattle.io
@@ -167,6 +173,16 @@ go.starlark.net/resolve
 go.starlark.net/starlark
 go.starlark.net/starlarkstruct
 go.starlark.net/syntax
+# golang.org/x/crypto v0.18.0
+## explicit; go 1.18
+golang.org/x/crypto/blowfish
+golang.org/x/crypto/chacha20
+golang.org/x/crypto/curve25519
+golang.org/x/crypto/curve25519/internal/field
+golang.org/x/crypto/internal/alias
+golang.org/x/crypto/internal/poly1305
+golang.org/x/crypto/ssh
+golang.org/x/crypto/ssh/internal/bcrypt_pbkdf
 # golang.org/x/net v0.17.0
 ## explicit; go 1.17
 golang.org/x/net/context
@@ -184,16 +200,17 @@ golang.org/x/oauth2/internal
 # golang.org/x/sync v0.2.0
 ## explicit
 golang.org/x/sync/errgroup
-# golang.org/x/sys v0.14.0
+# golang.org/x/sys v0.16.0
 ## explicit; go 1.18
+golang.org/x/sys/cpu
 golang.org/x/sys/plan9
 golang.org/x/sys/unix
 golang.org/x/sys/windows
-# golang.org/x/term v0.13.0
-## explicit; go 1.17
+# golang.org/x/term v0.16.0
+## explicit; go 1.18
 golang.org/x/term
-# golang.org/x/text v0.13.0
-## explicit; go 1.17
+# golang.org/x/text v0.14.0
+## explicit; go 1.18
 golang.org/x/text/encoding
 golang.org/x/text/encoding/charmap
 golang.org/x/text/encoding/htmlindex

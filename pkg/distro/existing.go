@@ -59,6 +59,12 @@ func (e *Existing) Install() error {
 	return nil
 }
 
+// Update updates the existing cluster
+func (e *Existing) Update() error {
+	log.Debug().Msgf("Nothing done to update an unsupported existing cluster")
+	return nil
+}
+
 // Exists checks if the cluster exists
 func (e *Existing) Exists() (bool, error) {
 	config, err := e.kubeConfig.RESTConfig()
@@ -103,4 +109,14 @@ func (e *Existing) Type() string {
 // GetKubeConfig returns the kubeconfig
 func (e *Existing) GetKubeConfig() *k8s.KubeConfig {
 	return e.kubeConfig
+}
+
+// NeedsUpgrade returns false for existing cluster
+func (e *Existing) NeedsUpgrade(blueprint *types.Blueprint) (bool, error) {
+	return false, nil
+}
+
+// ValidateProviderUpgrade returns nil for existing cluster
+func (e *Existing) ValidateProviderUpgrade(blueprint *types.Blueprint) error {
+	return nil
 }
