@@ -11,7 +11,7 @@ import (
 // Provider is the interface for a distro provider
 type Provider interface {
 	Install() error
-	Update() error
+	Upgrade() error
 	SetupClient() error
 	Exists() (bool, error)
 	Reset() error

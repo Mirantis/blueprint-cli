@@ -60,7 +60,7 @@ func (e *Existing) Install() error {
 }
 
 // Update updates the existing cluster
-func (e *Existing) Update() error {
+func (e *Existing) Upgrade() error {
 	log.Debug().Msgf("Nothing done to update an unsupported existing cluster")
 	return nil
 }

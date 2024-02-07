@@ -47,7 +47,7 @@ func runUpdate(cmd *cobra.Command) error {
 		}
 
 		log.Info().Msgf("Updating provider")
-		if err := provider.Update(); err != nil {
+		if err := provider.Upgrade(); err != nil {
 			return fmt.Errorf("failed to update provider: %w", err)
 		}
 	}

@@ -59,7 +59,7 @@ func (k *Kind) Install() error {
 	return nil
 }
 
-func (k *Kind) Update() error {
+func (k *Kind) Upgrade() error {
 	return nil
 }
 

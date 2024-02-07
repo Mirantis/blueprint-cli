@@ -7,16 +7,16 @@ import (
 	"os/exec"
 	"strings"
 
-	"github.com/mirantiscontainers/boundless-cli/pkg/k8s"
-	"github.com/mirantiscontainers/boundless-cli/pkg/utils"
 	"github.com/mirantiscontainers/boundless-cli/pkg/constants"
+	"github.com/mirantiscontainers/boundless-cli/pkg/k8s"
 	"github.com/mirantiscontainers/boundless-cli/pkg/types"
+	"github.com/mirantiscontainers/boundless-cli/pkg/utils"
 
-	"gopkg.in/yaml.v2"
+	"github.com/k0sproject/version"
 	"github.com/rs/zerolog/log"
+	"gopkg.in/yaml.v2"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
-	"github.com/k0sproject/version"
 )
 
 // K0s is the k0s provider
@@ -62,7 +62,7 @@ func (k *K0s) Install() error {
 }
 
 // Update updates k0s using k0sctl
-func (k *K0s) Update() error {
+func (k *K0s) Upgrade() error {
 	if err := utils.ExecCommand(fmt.Sprintf("k0sctl apply --config %s --no-wait", k.k0sConfig)); err != nil {
 
 		return fmt.Errorf("failed to update k0s: %w", err)
