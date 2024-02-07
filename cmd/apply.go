@@ -44,8 +44,8 @@ func runApply() error {
 	if err != nil {
 		return fmt.Errorf("failed to check if cluster exists: %w", err)
 	}
-	// If we are working with an unsupported provider, we need to make sure it exists
-	// If we are working with a supported provider, we need to make sure it does not exist
+	// If we are working with an unmanaged provider, we need to make sure it exists
+	// If we are working with a managed provider, we need to make sure it does not exist
 	if provider.Type() != constants.ProviderExisting {
 		if exists {
 			return fmt.Errorf("cluster %q already exists", blueprint.Metadata.Name)

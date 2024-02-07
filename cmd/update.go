@@ -52,8 +52,6 @@ func runUpdate(cmd *cobra.Command) error {
 		}
 	}
 
-	log.Info().Msgf("No Provider upgrade necessary")
-
 	log.Info().Msgf("Applying Boundless Operator resources")
 	if err := components.ApplyBlueprint(kubeConfig, blueprint); err != nil {
 		return fmt.Errorf("failed to update components: %w", err)

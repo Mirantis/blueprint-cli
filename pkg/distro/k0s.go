@@ -3,6 +3,7 @@ package distro
 import (
 	"bytes"
 	"fmt"
+	"k8s.io/apimachinery/pkg/api/errors"
 	"os"
 	"os/exec"
 	"strings"
@@ -199,23 +200,32 @@ func writeToTempFile(k0sctlConfig []byte) (string, error) {
 	return tmpfile.Name(), nil
 }
 
-// getInstalledVersion returns version of k0s on the first controller node
+// getInstalledVersion returns version of k0s on the first controller node that does not throw an error
 func (k *K0s) getInstalledVersion(blueprint *types.Blueprint) (string, error) {
 
-	controller := k.getControllerHosts(blueprint)[0]
+	controllers := k.getControllerHosts(blueprint)
 
-	key, err := utils.ReadFile(controller.SSH.KeyPath)
-	if err != nil {
-		return "", err
+	for _, controller := range controllers {
+		key, err := utils.ReadFile(controller.SSH.KeyPath)
+		if err != nil {
+			return "", err
+		}
+
+		// k0sctl has no apparent way to get version of k0s previously installed so get the k0s version directly on the first controller node
+		stdout, stderr, err := utils.RemoteCommand(controller.SSH.User, controller.SSH.Address, string(key), "sudo k0s version")
+		if err != nil {
+			log.Warn().Msgf("unable to get k0s version on host %s : %s, %s", controller.SSH.Address, stderr, err)
+
+			// try to get version from another controller
+			continue
+		}
+
+		return stdout, nil
+
 	}
 
-	// k0sctl has no apparent way to get version of k0s previously installed so get the k0s version directly on the first controller node
-	stdout, stderr, err := utils.RemoteCommand(controller.SSH.User, controller.SSH.Address, string(key), "sudo k0s version")
-	if err != nil {
-		return stderr, err
-	}
-
-	return stdout, nil
+	// if we got here all controllers have errors when getting version
+	return "", fmt.Errorf("unable to get k0s version of cluster")
 }
 
 func (k *K0s) getControllerHosts(blueprint *types.Blueprint) []types.Host {
@@ -232,7 +242,7 @@ func (k *K0s) getControllerHosts(blueprint *types.Blueprint) []types.Host {
 
 // NeedsUpgrade checks if an upgrade of the provider is required
 // return true if the providedVersion is greater than the installed Version
-// return false is the versions are equal
+// return false if the versions are equal
 // throw an error if the providedVersion is lower than the installed Version (don't support downgrade)
 func (k *K0s) NeedsUpgrade(blueprint *types.Blueprint) (bool, error) {
 	installedVersion, err := k.getInstalledVersion(blueprint)
@@ -270,7 +280,9 @@ func (k *K0s) ValidateProviderUpgrade(blueprint *types.Blueprint) error {
 
 			_, cleanupErr, err := utils.RemoteCommand(controller.SSH.User, controller.SSH.Address, string(key), "sudo rm -f /tmp/k0s")
 			if err != nil {
-				log.Warn().Msgf("failed to clean up temp k0s binary for host %s : %s", controller.SSH.Address, cleanupErr)
+				if !errors.IsNotFound(err) {
+					log.Warn().Msgf("failed to clean up temp k0s binary for host %s : %s", controller.SSH.Address, cleanupErr)
+				}
 			}
 		}
 	}()

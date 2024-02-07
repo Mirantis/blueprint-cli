@@ -55,13 +55,12 @@ func (e *Existing) WaitForPods() error {
 
 // Install installs the existing cluster
 func (e *Existing) Install() error {
-	log.Debug().Msgf("Nothing done to install an unsupported existing cluster")
+	log.Debug().Msgf("Nothing done to install an unmanaged existing cluster")
 	return nil
 }
 
 // Update updates the existing cluster
 func (e *Existing) Upgrade() error {
-	log.Debug().Msgf("Nothing done to update an unsupported existing cluster")
 	return nil
 }
 
@@ -92,7 +91,7 @@ func (e *Existing) Exists() (bool, error) {
 
 // Reset resets the existing cluster
 func (e *Existing) Reset() error {
-	log.Debug().Msgf("Nothing done to reset an unsupported existing cluster")
+	log.Debug().Msgf("Nothing done to reset an unmanaged existing cluster")
 	return nil
 }
 
@@ -113,6 +112,7 @@ func (e *Existing) GetKubeConfig() *k8s.KubeConfig {
 
 // NeedsUpgrade returns false for existing cluster
 func (e *Existing) NeedsUpgrade(blueprint *types.Blueprint) (bool, error) {
+	log.Debug().Msgf("Nothing done to upgrade an unmanaged existing cluster")
 	return false, nil
 }
 
