@@ -147,6 +147,7 @@ func getAddons(components *types.Components) ([]v1alpha1.AddonSpec, error) {
 					URL:           addon.Manifest.URL,
 					FailurePolicy: addon.Manifest.FailurePolicy,
 					Timeout:       addon.Manifest.Timeout,
+					Values:        addon.Manifest.Values,
 				},
 			})
 		} else {

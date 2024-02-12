@@ -11,6 +11,7 @@ import (
 
 	"github.com/k0sproject/dig"
 	"github.com/mirantiscontainers/boundless-cli/pkg/constants"
+	"github.com/mirantiscontainers/boundless-operator/api/v1alpha1"
 	"k8s.io/apimachinery/pkg/util/intstr"
 )
 
@@ -259,9 +260,10 @@ func (ci *ChartInfo) Validate() error {
 
 // ManifestInfo defines the desired state of manifest
 type ManifestInfo struct {
-	URL           string `yaml:"url"`
-	FailurePolicy string `yaml:"failurePolicy,omitempty"`
-	Timeout       string `yaml:"timeout,omitempty"`
+	URL           string           `yaml:"url"`
+	FailurePolicy string           `yaml:"failurePolicy,omitempty"`
+	Timeout       string           `yaml:"timeout,omitempty"`
+	Values        *v1alpha1.Values `yaml:"values,omitempty"`
 }
 
 // Validate checks the ManifestInfo structure and its children

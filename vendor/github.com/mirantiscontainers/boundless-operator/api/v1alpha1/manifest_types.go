@@ -4,13 +4,8 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-// EDIT THIS FILE!  THIS IS SCAFFOLDING FOR YOU TO OWN!
-// NOTE: json tags are required.  Any new fields you add must have json tags for the fields to be serialized.
-
 // ManifestSpec defines the desired state of Manifest
 type ManifestSpec struct {
-	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
-	// Important: Run "make" to regenerate code after modifying this file
 	Url string `json:"url"`
 
 	// This flag tells the controller how to handle the manifest in case of a failure.
@@ -27,14 +22,12 @@ type ManifestSpec struct {
 
 	NewChecksum string           `json:"newChecksum,omitempty"`
 	Checksum    string           `json:"checksum"`
+	Values      *Values          `json:"values,omitempty"`
 	Objects     []ManifestObject `json:"objects,omitempty"`
 }
 
 // ManifestStatus defines the observed state of Manifest
 type ManifestStatus struct {
-	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
-	// Important: Run "make" to regenerate code after modifying this file
-
 	Status `json:",inline"`
 }
 
