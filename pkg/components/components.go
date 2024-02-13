@@ -124,7 +124,7 @@ func getAddons(components *types.Components) ([]v1alpha1.AddonSpec, error) {
 
 	for _, addon := range components.Addons {
 		if addon.Kind == constants.AddonChart {
-			spec := v1alpha1.AddonSpec{
+			addons = append(addons, v1alpha1.AddonSpec{
 				Name:      addon.Name,
 				Kind:      addon.Kind,
 				Enabled:   addon.Enabled,
@@ -134,14 +134,9 @@ func getAddons(components *types.Components) ([]v1alpha1.AddonSpec, error) {
 					Repo:    addon.Chart.Repo,
 					Version: addon.Chart.Version,
 					Set:     addon.Chart.Set,
+					Values:  addon.Chart.Values,
 				},
-			}
-			var err error
-			spec.Chart.Values, err = yamlValues(addon.Chart.Values)
-			if err != nil {
-				return nil, fmt.Errorf("failed to convert chart values to yaml: %w", err)
-			}
-			addons = append(addons, spec)
+			})
 		} else if addon.Kind == constants.AddonManifest {
 			addons = append(addons, v1alpha1.AddonSpec{
 				Name:      addon.Name,

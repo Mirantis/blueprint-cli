@@ -235,7 +235,7 @@ type ChartInfo struct {
 	Repo    string                        `yaml:"repo"`
 	Version string                        `yaml:"version"`
 	Set     map[string]intstr.IntOrString `yaml:"set,omitempty"`
-	Values  dig.Mapping                   `yaml:"values,omitempty"`
+	Values  string                        `yaml:"values,omitempty"`
 }
 
 // Validate checks the ChartInfo structure and its children

@@ -32,7 +32,7 @@ func initCmd() *cobra.Command {
 
 func runInit(cmd *cobra.Command, args []string) error {
 	if isKind {
-		return encode(types.ConvertToClusterWithKind("boundless-cluster", *newDefaultComponents()))
+		return encode(types.ConvertToClusterWithKind("boundless-cluster", defaultComponents))
 	}
 
 	// @TODO Include pFlags for k0sctl init
@@ -52,7 +52,7 @@ func runInit(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	return encode(types.ConvertToClusterWithK0s(k0sConfig, *newDefaultComponents()))
+	return encode(types.ConvertToClusterWithK0s(k0sConfig, defaultComponents))
 }
 
 func encode(blueprint types.Blueprint) error {
@@ -60,50 +60,38 @@ func encode(blueprint types.Blueprint) error {
 	return encoder.Encode(&blueprint)
 }
 
-// newDefaultComponents returns a default components object
-func newDefaultComponents() *types.Components {
-	ingressValues := []byte(`service:
-  type: ClusterIP
-`)
-
-	values := dig.Mapping{}
-	if err := yaml.Unmarshal(ingressValues, &values); err != nil {
-		panic(err)
-	}
-
-	components := &types.Components{
-		Core: &types.Core{
-			Ingress: &types.CoreComponent{
-				Enabled:  true,
-				Provider: "ingress-nginx",
-				Config: dig.Mapping{
-					"controller": dig.Mapping{
-						"service": dig.Mapping{
-							"type": "NodePort",
-							"nodePorts": dig.Mapping{
-								"http":  30000,
-								"https": 30001,
-							},
+var defaultComponents = types.Components{
+	Core: &types.Core{
+		Ingress: &types.CoreComponent{
+			Enabled:  true,
+			Provider: "ingress-nginx",
+			Config: dig.Mapping{
+				"controller": dig.Mapping{
+					"service": dig.Mapping{
+						"type": "NodePort",
+						"nodePorts": dig.Mapping{
+							"http":  30000,
+							"https": 30001,
 						},
 					},
 				},
 			},
 		},
-		Addons: []types.Addon{
-			{
-				Name:      "example-server",
-				Kind:      constants.AddonChart,
-				Enabled:   true,
-				Namespace: "default",
-				Chart: &types.ChartInfo{
-					Name:    "nginx",
-					Repo:    "https://charts.bitnami.com/bitnami",
-					Version: "15.1.1",
-					Values:  values,
-				},
+	},
+	Addons: []types.Addon{
+		{
+			Name:      "example-server",
+			Kind:      constants.AddonChart,
+			Enabled:   true,
+			Namespace: "default",
+			Chart: &types.ChartInfo{
+				Name:    "nginx",
+				Repo:    "https://charts.bitnami.com/bitnami",
+				Version: "15.1.1",
+				Values: `"service":
+  "type": "ClusterIP"
+`,
 			},
 		},
-	}
-
-	return components
+	},
 }
