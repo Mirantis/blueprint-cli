@@ -5,11 +5,11 @@ import (
 	"os"
 	"os/exec"
 
-	"github.com/k0sproject/dig"
-	"github.com/mirantiscontainers/boundless-cli/pkg/constants"
-	"github.com/mirantiscontainers/boundless-cli/pkg/types"
 	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v2"
+
+	"github.com/mirantiscontainers/boundless-cli/pkg/constants"
+	"github.com/mirantiscontainers/boundless-cli/pkg/types"
 )
 
 var isKind bool
@@ -61,23 +61,6 @@ func encode(blueprint types.Blueprint) error {
 }
 
 var defaultComponents = types.Components{
-	Core: &types.Core{
-		Ingress: &types.CoreComponent{
-			Enabled:  true,
-			Provider: "ingress-nginx",
-			Config: dig.Mapping{
-				"controller": dig.Mapping{
-					"service": dig.Mapping{
-						"type": "NodePort",
-						"nodePorts": dig.Mapping{
-							"http":  30000,
-							"https": 30001,
-						},
-					},
-				},
-			},
-		},
-	},
 	Addons: []types.Addon{
 		{
 			Name:      "example-server",

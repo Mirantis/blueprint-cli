@@ -111,7 +111,7 @@ github.com/mattn/go-colorable
 # github.com/mattn/go-isatty v0.0.19
 ## explicit; go 1.15
 github.com/mattn/go-isatty
-# github.com/mirantiscontainers/boundless-operator v0.0.0-20240212155826-c623f302e225
+# github.com/mirantiscontainers/boundless-operator v0.0.0-20240216165137-1d47779108de
 ## explicit; go 1.21
 github.com/mirantiscontainers/boundless-operator/api/v1alpha1
 # github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd

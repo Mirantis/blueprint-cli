@@ -10,9 +10,10 @@ import (
 	"strings"
 
 	"github.com/k0sproject/dig"
-	"github.com/mirantiscontainers/boundless-cli/pkg/constants"
 	"github.com/mirantiscontainers/boundless-operator/api/v1alpha1"
 	"k8s.io/apimachinery/pkg/util/intstr"
+
+	"github.com/mirantiscontainers/boundless-cli/pkg/constants"
 )
 
 var blueprintKinds = []string{"Blueprint"}
@@ -140,7 +141,6 @@ func (k *Kubernetes) Validate() error {
 }
 
 type Components struct {
-	Core   *Core   `yaml:"core,omitempty"`
 	Addons []Addon `yaml:"addons,omitempty"`
 }
 
@@ -156,14 +156,6 @@ func (c *Components) Validate() error {
 	}
 
 	return nil
-}
-
-type Core struct {
-	Cni        *CoreComponent `yaml:"cni,omitempty"`
-	Ingress    *CoreComponent `yaml:"ingress,omitempty"`
-	DNS        *CoreComponent `yaml:"dns,omitempty"`
-	Logging    *CoreComponent `yaml:"logging,omitempty"`
-	Monitoring *CoreComponent `yaml:"monitoring,omitempty"`
 }
 
 type CoreComponent struct {

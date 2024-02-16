@@ -8,7 +8,7 @@ require (
 	github.com/k0sproject/version v0.6.0
 	github.com/k3s-io/helm-controller v0.15.4
 	github.com/mattn/go-colorable v0.1.13
-	github.com/mirantiscontainers/boundless-operator v0.0.0-20240212155826-c623f302e225
+	github.com/mirantiscontainers/boundless-operator v0.0.0-20240216165137-1d47779108de
 	github.com/onsi/gomega v1.30.0
 	github.com/rs/zerolog v1.31.0
 	github.com/spf13/cobra v1.8.0

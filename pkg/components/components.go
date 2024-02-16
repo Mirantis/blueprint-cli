@@ -11,30 +11,16 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/util/yaml"
 
+	"github.com/mirantiscontainers/boundless-operator/api/v1alpha1"
+
 	"github.com/mirantiscontainers/boundless-cli/pkg/constants"
 	"github.com/mirantiscontainers/boundless-cli/pkg/k8s"
 	"github.com/mirantiscontainers/boundless-cli/pkg/types"
-	"github.com/mirantiscontainers/boundless-operator/api/v1alpha1"
 )
 
 // ApplyBlueprint applies a Blueprint object to the cluster
 func ApplyBlueprint(kubeConfig *k8s.KubeConfig, cluster types.Blueprint) error {
 	components := cluster.Spec.Components
-
-	// install/update core components
-	var core = v1alpha1.Core{}
-	if components.Core != nil && components.Core.Ingress != nil {
-		ingressConfig, err := yamlValues(components.Core.Ingress.Config)
-		if err != nil {
-			return fmt.Errorf("failed to convert ingress config to yaml: %w", err)
-		}
-
-		core.Ingress = &v1alpha1.IngressSpec{
-			Enabled:  components.Core.Ingress.Enabled,
-			Provider: components.Core.Ingress.Provider,
-			Config:   ingressConfig,
-		}
-	}
 
 	// Get the list of addons
 	addons, err := getAddons(&components)
@@ -49,7 +35,6 @@ func ApplyBlueprint(kubeConfig *k8s.KubeConfig, cluster types.Blueprint) error {
 		},
 		Spec: v1alpha1.BlueprintSpec{
 			Components: v1alpha1.Component{
-				Core:   &core,
 				Addons: addons,
 			},
 		},
@@ -67,20 +52,6 @@ func ApplyBlueprint(kubeConfig *k8s.KubeConfig, cluster types.Blueprint) error {
 func RemoveComponents(kubeConfig *k8s.KubeConfig, cluster types.Blueprint) error {
 	components := cluster.Spec.Components
 
-	var core = v1alpha1.Core{}
-	if components.Core != nil && components.Core.Ingress != nil {
-		ingressConfig, err := yamlValues(components.Core.Ingress.Config)
-		if err != nil {
-			return fmt.Errorf("failed to convert ingress config to yaml: %w", err)
-		}
-
-		core.Ingress = &v1alpha1.IngressSpec{
-			Enabled:  components.Core.Ingress.Enabled,
-			Provider: components.Core.Ingress.Provider,
-			Config:   ingressConfig,
-		}
-	}
-
 	// Get the list of addons
 	addons, err := getAddons(&components)
 	if err != nil {
@@ -94,7 +65,6 @@ func RemoveComponents(kubeConfig *k8s.KubeConfig, cluster types.Blueprint) error
 		},
 		Spec: v1alpha1.BlueprintSpec{
 			Components: v1alpha1.Component{
-				Core:   &core,
 				Addons: addons,
 			},
 		},
