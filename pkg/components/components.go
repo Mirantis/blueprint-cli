@@ -98,6 +98,7 @@ func getAddons(components *types.Components) ([]v1alpha1.AddonSpec, error) {
 				Name:      addon.Name,
 				Kind:      addon.Kind,
 				Enabled:   addon.Enabled,
+				DryRun:    addon.DryRun,
 				Namespace: addon.Namespace,
 				Chart: &v1alpha1.ChartInfo{
 					Name:    addon.Chart.Name,

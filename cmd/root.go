@@ -55,6 +55,7 @@ func init() {
 		upgradeCmd(),
 		statusCmd(),
 		kubeConfigCmd(),
+		verifyCmd(),
 	)
 
 	pFlags = NewPersistenceFlags()

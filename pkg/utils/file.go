@@ -34,3 +34,18 @@ func fileReader(f string) (io.ReadCloser, error) {
 
 	return file, nil
 }
+
+func WriteTempFile(data []byte, pattern string) (string, error) {
+	tmpfile, err := os.CreateTemp("/tmp/", pattern)
+	if err != nil {
+		return "", err
+	}
+	defer tmpfile.Close()
+
+	_, err = tmpfile.Write(data)
+	if err != nil {
+		return "", err
+	}
+
+	return tmpfile.Name(), nil
+}

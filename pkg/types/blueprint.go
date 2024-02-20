@@ -171,6 +171,7 @@ type Addon struct {
 	Name      string        `yaml:"name"`
 	Kind      string        `yaml:"kind"`
 	Enabled   bool          `yaml:"enabled"`
+	DryRun    bool          `yaml:"dryRun"`
 	Namespace string        `yaml:"namespace,omitempty"`
 	Chart     *ChartInfo    `yaml:"chart,omitempty"`
 	Manifest  *ManifestInfo `yaml:"manifest,omitempty"`

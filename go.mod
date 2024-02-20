@@ -2,6 +2,9 @@ module github.com/mirantiscontainers/boundless-cli
 
 go 1.21
 
+//TODO: remove once boundless operator require updated
+replace github.com/mirantiscontainers/boundless-operator => ../boundless-operator
+
 require (
 	github.com/a8m/envsubst v1.4.2
 	github.com/k0sproject/dig v0.2.0
