@@ -35,7 +35,7 @@ func NewK0sProvider(blueprint *types.Blueprint, kubeConfig *k8s.KubeConfig) *K0s
 		kubeConfig: kubeConfig,
 	}
 
-	k0sConfig, err := createTempK0sConfig(blueprint)
+	k0sConfig, err := CreateTempK0sConfig(blueprint)
 	if err != nil {
 		log.Fatal().Err(err).Msg("failed to get k0s config path")
 	}
@@ -54,7 +54,7 @@ func (k *K0s) Install() error {
 	}
 
 	// create kubeconfig
-	if err := writeK0sKubeConfig(k.k0sConfig, k.kubeConfig); err != nil {
+	if err := WriteK0sKubeConfig(k.k0sConfig, k.kubeConfig); err != nil {
 		return fmt.Errorf("failed to write kubeconfig: %w", err)
 	}
 	log.Trace().Msgf("kubeconfig file for k0s cluster: %s", kubeConfigPath)
@@ -138,7 +138,7 @@ func (k *K0s) WaitForPods() error {
 	return nil
 }
 
-func writeK0sKubeConfig(k0sctlConfig string, kubeConfig *k8s.KubeConfig) error {
+func WriteK0sKubeConfig(k0sctlConfig string, kubeConfig *k8s.KubeConfig) error {
 	c := exec.Command("k0sctl", "kubeconfig", "--config", k0sctlConfig)
 	c.Stderr = os.Stderr
 
@@ -159,6 +159,7 @@ func writeK0sKubeConfig(k0sctlConfig string, kubeConfig *k8s.KubeConfig) error {
 	if err != nil {
 		return err
 	}
+
 	err = kubeConfig.MergeConfig(rawConfig)
 	if err != nil {
 		return err
@@ -167,8 +168,8 @@ func writeK0sKubeConfig(k0sctlConfig string, kubeConfig *k8s.KubeConfig) error {
 	return nil
 }
 
-// createTempK0sConfig creates a k0s config file from the blueprint in the tmp directory
-func createTempK0sConfig(blueprint *types.Blueprint) (string, error) {
+// CreateTempK0sConfig creates a k0s config file from the blueprint in the tmp directory
+func CreateTempK0sConfig(blueprint *types.Blueprint) (string, error) {
 	k0sctlConfig := types.ConvertToK0s(blueprint)
 
 	data, err := yaml.Marshal(k0sctlConfig)

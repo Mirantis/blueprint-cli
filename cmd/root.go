@@ -131,7 +131,7 @@ func loadKubeConfig(cmd *cobra.Command, args []string) error {
 	// TODO (ranyodh): remove this hack
 	// This is a hack to ensure that the kubeconfig file is not loaded for apply command
 	// because the cluster is not yet created at this point
-	if cmd.Name() == "apply" {
+	if cmd.Name() == "apply" || cmd.Name() == "kubeconfig" {
 		return nil
 	}
 
