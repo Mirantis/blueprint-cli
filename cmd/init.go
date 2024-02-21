@@ -71,8 +71,8 @@ var defaultComponents = types.Components{
 				Name:    "nginx",
 				Repo:    "https://charts.bitnami.com/bitnami",
 				Version: "15.1.1",
-				Values: `"service":
-  "type": "ClusterIP"
+				Values: `service:
+  type: ClusterIP
 `,
 			},
 		},
