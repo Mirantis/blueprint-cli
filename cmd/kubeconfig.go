@@ -14,7 +14,7 @@ func kubeConfigCmd() *cobra.Command {
 		Use:     "kubeconfig",
 		Short:   "Generate kubeconfig file for the Blueprint",
 		Args:    cobra.NoArgs,
-		PreRunE: actions(loadBlueprint, loadKubeConfig),
+		PreRunE: actions(loadBlueprint),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return runKubeConfig()
 		},
@@ -26,8 +26,6 @@ func kubeConfigCmd() *cobra.Command {
 	return cmd
 }
 func runKubeConfig() error {
-	log.Info().Msgf("Generating kubeconfig for blueprint %s", blueprintFlag)
-
 	// Determine the distro
 	provider, err := distro.GetProvider(&blueprint, kubeConfig)
 	if err != nil {
@@ -43,7 +41,6 @@ func runKubeConfig() error {
 	if !exists {
 		return fmt.Errorf("cluster doesn't exist: %s", blueprint.Metadata.Name)
 	}
-	log.Info().Msgf("Cluster %q exists", blueprint.Metadata.Name)
 
 	if provider.Type() == constants.ProviderK0s {
 		k0sConfig, err := distro.CreateTempK0sConfig(&blueprint)
@@ -51,20 +48,17 @@ func runKubeConfig() error {
 			log.Fatal().Err(err).Msg("failed to get k0s config path")
 		}
 
-		// create kubeconfig
-		if err := distro.WriteK0sKubeConfig(k0sConfig, kubeConfig); err != nil {
-			return fmt.Errorf("failed to write kubeconfig: %w", err)
+		if err := utils.ExecCommand(fmt.Sprintf("k0sctl kubeconfig --config %s", k0sConfig)); err != nil {
+			return fmt.Errorf("failed to get kubeconfig for k0s cluster %s : %w ", blueprint.Metadata.Name, err)
 		}
 
 	} else if provider.Type() == constants.ProviderKind {
-		if err := utils.ExecCommand(fmt.Sprintf("kind export kubeconfig --name %s", blueprint.Metadata.Name)); err != nil {
-			return fmt.Errorf("failed to get kubeconfig for cluster %s : %w ", blueprint.Metadata.Name, err)
+		if err := utils.ExecCommand(fmt.Sprintf("kind get kubeconfig --name %s", blueprint.Metadata.Name)); err != nil {
+			return fmt.Errorf("failed to get kubeconfig for kind cluster %s : %w ", blueprint.Metadata.Name, err)
 		}
 	} else if provider.Type() == constants.ProviderExisting {
 		return fmt.Errorf("provider: %s not supported.", constants.ProviderExisting)
 	}
-
-	log.Info().Msgf("Finished generating kubeconfig for the blueprint")
 
 	return nil
 }
