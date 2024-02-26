@@ -14,6 +14,7 @@ import (
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/util/wait"
 	"k8s.io/client-go/kubernetes"
 
 	"github.com/mirantiscontainers/boundless-cli/pkg/components"
@@ -27,7 +28,7 @@ import (
 func verifyCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "verify",
-		Short:   "Verify blueprint addons",
+		Short:   "Verifies the blueprint is valid and can be applied to the cluster. Specifically checks helm chart addons",
 		Args:    cobra.NoArgs,
 		PreRunE: actions(loadBlueprint, loadKubeConfig),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -43,6 +44,7 @@ func verifyCmd() *cobra.Command {
 
 func runVerify() error {
 	log.Info().Msgf("Verifying blueprint %s", blueprintFlag)
+	ctx := context.Background()
 
 	// Determine the distro
 	provider, err := distro.GetProvider(&blueprint, kubeConfig)
@@ -100,7 +102,7 @@ func runVerify() error {
 		// pods for failed dry-runs get deleted after running so run verification in parallel
 		// this way we can get the detailed dry-run logs before the pod is deleted
 		wg.Add(1)
-		go verifyAddon(addon, k8sclient, &wg)
+		go verifyAddon(ctx, addon, k8sclient, &wg)
 	}
 
 	wg.Wait()
@@ -110,7 +112,7 @@ func runVerify() error {
 
 }
 
-func verifyAddon(addon types.Addon, k8sclient *kubernetes.Clientset, wg *sync.WaitGroup) error {
+func verifyAddon(ctx context.Context, addon types.Addon, k8sclient *kubernetes.Clientset, wg *sync.WaitGroup) error {
 	defer wg.Done()
 	if addon.Kind == constants.AddonManifest {
 		//TODO: BOP-309 Add Manifest Validation
@@ -121,38 +123,9 @@ func verifyAddon(addon types.Addon, k8sclient *kubernetes.Clientset, wg *sync.Wa
 
 	var dryRunPod corev1.Pod
 
-	// wait for the job to start
-	for jobPodExists := false; !jobPodExists; {
-		pods, err := k8sclient.CoreV1().Pods(addon.Namespace).List(context.TODO(), metav1.ListOptions{
-			LabelSelector: fmt.Sprintf("batch.kubernetes.io/job-name=helm-install-%s", addon.Chart.Name),
-			Limit:         1,
-		})
-		if err != nil {
-			if errors.IsNotFound(err) {
-				log.Debug().Msgf("Pod for helmchart addon %s not found, retrying", addon.Chart.Name)
-				time.Sleep(2 * time.Second)
-				continue
-			}
-			log.Warn().Msgf("Failed to get pod for helmchart addon %s: %v", addon.Chart.Name, err)
-			return err
-		}
-
-		if len(pods.Items) == 0 {
-			log.Debug().Msgf("Pod for helmchart addon %s not found, retrying", addon.Chart.Name)
-			time.Sleep(2 * time.Second)
-			continue
-		}
-
-		dryRunPod = pods.Items[0]
-
-		// check if pod is ready
-		if dryRunPod.Status.Phase == corev1.PodPending {
-			log.Debug().Msgf("Pod for helmchart addon %s is still pending, retrying", addon.Chart.Name)
-			time.Sleep(2 * time.Second)
-			continue
-		}
-
-		jobPodExists = true
+	dryRunPod, err := waitForJobReady(addon, k8sclient, dryRunPod)
+	if err != nil {
+		return err
 	}
 
 	// start streaming the job pod logs
@@ -168,43 +141,91 @@ func verifyAddon(addon types.Addon, k8sclient *kubernetes.Clientset, wg *sync.Wa
 		return err
 	}
 
-	return getJobResult(addon, k8sclient, err, fileName)
+	timeoutCtx, cancelFunc := context.WithTimeout(ctx, 2*time.Minute)
+	defer cancelFunc()
 
+	err = getJobResult(timeoutCtx, addon, k8sclient, err, fileName)
+	if err != nil {
+		if err == context.DeadlineExceeded {
+			log.Warn().Msgf("Verification timed out for helmchart %s", addon.Chart.Name)
+		}
+		return err
+	}
+
+	return nil
+}
+
+func waitForJobReady(addon types.Addon, k8sclient *kubernetes.Clientset, dryRunPod corev1.Pod) (corev1.Pod, error) {
+	// wait for the job to start
+	for jobPodExists := false; !jobPodExists; {
+		pods, err := k8sclient.CoreV1().Pods(addon.Namespace).List(context.TODO(), metav1.ListOptions{
+			LabelSelector: fmt.Sprintf("batch.kubernetes.io/job-name=helm-install-%s", addon.Chart.Name),
+			Limit:         1,
+		})
+		if err != nil {
+			if errors.IsNotFound(err) {
+				log.Debug().Msgf("Pod for helmchart addon %s not found, retrying", addon.Chart.Name)
+				time.Sleep(constants.DryRunWaitInterval)
+				continue
+			}
+			log.Warn().Msgf("Failed to get pod for helmchart addon %s: %v", addon.Chart.Name, err)
+			return corev1.Pod{}, err
+		}
+
+		if len(pods.Items) == 0 {
+			log.Debug().Msgf("Pod for helmchart addon %s not found, retrying", addon.Chart.Name)
+			time.Sleep(constants.DryRunWaitInterval)
+			continue
+		}
+
+		dryRunPod = pods.Items[0]
+
+		// check if pod is ready
+		if dryRunPod.Status.Phase == corev1.PodPending {
+			log.Debug().Msgf("Pod for helmchart addon %s is still pending, retrying", addon.Chart.Name)
+			time.Sleep(constants.DryRunWaitInterval)
+			continue
+		}
+
+		jobPodExists = true
+	}
+	return dryRunPod, nil
 }
 
 // getJobResult waits for the job to complete and checks the job result
-func getJobResult(addon types.Addon, k8sclient *kubernetes.Clientset, err error, fileName string) error {
+func getJobResult(timeoutCtx context.Context, addon types.Addon, k8sclient *kubernetes.Clientset, err error, fileName string) error {
 	var dryRunJob *batchv1.Job
 
-	for jobConditionsExist := false; !jobConditionsExist; {
+	return wait.PollUntilContextCancel(timeoutCtx, 5*time.Second, true, func(ctx context.Context) (bool, error) {
 		dryRunJob, err = k8sclient.BatchV1().Jobs(addon.Namespace).Get(context.TODO(), fmt.Sprintf("helm-install-%s", addon.Chart.Name), metav1.GetOptions{})
 		if err != nil {
-			log.Warn().Msgf("Failed to get job for helmchart addon %s: %v", addon.Chart.Name, err)
-			return err
+			if errors.IsNotFound(err) {
+				log.Debug().Msgf("Job for helmchart addon %s not found, retrying", addon.Chart.Name)
+				return false, nil
+			}
+			return false, fmt.Errorf("failed to get job for helmchart addon %s: %v", addon.Chart.Name, err)
 		}
 
 		if len(dryRunJob.Status.Conditions) == 0 {
 			log.Debug().Msgf("waiting on job %s conditions", addon.Chart.Name)
-			time.Sleep(2 * time.Second)
-			continue
+			return false, nil
 		}
-		jobConditionsExist = true
-	}
 
-	for _, condition := range dryRunJob.Status.Conditions {
-		log.Debug().Msgf("Condition: %s, Status: %s", condition.Type, condition.Status)
-		if condition.Type == batchv1.JobFailed && condition.Status == corev1.ConditionTrue {
-			log.Error().Msgf("Verification failed for helmchart %s, detailed dry-run for helmchart %s written to %s", addon.Chart.Name, addon.Chart.Name, fileName)
-			// return early if dry-run failed
-			return fmt.Errorf("verification failed for helmchart %s", addon.Chart.Name)
+		for _, condition := range dryRunJob.Status.Conditions {
+			log.Debug().Msgf("Condition: %s, Status: %s", condition.Type, condition.Status)
+			if condition.Type == batchv1.JobFailed && condition.Status == corev1.ConditionTrue {
+				log.Error().Msgf("Verification failed for helmchart %s, detailed dry-run for helmchart %s written to %s", addon.Chart.Name, addon.Chart.Name, fileName)
+				return true, fmt.Errorf("verification failed for helmchart %s", addon.Chart.Name)
+			}
+			if condition.Type == batchv1.JobComplete && condition.Status == corev1.ConditionTrue {
+				log.Info().Msgf("Verification completed for helmchart %s, detailed dry-run for helmchart %s written to %s", addon.Chart.Name, addon.Chart.Name, fileName)
+				return true, nil
+			}
 		}
-		if condition.Type == batchv1.JobComplete && condition.Status == corev1.ConditionTrue {
-			log.Info().Msgf("Verification completed for helmchart %s, detailed dry-run for helmchart %s written to %s", addon.Chart.Name, addon.Chart.Name, fileName)
-			return nil
-		}
-	}
 
-	return nil
+		return false, nil
+	})
+
 }
 
 func getPodLogs(pod corev1.Pod) (string, error) {

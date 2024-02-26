@@ -1,5 +1,7 @@
 package constants
 
+import "time"
+
 const (
 	// ManifestUrlLatest is the URL of the latest manifest YAML for the Boundless Operator
 	ManifestUrlLatest = "https://raw.githubusercontent.com/mirantiscontainers/boundless/main/deploy/static/boundless-operator.yaml"
@@ -12,4 +14,7 @@ const (
 
 	// DefaultLogLevel represents the default log level.
 	DefaultLogLevel = "info"
+
+	// DryRunWaitInterval is the interval to wait between checks of resources when performing a dry run
+	DryRunWaitInterval = 2 * time.Second
 )
