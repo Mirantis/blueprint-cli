@@ -153,13 +153,10 @@ func verifyAddon(ctx context.Context, addon types.Addon, k8sclient *kubernetes.C
 }
 
 func waitForJobReady(ctx context.Context, addon types.Addon, k8sclient *kubernetes.Clientset) (corev1.Pod, error) {
-	timeoutCtx, cancelFunc := context.WithTimeout(ctx, constants.DryRunTimeout)
-	defer cancelFunc()
-
 	var dryRunPod corev1.Pod
 
 	// wait for the job that runs the helm install to start
-	err := wait.PollUntilContextCancel(timeoutCtx, 1*time.Second, true, func(ctx context.Context) (bool, error) {
+	err := wait.PollUntilContextTimeout(ctx, 1*time.Second, constants.DryRunTimeout, true, func(ctx context.Context) (bool, error) {
 		pods, err := k8sclient.CoreV1().Pods(addon.Namespace).List(context.TODO(), metav1.ListOptions{
 			LabelSelector: fmt.Sprintf("batch.kubernetes.io/job-name=helm-install-%s", addon.Chart.Name),
 			Limit:         1,
@@ -197,12 +194,9 @@ func waitForJobReady(ctx context.Context, addon types.Addon, k8sclient *kubernet
 
 // getJobResult waits for the job to complete and checks the job result
 func getJobResult(ctx context.Context, addon types.Addon, k8sclient *kubernetes.Clientset, err error, fileName string) error {
-	timeoutCtx, cancelFunc := context.WithTimeout(ctx, constants.DryRunTimeout)
-	defer cancelFunc()
-
 	var dryRunJob *batchv1.Job
 
-	return wait.PollUntilContextCancel(timeoutCtx, 5*time.Second, true, func(ctx context.Context) (bool, error) {
+	return wait.PollUntilContextTimeout(ctx, 5*time.Second, constants.DryRunTimeout, true, func(ctx context.Context) (bool, error) {
 		dryRunJob, err = k8sclient.BatchV1().Jobs(addon.Namespace).Get(context.TODO(), fmt.Sprintf("helm-install-%s", addon.Chart.Name), metav1.GetOptions{})
 		if err != nil {
 			if errors.IsNotFound(err) {
