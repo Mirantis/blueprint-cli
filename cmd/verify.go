@@ -125,6 +125,9 @@ func verifyAddon(ctx context.Context, addon types.Addon, k8sclient *kubernetes.C
 
 	dryRunPod, err := waitForJobReady(ctx, addon, k8sclient)
 	if err != nil {
+		if err == context.DeadlineExceeded {
+			log.Warn().Msgf("Verification timed out for helmchart %s", addon.Chart.Name)
+		}
 		return err
 	}
 
