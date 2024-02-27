@@ -25,7 +25,7 @@ type Host struct {
 	Role      string     `yaml:"role"`
 }
 
-var nodeRoles = []string{"single", "controller", "worker"}
+var nodeRoles = []string{"single", "controller", "worker", "controller+worker"}
 
 // Validate checks the Host structure and its children
 func (h *Host) Validate() error {
