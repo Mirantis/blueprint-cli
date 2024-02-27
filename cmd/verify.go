@@ -123,7 +123,7 @@ func verifyAddon(ctx context.Context, addon types.Addon, k8sclient *kubernetes.C
 
 	var dryRunPod corev1.Pod
 
-	dryRunPod, err := waitForJobReady(addon, k8sclient, dryRunPod)
+	dryRunPod, err := waitForJobReady(ctx, addon, k8sclient)
 	if err != nil {
 		return err
 	}
@@ -141,10 +141,7 @@ func verifyAddon(ctx context.Context, addon types.Addon, k8sclient *kubernetes.C
 		return err
 	}
 
-	timeoutCtx, cancelFunc := context.WithTimeout(ctx, 2*time.Minute)
-	defer cancelFunc()
-
-	err = getJobResult(timeoutCtx, addon, k8sclient, err, fileName)
+	err = getJobResult(ctx, addon, k8sclient, err, fileName)
 	if err != nil {
 		if err == context.DeadlineExceeded {
 			log.Warn().Msgf("Verification timed out for helmchart %s", addon.Chart.Name)
@@ -155,9 +152,14 @@ func verifyAddon(ctx context.Context, addon types.Addon, k8sclient *kubernetes.C
 	return nil
 }
 
-func waitForJobReady(addon types.Addon, k8sclient *kubernetes.Clientset, dryRunPod corev1.Pod) (corev1.Pod, error) {
-	// wait for the job to start
-	for jobPodExists := false; !jobPodExists; {
+func waitForJobReady(ctx context.Context, addon types.Addon, k8sclient *kubernetes.Clientset) (corev1.Pod, error) {
+	timeoutCtx, cancelFunc := context.WithTimeout(ctx, constants.DryRunTimeout)
+	defer cancelFunc()
+
+	var dryRunPod corev1.Pod
+
+	// wait for the job that runs the helm install to start
+	err := wait.PollUntilContextCancel(timeoutCtx, 1*time.Second, true, func(ctx context.Context) (bool, error) {
 		pods, err := k8sclient.CoreV1().Pods(addon.Namespace).List(context.TODO(), metav1.ListOptions{
 			LabelSelector: fmt.Sprintf("batch.kubernetes.io/job-name=helm-install-%s", addon.Chart.Name),
 			Limit:         1,
@@ -166,16 +168,16 @@ func waitForJobReady(addon types.Addon, k8sclient *kubernetes.Clientset, dryRunP
 			if errors.IsNotFound(err) {
 				log.Debug().Msgf("Pod for helmchart addon %s not found, retrying", addon.Chart.Name)
 				time.Sleep(constants.DryRunWaitInterval)
-				continue
+				return false, nil
 			}
 			log.Warn().Msgf("Failed to get pod for helmchart addon %s: %v", addon.Chart.Name, err)
-			return corev1.Pod{}, err
+			return false, err
 		}
 
 		if len(pods.Items) == 0 {
 			log.Debug().Msgf("Pod for helmchart addon %s not found, retrying", addon.Chart.Name)
 			time.Sleep(constants.DryRunWaitInterval)
-			continue
+			return false, nil
 		}
 
 		dryRunPod = pods.Items[0]
@@ -184,16 +186,20 @@ func waitForJobReady(addon types.Addon, k8sclient *kubernetes.Clientset, dryRunP
 		if dryRunPod.Status.Phase == corev1.PodPending {
 			log.Debug().Msgf("Pod for helmchart addon %s is still pending, retrying", addon.Chart.Name)
 			time.Sleep(constants.DryRunWaitInterval)
-			continue
+			return false, nil
 		}
 
-		jobPodExists = true
-	}
-	return dryRunPod, nil
+		return true, nil
+	})
+
+	return dryRunPod, err
 }
 
 // getJobResult waits for the job to complete and checks the job result
-func getJobResult(timeoutCtx context.Context, addon types.Addon, k8sclient *kubernetes.Clientset, err error, fileName string) error {
+func getJobResult(ctx context.Context, addon types.Addon, k8sclient *kubernetes.Clientset, err error, fileName string) error {
+	timeoutCtx, cancelFunc := context.WithTimeout(ctx, constants.DryRunTimeout)
+	defer cancelFunc()
+
 	var dryRunJob *batchv1.Job
 
 	return wait.PollUntilContextCancel(timeoutCtx, 5*time.Second, true, func(ctx context.Context) (bool, error) {

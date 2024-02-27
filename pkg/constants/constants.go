@@ -17,4 +17,7 @@ const (
 
 	// DryRunWaitInterval is the interval to wait between checks of resources when performing a dry run
 	DryRunWaitInterval = 2 * time.Second
+
+	// DryRunTimeout is the timeout for dry run operations
+	DryRunTimeout = 2 * time.Minute
 )
