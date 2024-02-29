@@ -201,8 +201,19 @@ func writeToTempFile(k0sctlConfig []byte) (string, error) {
 	return tmpfile.Name(), nil
 }
 
-// getInstalledVersion returns version of k0s on the first controller node that does not throw an error
+// getInstalledVersion returns version of k0s
+// for local k0s it will get the k0s version of the local machine
+// otherwise it will get k0s version on the first controller node that does not throw an error
 func (k *K0s) getInstalledVersion(blueprint *types.Blueprint) (string, error) {
+
+	if k.isLocalK0s(blueprint) {
+		out, err := utils.ExecCommandWithReturn("sudo k0s version")
+		if err != nil {
+			return "", fmt.Errorf("unable to get k0s version on local host : %w", err)
+		}
+
+		return out, nil
+	}
 
 	controllers := k.getControllerHosts(blueprint)
 
@@ -233,12 +244,18 @@ func (k *K0s) getControllerHosts(blueprint *types.Blueprint) []types.Host {
 	var hosts []types.Host
 
 	for _, host := range blueprint.Spec.Kubernetes.Infra.Hosts {
-		if host.Role == "controller" {
+		// match both controller and controller+worker role
+		if strings.Contains(host.Role, "controller") {
 			hosts = append(hosts, host)
 			break
 		}
 	}
 	return hosts
+}
+
+func (k *K0s) isLocalK0s(blueprint *types.Blueprint) bool {
+	// if running localhost there should just be 1 host
+	return len(blueprint.Spec.Kubernetes.Infra.Hosts) > 0 && blueprint.Spec.Kubernetes.Infra.Hosts[0].LocalHost.Enabled
 }
 
 // NeedsUpgrade checks if an upgrade of the provider is required
