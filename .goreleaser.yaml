@@ -30,7 +30,7 @@ builds:
       - -trimpath
       - -mod=vendor
     ldflags:
-      - -s -w -X boundless-cli/cmd.version=v{{.Version}} -X boundless-cli/cmd.date={{.Date}}
+      - -s -w -X github.com/mirantiscontainers/boundless-cli/cmd.version=${VERSION} -X github.com/mirantiscontainers/boundless-cli/cmd.commit=${COMMIT} -X github.com/mirantiscontainers/boundless-cli/cmd.date=${DATE}
 
 archives:
   - format: tar.gz
