@@ -3,13 +3,14 @@ package components
 import (
 	"bytes"
 	"fmt"
+	"os"
 
 	"github.com/k0sproject/dig"
 	"github.com/rs/zerolog/log"
 	yamlDecoder "gopkg.in/yaml.v2"
 	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/apimachinery/pkg/util/yaml"
+	k8sYaml "k8s.io/apimachinery/pkg/util/yaml"
 
 	"github.com/mirantiscontainers/boundless-operator/api/v1alpha1"
 
@@ -19,7 +20,7 @@ import (
 )
 
 // ApplyBlueprint applies a Blueprint object to the cluster
-func ApplyBlueprint(kubeConfig *k8s.KubeConfig, cluster types.Blueprint) error {
+func ApplyBlueprint(kubeConfig *k8s.KubeConfig, cluster *types.Blueprint) error {
 	components := cluster.Spec.Components
 
 	// Get the list of addons
@@ -49,7 +50,7 @@ func ApplyBlueprint(kubeConfig *k8s.KubeConfig, cluster types.Blueprint) error {
 }
 
 // RemoveComponents removes all components from the cluster
-func RemoveComponents(kubeConfig *k8s.KubeConfig, cluster types.Blueprint) error {
+func RemoveComponents(kubeConfig *k8s.KubeConfig, cluster *types.Blueprint) error {
 	components := cluster.Spec.Components
 
 	// Get the list of addons
@@ -138,9 +139,33 @@ func jsonValues(values dig.Mapping) (string, error) {
 		return "", err
 	}
 
-	json, err := yaml.ToJSON(valuesYaml.Bytes())
+	json, err := k8sYaml.ToJSON(valuesYaml.Bytes())
 	if err != nil {
 		return "", err
 	}
 	return string(json), nil
+}
+
+func Encode(blueprint types.Blueprint) error {
+	encoder := yamlDecoder.NewEncoder(os.Stdout)
+	return encoder.Encode(&blueprint)
+}
+
+var DefaultComponents = types.Components{
+	Addons: []types.Addon{
+		{
+			Name:      "example-server",
+			Kind:      constants.AddonChart,
+			Enabled:   true,
+			Namespace: "default",
+			Chart: &types.ChartInfo{
+				Name:    "nginx",
+				Repo:    "https://charts.bitnami.com/bitnami",
+				Version: "15.1.1",
+				Values: `service:
+  type: ClusterIP
+`,
+			},
+		},
+	},
 }

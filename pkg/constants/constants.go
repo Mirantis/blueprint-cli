@@ -20,4 +20,6 @@ const (
 
 	// DryRunTimeout is the timeout for dry run operations
 	DryRunTimeout = 2 * time.Minute
+
+	BoundlessOperatorDeployment = "boundless-operator-controller-manager"
 )

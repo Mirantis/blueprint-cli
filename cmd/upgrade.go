@@ -1,10 +1,7 @@
 package cmd
 
 import (
-	"fmt"
-
-	"github.com/mirantiscontainers/boundless-cli/pkg/k8s"
-	"github.com/rs/zerolog/log"
+	"github.com/mirantiscontainers/boundless-cli/pkg/commands"
 	"github.com/spf13/cobra"
 )
 
@@ -16,7 +13,7 @@ func upgradeCmd() *cobra.Command {
 		Args:    cobra.NoArgs,
 		PreRunE: actions(loadBlueprint, loadKubeConfig),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			return runUpgrade(cmd)
+			return commands.Upgrade(&blueprint, kubeConfig, operatorUri)
 		},
 	}
 
@@ -24,15 +21,6 @@ func upgradeCmd() *cobra.Command {
 	addOperatorUriFlag(flags)
 	addBlueprintFileFlags(flags)
 	addKubeFlags(flags)
+
 	return cmd
-}
-
-func runUpgrade(cmd *cobra.Command) error {
-	log.Info().Msgf("Upgrading Boundless Operator using manifest file %q", operatorUri)
-	if err := k8s.ApplyYaml(kubeConfig, operatorUri); err != nil {
-		return fmt.Errorf("failed to upgrade boundless operator: %w", err)
-	}
-
-	log.Info().Msgf("Finished updating Boundless Operator")
-	return nil
 }

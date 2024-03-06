@@ -2,15 +2,14 @@ package cmd
 
 import (
 	"fmt"
-	"os"
 
 	"github.com/mattn/go-colorable"
+	"github.com/mirantiscontainers/boundless-cli/internal/logger"
 	"github.com/mirantiscontainers/boundless-cli/pkg/constants"
 	"github.com/mirantiscontainers/boundless-cli/pkg/distro"
 	"github.com/mirantiscontainers/boundless-cli/pkg/k8s"
 	"github.com/mirantiscontainers/boundless-cli/pkg/types"
 	"github.com/mirantiscontainers/boundless-cli/pkg/utils"
-	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
@@ -35,7 +34,7 @@ var (
 		Short: shortAppDesc,
 		Args:  cobra.NoArgs,
 		PersistentPreRun: func(cmd *cobra.Command, args []string) {
-			setupLogger()
+			logger.NewLogger(pFlags.LogLevel)
 		},
 		RunE:         runHelp,
 		SilenceUsage: true,
@@ -142,28 +141,6 @@ func loadKubeConfig(cmd *cobra.Command, args []string) error {
 		return err
 	}
 	return nil
-}
-
-func setupLogger() {
-	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stdout, PartsExclude: []string{zerolog.TimestampFieldName}})
-	zerolog.SetGlobalLevel(parseLevel(pFlags.LogLevel))
-}
-
-func parseLevel(level string) zerolog.Level {
-	switch level {
-	case "trace":
-		return zerolog.TraceLevel
-	case "debug":
-		return zerolog.DebugLevel
-	case "warn":
-		return zerolog.WarnLevel
-	case "error":
-		return zerolog.ErrorLevel
-	case "fatal":
-		return zerolog.FatalLevel
-	default:
-		return zerolog.InfoLevel
-	}
 }
 
 func addOperatorUriFlag(flags *pflag.FlagSet) {
