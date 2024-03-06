@@ -8,6 +8,7 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
+// Upgrade upgrades the Boundless Operator
 func Upgrade(blueprint *types.Blueprint, kubeConfig *k8s.KubeConfig, operatorUri string) error {
 	log.Info().Msgf("Upgrading Boundless Operator using manifest file %q", operatorUri)
 	if err := k8s.ApplyYaml(kubeConfig, operatorUri); err != nil {

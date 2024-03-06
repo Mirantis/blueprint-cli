@@ -24,6 +24,7 @@ import (
 	"k8s.io/client-go/kubernetes"
 )
 
+// Verifies the contents of a blueprint against an existing cluster
 func Verify(blueprint *types.Blueprint, kubeConfig *k8s.KubeConfig) error {
 	ctx := context.Background()
 

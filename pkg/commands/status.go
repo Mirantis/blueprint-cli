@@ -24,6 +24,7 @@ const (
 	kubernetesInstanceLabel      = "app.kubernetes.io/instance"
 )
 
+// Status prints the status of the boundless operator and any installed addons
 func Status(kubeConfig *k8s.KubeConfig) error {
 	k8sclient, err := k8s.GetClient(kubeConfig)
 	if err != nil {
@@ -72,6 +73,7 @@ func Status(kubeConfig *k8s.KubeConfig) error {
 	return nil
 }
 
+// AddonSpecificStatus prints the status of a specific addon
 func AddonSpecificStatus(kubeConfig *k8s.KubeConfig, providedAddonName string) error {
 	providedAddon, err := getAddon(kubeConfig, providedAddonName)
 	if err != nil {

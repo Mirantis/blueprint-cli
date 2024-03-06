@@ -10,8 +10,8 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
+// Update updates the Boundless Operator and applies the components defined in the blueprint
 func Update(blueprint *types.Blueprint, kubeConfig *k8s.KubeConfig) error {
-
 	// Determine the distro
 	provider, err := distro.GetProvider(blueprint, kubeConfig)
 	if err != nil {

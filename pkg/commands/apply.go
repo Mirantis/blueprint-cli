@@ -15,6 +15,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
+// Apply installs the Boundless Operator and applies the components defined in the blueprint
 func Apply(blueprint *types.Blueprint, kubeConfig *k8s.KubeConfig, operatorUri string) error {
 	// Determine the distro
 	provider, err := distro.GetProvider(blueprint, kubeConfig)

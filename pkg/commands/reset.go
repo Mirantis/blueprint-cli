@@ -10,6 +10,7 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
+// Reset resets the cluster
 func Reset(blueprint *types.Blueprint, kubeConfig *k8s.KubeConfig, operatorUri string) error {
 	log.Info().Msg("Resetting cluster")
 

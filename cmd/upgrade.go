@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"github.com/mirantiscontainers/boundless-cli/pkg/commands"
+	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
 )
 
@@ -13,6 +14,7 @@ func upgradeCmd() *cobra.Command {
 		Args:    cobra.NoArgs,
 		PreRunE: actions(loadBlueprint, loadKubeConfig),
 		RunE: func(cmd *cobra.Command, args []string) error {
+			log.Info().Msgf("Upgrading blueprint at %s", blueprintFlag)
 			return commands.Upgrade(&blueprint, kubeConfig, operatorUri)
 		},
 	}

@@ -9,8 +9,8 @@ import (
 	"github.com/mirantiscontainers/boundless-cli/pkg/types"
 )
 
+// Init initializes a new cluster
 func Init(provider string) error {
-
 	if provider == "kind" {
 		return components.Encode(types.ConvertToClusterWithKind("boundless-cluster", components.DefaultComponents))
 	}
