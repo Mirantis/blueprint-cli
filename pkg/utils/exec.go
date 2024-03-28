@@ -1,8 +1,6 @@
 package utils
 
 import (
-	"bufio"
-	"io"
 	"os"
 	"os/exec"
 	"strings"
@@ -49,17 +47,4 @@ func ExecCommandWithReturn(name string) (string, error) {
 	})
 
 	return cleanStdOut, nil
-}
-
-// ReadLines reads lines from an io.Reader and returns them as a slice of strings.
-func ReadLines(r io.Reader) ([]string, error) {
-	var lines []string
-	s := bufio.NewScanner(r)
-	for s.Scan() {
-		lines = append(lines, s.Text())
-	}
-	if err := s.Err(); err != nil {
-		return nil, err
-	}
-	return lines, nil
 }
