@@ -75,7 +75,7 @@ func (k *Kind) SetupClient() error {
 
 // Exists checks if kind exists
 func (k *Kind) Exists() (bool, error) {
-	err := utils.ExecCommandQuietly("bash", "-c", fmt.Sprintf("kind get clusters | grep %s", k.name))
+	output, err := utils.ExecCommandWithReturn(fmt.Sprintf("kind get clusters -q | grep %s", k.name))
 	if err != nil && strings.Contains(err.Error(), "exit status 1") {
 		return false, nil
 	}
@@ -83,7 +83,18 @@ func (k *Kind) Exists() (bool, error) {
 		return false, err
 	}
 
-	return true, nil
+	lines, err := utils.ReadLines(strings.NewReader(output))
+	if err != nil {
+		return false, err
+	}
+
+	for _, line := range lines {
+		if line == k.name {
+			return true, nil
+		}
+	}
+
+	return false, nil
 }
 
 // Reset deletes the kind cluster

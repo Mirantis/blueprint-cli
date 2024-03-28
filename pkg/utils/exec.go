@@ -1,6 +1,8 @@
 package utils
 
 import (
+	"bufio"
+	"io"
 	"os"
 	"os/exec"
 	"strings"
@@ -31,6 +33,7 @@ func ExecCommandQuietly(name string, args ...string) error {
 	return nil
 }
 
+// ExecCommandWithReturn executes a command and returns the output as a string.
 func ExecCommandWithReturn(name string) (string, error) {
 	cmd := exec.Command("sh", "-c", name)
 	cmd.Stdin = os.Stdin
@@ -46,4 +49,17 @@ func ExecCommandWithReturn(name string) (string, error) {
 	})
 
 	return cleanStdOut, nil
+}
+
+// ReadLines reads lines from an io.Reader and returns them as a slice of strings.
+func ReadLines(r io.Reader) ([]string, error) {
+	var lines []string
+	s := bufio.NewScanner(r)
+	for s.Scan() {
+		lines = append(lines, s.Text())
+	}
+	if err := s.Err(); err != nil {
+		return nil, err
+	}
+	return lines, nil
 }
