@@ -145,7 +145,7 @@ func loadKubeConfig(cmd *cobra.Command, args []string) error {
 }
 
 func addForceFlag(flags *pflag.FlagSet) {
-	flags.BoolVarP(&force, "force", "f", false, "Bypass user confirmation for a command")
+	flags.BoolVarP(&force, "force", "", false, "Bypass user confirmation for a command")
 }
 
 func addOperatorUriFlag(flags *pflag.FlagSet) {
