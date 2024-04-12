@@ -87,7 +87,7 @@ func (k *Kind) Exists() (bool, error) {
 }
 
 // Reset deletes the kind cluster
-func (k *Kind) Reset() error {
+func (k *Kind) Reset(force bool) error {
 	log.Debug().Msgf("Resetting kind cluster %q", k.name)
 
 	if err := utils.ExecCommand(fmt.Sprintf("kind delete clusters %s", k.name)); err != nil {

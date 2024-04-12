@@ -11,7 +11,7 @@ import (
 )
 
 // Reset resets the cluster
-func Reset(blueprint *types.Blueprint, kubeConfig *k8s.KubeConfig, operatorUri string) error {
+func Reset(blueprint *types.Blueprint, kubeConfig *k8s.KubeConfig, operatorUri string, force bool) error {
 	log.Info().Msg("Resetting cluster")
 
 	// Determine the distro
@@ -34,7 +34,7 @@ func Reset(blueprint *types.Blueprint, kubeConfig *k8s.KubeConfig, operatorUri s
 	}
 
 	// Reset the cluster
-	if err := provider.Reset(); err != nil {
+	if err := provider.Reset(force); err != nil {
 		return fmt.Errorf("failed to reset cluster: %w", err)
 	}
 

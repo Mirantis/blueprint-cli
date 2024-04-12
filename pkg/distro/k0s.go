@@ -95,10 +95,15 @@ func (k *K0s) Exists() (bool, error) {
 }
 
 // Reset resets k0s using k0sctl
-func (k *K0s) Reset() error {
+func (k *K0s) Reset(force bool) error {
 	log.Debug().Msgf("Resetting k0s cluster: %s", k.name)
 
-	if err := utils.ExecCommand(fmt.Sprintf("k0sctl reset --config %s", k.k0sConfig)); err != nil {
+	resetCmd := fmt.Sprintf("k0sctl reset --config %s", k.k0sConfig)
+	if force {
+		resetCmd = fmt.Sprintf("%s --force", resetCmd)
+	}
+
+	if err := utils.ExecCommand(resetCmd); err != nil {
 		return fmt.Errorf("failed to reset k0s: %w", err)
 	}
 

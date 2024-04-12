@@ -25,6 +25,7 @@ var (
 	pFlags        *PersistenceFlags
 	blueprintFlag string
 	operatorUri   string
+	force         bool
 
 	blueprint  types.Blueprint
 	kubeConfig *k8s.KubeConfig
@@ -141,6 +142,10 @@ func loadKubeConfig(cmd *cobra.Command, args []string) error {
 		return err
 	}
 	return nil
+}
+
+func addForceFlag(flags *pflag.FlagSet) {
+	flags.BoolVarP(&force, "force", "f", false, "Bypass user confirmation for a command")
 }
 
 func addOperatorUriFlag(flags *pflag.FlagSet) {

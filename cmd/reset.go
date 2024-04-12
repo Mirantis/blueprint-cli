@@ -23,12 +23,13 @@ For a cluster with an external Kubernetes provider, this will remove Boundless O
 		PreRunE: actions(loadBlueprint, loadKubeConfig),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			log.Info().Msgf("Resetting blueprint at %s", blueprintFlag)
-			return commands.Reset(&blueprint, kubeConfig, operatorUri)
+			return commands.Reset(&blueprint, kubeConfig, operatorUri, force)
 		},
 	}
 
 	flags := cmd.Flags()
 	addBlueprintFileFlags(flags)
 	addKubeFlags(flags)
+	addForceFlag(flags)
 	return cmd
 }

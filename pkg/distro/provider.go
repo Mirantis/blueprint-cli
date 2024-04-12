@@ -14,7 +14,7 @@ type Provider interface {
 	Upgrade() error
 	SetupClient() error
 	Exists() (bool, error)
-	Reset() error
+	Reset(force bool) error
 	GetKubeConfigContext() string
 	Type() string
 	GetKubeConfig() *k8s.KubeConfig
