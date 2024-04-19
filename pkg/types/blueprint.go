@@ -57,6 +57,7 @@ type BlueprintSpec struct {
 	Kubernetes *Kubernetes `yaml:"kubernetes,omitempty"`
 	Components Components  `yaml:"components"`
 	Resources  *Resources  `yaml:"resources,omitempty"`
+	Network    Network     `yaml:"network"`
 }
 
 // Validate checks the BlueprintSpec structure and its children
@@ -150,6 +151,14 @@ func (k *Kubernetes) Validate() error {
 
 type Components struct {
 	Addons []Addon `yaml:"addons,omitempty"`
+}
+
+type Network struct {
+	Calico Calico `yaml:"calico"`
+}
+
+type Calico struct {
+	WithWindowsNodes bool `yaml:"withWindowsNodes"`
 }
 
 // Validate checks the Components structure and its children
