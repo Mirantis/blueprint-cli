@@ -56,6 +56,7 @@ func (b *Blueprint) Validate() error {
 type BlueprintSpec struct {
 	Kubernetes *Kubernetes `yaml:"kubernetes,omitempty"`
 	Components Components  `yaml:"components"`
+	Resources  *Resources  `yaml:"resources,omitempty"`
 }
 
 // Validate checks the BlueprintSpec structure and its children
@@ -71,6 +72,13 @@ func (bs *BlueprintSpec) Validate() error {
 	// Components checks
 	if err := bs.Components.Validate(); err != nil {
 		return err
+	}
+
+	// Resources checks
+	if bs.Resources != nil {
+		if err := bs.Resources.Validate(); err != nil {
+			return err
+		}
 	}
 
 	return nil
@@ -267,6 +275,20 @@ func (mi *ManifestInfo) Validate() error {
 	}
 	if _, err := url.ParseRequestURI(mi.URL); err != nil {
 		return fmt.Errorf("manifest.url field must be a valid url: %v", mi.URL)
+	}
+
+	return nil
+}
+
+// Resources defines the desired state of k8s resources managed by BOP
+type Resources struct {
+	CertManagement CertManagement `yaml:"certManagement,omitempty"`
+}
+
+// Validate checks the Resources structure and its children
+func (r *Resources) Validate() error {
+	if err := r.CertManagement.Validate(); err != nil {
+		return err
 	}
 
 	return nil

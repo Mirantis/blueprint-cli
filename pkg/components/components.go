@@ -38,6 +38,7 @@ func ApplyBlueprint(kubeConfig *k8s.KubeConfig, cluster *types.Blueprint) error 
 			Components: v1alpha1.Component{
 				Addons: addons,
 			},
+			Resources: getResources(cluster.Spec.Resources),
 		},
 	}
 
@@ -68,6 +69,7 @@ func RemoveComponents(kubeConfig *k8s.KubeConfig, cluster *types.Blueprint) erro
 			Components: v1alpha1.Component{
 				Addons: addons,
 			},
+			Resources: getResources(cluster.Spec.Resources),
 		},
 	}
 
@@ -168,4 +170,14 @@ var DefaultComponents = types.Components{
 			},
 		},
 	},
+}
+
+func getResources(resources *types.Resources) v1alpha1.Resources {
+	if resources == nil {
+		return v1alpha1.Resources{}
+	}
+
+	return v1alpha1.Resources{
+		CertManagement: resources.CertManagement.CertManagement,
+	}
 }
