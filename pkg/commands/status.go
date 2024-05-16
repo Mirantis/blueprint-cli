@@ -5,19 +5,21 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/mirantiscontainers/boundless-cli/boundlessclientset"
-	"github.com/mirantiscontainers/boundless-cli/pkg/constants"
-	"github.com/mirantiscontainers/boundless-cli/pkg/k8s"
-	"github.com/mirantiscontainers/boundless-cli/pkg/utils"
 	"github.com/mirantiscontainers/boundless-operator/api/v1alpha1"
 	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/kubernetes/scheme"
 	"k8s.io/client-go/tools/clientcmd"
+
+	"github.com/mirantiscontainers/boundless-cli/boundlessclientset"
+	"github.com/mirantiscontainers/boundless-cli/pkg/constants"
+	"github.com/mirantiscontainers/boundless-cli/pkg/k8s"
+	"github.com/mirantiscontainers/boundless-cli/pkg/utils"
 )
 
 const (
+	helmControllerNamespace      = "flux-system"
 	helmControllerDeployment     = "helm-controller"
 	kubernetesManagedByLabel     = "app.kubernetes.io/managed-by"
 	kubernetesManagedByHelmValue = "Helm"
@@ -42,7 +44,7 @@ func Status(kubeConfig *k8s.KubeConfig) error {
 		utils.PrintDeploymentStatus(*operatorDeployment)
 	}
 
-	helmController, err := k8sclient.AppsV1().Deployments(constants.NamespaceBoundless).Get(context.TODO(), helmControllerDeployment, metav1.GetOptions{})
+	helmController, err := k8sclient.AppsV1().Deployments(helmControllerNamespace).Get(context.TODO(), helmControllerDeployment, metav1.GetOptions{})
 	if err != nil {
 		if errors.IsNotFound(err) {
 			fmt.Println("No helm controller detected - Chart addons may not function")
