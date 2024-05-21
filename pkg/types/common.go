@@ -49,7 +49,7 @@ func (h *Host) Validate() error {
 		return fmt.Errorf("hosts.role field cannot be left blank")
 	}
 	if !slices.Contains(nodeRoles, h.Role) {
-		return fmt.Errorf("invalid hosts.role: %s", h.Role)
+		return fmt.Errorf("invalid hosts.role: %s\nValid hosts.role values: %s", h.Role, nodeRoles)
 	}
 
 	return nil
