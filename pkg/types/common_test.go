@@ -21,7 +21,7 @@ func TestHostsValidateRole(t *testing.T) {
 		want types.GomegaMatcher
 	}{
 		"valid role": {role: nodeRoles[0], want: BeNil()},
-		"wrong role": {role: "janitor", want: Equal(fmt.Errorf("invalid hosts.role: janitor"))},
+		"wrong role": {role: "janitor", want: Equal(fmt.Errorf("invalid hosts.role: janitor\nValid hosts.role values: [single controller worker controller+worker]"))},
 		"no role":    {role: "", want: Equal(fmt.Errorf("hosts.role field cannot be left blank"))},
 	}
 
