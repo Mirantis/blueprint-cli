@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
 
 	"github.com/mirantiscontainers/boundless-cli/pkg/commands"
@@ -13,7 +12,6 @@ func initCmd() *cobra.Command {
 		Use:   "init",
 		Short: "Creates a blueprint file template",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			log.Info().Msg("Initializing blueprint")
 			return commands.Init(constants.ProviderK0s)
 		},
 	}
