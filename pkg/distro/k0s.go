@@ -6,6 +6,7 @@ import (
 	"k8s.io/apimachinery/pkg/api/errors"
 	"os"
 	"os/exec"
+	"regexp"
 	"strings"
 
 	"github.com/mirantiscontainers/boundless-cli/pkg/constants"
@@ -186,6 +187,7 @@ func CreateTempK0sConfig(blueprint *types.Blueprint) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	log.Info().Msgf("k0s config file created at: %s", k0sctlConfigFile)
 
 	return k0sctlConfigFile, nil
 }
@@ -337,4 +339,134 @@ func (k *K0s) ValidateProviderUpgrade(blueprint *types.Blueprint) error {
 	log.Info().Msg("New provider version successfully validated")
 	return nil
 
+}
+
+func (k *K0s) JoinWindowsHosts(blueprint *types.Blueprint, windowsHosts []types.Host) error {
+	controllers := k.getControllerHosts(blueprint)
+	key, err := utils.ReadFile(controllers[0].SSH.KeyPath)
+	if err != nil {
+		log.Warn().Msgf("failed to read ssh key for windows host %s", controllers[0].SSH.Address)
+	}
+
+	joinToken, _, err := utils.RemoteCommand(controllers[0].SSH.User, controllers[0].SSH.Address, string(key), "sudo k0s token create --role=worker --expiry='100h'")
+	if err != nil {
+		return err
+	}
+
+	log.Info().Msgf("join token is %s", joinToken)
+
+	for _, host := range windowsHosts {
+		key, err := utils.ReadFile(host.SSH.KeyPath)
+		if err != nil {
+			log.Warn().Msgf("failed to read ssh key for windows host %s", host.SSH.Address)
+		}
+
+		log.Info().Msgf("Joining windows host %s to k0s cluster, %s , %s", host.SSH.Address, host.SSH.User, host.SSH.KeyPath)
+		stdout, stderr, err := utils.RemoteCommand(host.SSH.User, host.SSH.Address, string(key), "powershell -Command \"$ProgressPreference = 'SilentlyContinue'; Invoke-WebRequest -Uri https://get.mirantis.com/install.ps1 -o install.ps1\"")
+		log.Info().Msgf("stdout: %s", stdout)
+		log.Info().Msgf("stddev: %s", stderr)
+		if err != nil {
+			return err
+		}
+
+		stdout, stderr, err = utils.RemoteCommand(host.SSH.User, host.SSH.Address, string(key), "powershell .\\install.ps1")
+		log.Info().Msgf("stdout: %s", stdout)
+		log.Info().Msgf("stddev: %s", stderr)
+		if err != nil {
+			return err
+		}
+
+		stdout, stderr, err = utils.RemoteCommand(host.SSH.User, host.SSH.Address, string(key), "powershell -Command \"[Environment]::SetEnvironmentVariable('Path', [Environment]::GetEnvironmentVariable('Path', [EnvironmentVariableTarget]::Machine) + ';C:\\Program Files\\k0s.exe', [EnvironmentVariableTarget]::Machine)\"")
+		if err != nil {
+			return err
+		}
+
+		log.Info().Msgf("stdout: %s", stdout)
+		log.Info().Msgf("stddev: %s", stderr)
+
+		stdout, stderr, err = utils.RemoteCommand(host.SSH.User, host.SSH.Address, string(key), "powershell Restart-Computer")
+		if err != nil {
+			return err
+		}
+
+		// machine needs to restart so may not be available for a few seconds
+
+		k0sExistsCmd := "powershell -Command \"Test-Path 'C:/Program Files/k0s.exe' -PathType Leaf\""
+		k0sExeUrl := fmt.Sprintf("https://github.com/k0sproject/k0s/releases/download/%s%%2Bk0s.0/k0s-%s-amd64.exe", trimK0sVersion(blueprint.Spec.Kubernetes.Version), blueprint.Spec.Kubernetes.Version)
+		k0sDownloadCmd := fmt.Sprintf("powershell -Command \"$ProgressPreference = 'SilentlyContinue'; Invoke-WebRequest -Uri '%s' -OutFile 'C:\\Program Files\\k0s.exe'\"", k0sExeUrl)
+
+		downloadK0sIfNotExistFunc := func() error {
+			stdout, _, err := utils.RemoteCommand(host.SSH.User, host.SSH.Address, string(key), k0sExistsCmd)
+			if err != nil {
+				return err
+			}
+
+			// TODO: should also check version of k0s binary but for now just skip if it exists to speed up testing
+			if stdout == "True" {
+				return nil
+			}
+
+			stdout, stderr, err := utils.RemoteCommand(host.SSH.User, host.SSH.Address, string(key), k0sDownloadCmd)
+			log.Info().Msgf("stdout: %s", stdout)
+			log.Info().Msgf("stddev: %s", stderr)
+			return err
+		}
+
+		err = utils.RetryWithExponentialBackoff(9, downloadK0sIfNotExistFunc)
+		if err != nil {
+			return err
+		}
+
+		nssmExistsCmd := "powershell -Command \"Test-Path 'C:\\nssm\\nssm.exe' -PathType Leaf\""
+		nssmDownloadCmd := "powershell -Command \"$ProgressPreference = 'SilentlyContinue'; New-Item -ItemType Directory -Path 'C:\\nssm' -Force; Invoke-WebRequest -Uri 'https://packages-stage.mirantis.com/nssm/nssm-2.24-103-gdee49fc.zip' -OutFile 'C:\\nssm\\nssm.zip'\""
+		//nssmDownloadCmd := "powershell -Command \"(New-Object System.Net.WebClient).DownloadFile('https://packages-stage.mirantis.com/nssm/nssm-2.24-103-gdee49fc.zip', 'C:\\nssm\\nssm.zip')\""
+		nssmUnzipCmd := "powershell -Command \"$ProgressPreference = 'SilentlyContinue'; Expand-Archive -Force -Path 'C:\\nssm\\nssm.zip' -DestinationPath 'C:\\nssm\\nssm.exe'\""
+
+		downloadNssmIfNotExistFunc := func() error {
+			stdout, _, err := utils.RemoteCommand(host.SSH.User, host.SSH.Address, string(key), nssmExistsCmd)
+			if err != nil {
+				return err
+			}
+
+			// TODO: should also check version of binary but for now just skip if it exists to speed up testing
+			if stdout == "True" {
+				return nil
+			}
+
+			stdout, stderr, err := utils.RemoteCommand(host.SSH.User, host.SSH.Address, string(key), nssmDownloadCmd)
+			log.Info().Msgf("stdout: %s", stdout)
+			log.Info().Msgf("stddev: %s", stderr)
+			if err != nil {
+				return err
+			}
+
+			stdout, stderr, err = utils.RemoteCommand(host.SSH.User, host.SSH.Address, string(key), nssmUnzipCmd)
+			log.Info().Msgf("stdout: %s", stdout)
+			log.Info().Msgf("stddev: %s", stderr)
+			return err
+		}
+
+		err = utils.RetryWithExponentialBackoff(3, downloadNssmIfNotExistFunc)
+
+		stdout, stderr, err = utils.RemotePowershellScript(host.SSH.User, host.SSH.Address, string(key), "../boundless-cli/pkg/distro/joinWindowsWorker.ps1")
+		log.Info().Msgf("stdout: %s", stdout)
+		log.Info().Msgf("stddev: %s", stderr)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func trimK0sVersion(k0sFullVersion string) string {
+	pattern := `v\d+\.\d+\.\d+`
+
+	// Compile the regex pattern
+	re := regexp.MustCompile(pattern)
+
+	// Find the first match in the input string
+	match := re.FindString(k0sFullVersion)
+
+	return match
 }

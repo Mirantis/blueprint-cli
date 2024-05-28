@@ -57,7 +57,7 @@ type BlueprintSpec struct {
 	Kubernetes *Kubernetes `yaml:"kubernetes,omitempty"`
 	Components Components  `yaml:"components"`
 	Resources  *Resources  `yaml:"resources,omitempty"`
-	Network    Network     `yaml:"network"`
+	//Network    Network     `yaml:"network"`
 }
 
 // Validate checks the BlueprintSpec structure and its children

@@ -120,3 +120,7 @@ func (e *Existing) NeedsUpgrade(blueprint *types.Blueprint) (bool, error) {
 func (e *Existing) ValidateProviderUpgrade(blueprint *types.Blueprint) error {
 	return nil
 }
+
+func (e *Existing) JoinWindowsHosts(blueprint *types.Blueprint, windowsHosts []types.Host) error {
+	return nil
+}

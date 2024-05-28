@@ -51,6 +51,12 @@ func ConvertToK0s(cluster *Blueprint) K0sCluster {
 				Version:       cluster.Spec.Kubernetes.Version,
 				DynamicConfig: digBool(cluster.Spec.Kubernetes.Config, "dynamicConfig"),
 				Config:        cluster.Spec.Kubernetes.Config,
+				//Spec: K0sSpec{
+				//	Network: K0sNetwork{
+				//		Provider: "calico",
+				//		Calico:   cluster.Spec.Network.Calico,
+				//	},
+				//},
 			},
 		},
 	}

@@ -139,3 +139,7 @@ func (k *Kind) NeedsUpgrade(blueprint *types.Blueprint) (bool, error) {
 func (k *Kind) ValidateProviderUpgrade(blueprint *types.Blueprint) error {
 	return nil
 }
+
+func (k *Kind) JoinWindowsHosts(blueprint *types.Blueprint, windowsHosts []types.Host) error {
+	return nil
+}
