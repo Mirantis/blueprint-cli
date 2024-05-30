@@ -12,7 +12,7 @@ import (
 // Init initializes a new cluster
 func Init(provider string) error {
 	if provider == "kind" {
-		return components.Encode(types.ConvertToClusterWithKind("boundless-cluster", components.DefaultComponents))
+		return components.Encode(types.ConvertToClusterWithKind("blueprint-cluster", components.DefaultComponents))
 	}
 
 	// @TODO Include pFlags for k0sctl init

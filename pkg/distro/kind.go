@@ -114,7 +114,7 @@ func (k *Kind) GetKubeConfig() *k8s.KubeConfig {
 
 // WaitForPods waits for pods to be ready
 func (k *Kind) WaitForPods() error {
-	if err := k8s.WaitForPods(k.client, constants.NamespaceBoundless); err != nil {
+	if err := k8s.WaitForPods(k.client, constants.NamespaceBlueprint); err != nil {
 		return fmt.Errorf("failed to wait for pods: %w", err)
 	}
 

@@ -59,7 +59,7 @@ func Apply(blueprint *types.Blueprint, kubeConfig *k8s.KubeConfig, operatorUri s
 	// For existing clusters, determine whether boundless is currently installed
 	installOperator := true
 	if exists {
-		_, err := k8sclient.AppsV1().Deployments(constants.NamespaceBoundless).Get(context.TODO(), constants.BoundlessOperatorDeployment, metav1.GetOptions{})
+		_, err := k8sclient.AppsV1().Deployments(constants.NamespaceBlueprint).Get(context.TODO(), constants.BlueprintOperatorDeployment, metav1.GetOptions{})
 		if err != nil {
 			if !errors.IsNotFound(err) {
 				log.Warn().Msgf("Could not determine existing Boundless Operator installation: %s", err)

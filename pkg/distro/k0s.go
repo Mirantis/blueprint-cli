@@ -3,10 +3,11 @@ package distro
 import (
 	"bytes"
 	"fmt"
-	"k8s.io/apimachinery/pkg/api/errors"
 	"os"
 	"os/exec"
 	"strings"
+
+	"k8s.io/apimachinery/pkg/api/errors"
 
 	"github.com/mirantiscontainers/boundless-cli/pkg/constants"
 	"github.com/mirantiscontainers/boundless-cli/pkg/k8s"
@@ -136,7 +137,7 @@ func (k *K0s) WaitForNodes() error {
 
 // WaitForPods waits for pods to be ready
 func (k *K0s) WaitForPods() error {
-	if err := k8s.WaitForPods(k.client, constants.NamespaceBoundless); err != nil {
+	if err := k8s.WaitForPods(k.client, constants.NamespaceBlueprint); err != nil {
 		return fmt.Errorf("failed to wait for pods: %w", err)
 	}
 

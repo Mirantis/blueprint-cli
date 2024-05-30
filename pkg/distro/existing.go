@@ -4,12 +4,13 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/rs/zerolog/log"
+	"k8s.io/client-go/kubernetes"
+
 	"github.com/mirantiscontainers/boundless-cli/pkg/constants"
 	"github.com/mirantiscontainers/boundless-cli/pkg/k8s"
 	"github.com/mirantiscontainers/boundless-cli/pkg/types"
 	"github.com/mirantiscontainers/boundless-cli/pkg/utils"
-	"github.com/rs/zerolog/log"
-	"k8s.io/client-go/kubernetes"
 )
 
 // Existing is the existing provider
@@ -46,7 +47,7 @@ func (e *Existing) WaitForNodes() error {
 
 // WaitForPods waits for pods to be ready
 func (e *Existing) WaitForPods() error {
-	if err := k8s.WaitForPods(e.client, constants.NamespaceBoundless); err != nil {
+	if err := k8s.WaitForPods(e.client, constants.NamespaceBlueprint); err != nil {
 		return fmt.Errorf("failed to wait for pods: %w", err)
 	}
 

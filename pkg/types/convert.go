@@ -6,7 +6,7 @@ import (
 	"sigs.k8s.io/yaml"
 )
 
-const apiVersion = "boundless.mirantis.com/v1alpha1"
+const apiVersion = "blueprint.mirantis.com/v1alpha1"
 const apiVersionK0s = "k0sctl.k0sproject.io/v1beta1"
 
 func ParseK0sCluster(data []byte) (K0sCluster, error) {

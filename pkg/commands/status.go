@@ -33,7 +33,7 @@ func Status(kubeConfig *k8s.KubeConfig) error {
 		panic(err)
 	}
 
-	operatorDeployment, err := k8sclient.AppsV1().Deployments(constants.NamespaceBoundless).Get(context.TODO(), constants.BoundlessOperatorDeployment, metav1.GetOptions{})
+	operatorDeployment, err := k8sclient.AppsV1().Deployments(constants.NamespaceBlueprint).Get(context.TODO(), constants.BlueprintOperatorDeployment, metav1.GetOptions{})
 	if err != nil {
 		if errors.IsNotFound(err) {
 			fmt.Println("No boundless operator installation detected")
@@ -112,7 +112,7 @@ func AddonSpecificStatus(kubeConfig *k8s.KubeConfig, providedAddonName string) e
 
 	var eventMsgs []string
 
-	eventList, err := k8sclient.EventsV1().Events(constants.NamespaceBoundless).List(context.TODO(), metav1.ListOptions{})
+	eventList, err := k8sclient.EventsV1().Events(constants.NamespaceBlueprint).List(context.TODO(), metav1.ListOptions{})
 	if err != nil {
 		panic(err)
 	}
@@ -143,7 +143,7 @@ func getAddon(kubeConfig *k8s.KubeConfig, addonName string) (*v1alpha1.Addon, er
 		return nil, err
 	}
 
-	addon, err := clientSet.Addons(constants.NamespaceBoundless).Get(addonName, metav1.GetOptions{})
+	addon, err := clientSet.Addons(constants.NamespaceBlueprint).Get(addonName, metav1.GetOptions{})
 	if err != nil {
 		return nil, err
 	}
@@ -159,7 +159,7 @@ func getAddons(kubeConfig *k8s.KubeConfig) (*v1alpha1.AddonList, error) {
 		return nil, err
 	}
 
-	addonList, err := clientSet.Addons(constants.NamespaceBoundless).List(metav1.ListOptions{})
+	addonList, err := clientSet.Addons(constants.NamespaceBlueprint).List(metav1.ListOptions{})
 	if err != nil {
 		return nil, err
 	}
@@ -185,7 +185,7 @@ func printManifestResources(kubeConfig *k8s.KubeConfig, providedAddon v1alpha1.A
 		panic(err)
 	}
 
-	manifest, err := clientSet.Manifests(constants.NamespaceBoundless).Get(providedAddon.Spec.Name, metav1.GetOptions{})
+	manifest, err := clientSet.Manifests(constants.NamespaceBlueprint).Get(providedAddon.Spec.Name, metav1.GetOptions{})
 	if err != nil {
 		panic(err)
 	}
