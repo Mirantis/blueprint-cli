@@ -30,7 +30,7 @@ builds:
       - -trimpath
       - -mod=vendor
     ldflags:
-      - -s -w -X github.com/mirantiscontainers/boundless-cli/cmd.version=v{{.Version}} -X github.com/mirantiscontainers/boundless-cli/cmd.commit={{.Commit}} -X github.com/mirantiscontainers/boundless-cli/cmd.date={{.Date}}
+      - -s -w -X github.com/mirantiscontainers/blueprint-cli/cmd.version=v{{.Version}} -X github.com/mirantiscontainers/blueprint-cli/cmd.commit={{.Commit}} -X github.com/mirantiscontainers/blueprint-cli/cmd.date={{.Date}}
 
 archives:
   - format: tar.gz
@@ -57,7 +57,7 @@ release:
   # release to the public repository
   github:
     owner: mirantiscontainers
-    name: boundless
+    name: blueprint
   name_template: "bctl-v{{.Version}}"
 
 changelog:
