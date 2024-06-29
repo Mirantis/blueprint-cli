@@ -1,5 +1,5 @@
 name: 🐞 Bug Report
-description: Create a report to help us improve
+description: Create a report to assist us in making improvements.
 labels:
   - bug
 
@@ -8,13 +8,13 @@ body:
     attributes:
       value: |
         **Thanks :heart: for taking the time to fill out this bug report!**
-        We kindly ask that you search to see if an issue already exists for your bug.
+        Before you start, do you know if someone else has reported the same bug?
 
   - type: textarea
     attributes:
       label: Current Behavior
       description: |
-        A clear and concise description of the issue you're experiencing.
+        Can you explain what you are experiencing in a couple of sentences?
     validations:
       required: false
 
@@ -22,7 +22,7 @@ body:
     attributes:
       label: Expected Behavior
       description: |
-        A clear and concise description of what you expected to happen.
+        What were you expecting to happen?
     validations:
       required: false
 
@@ -37,7 +37,7 @@ body:
     attributes:
       label: Environment
       description: |
-        Information about your environment where you see the bug.
+        List your environment, to help others reproduce.
 
       value: |
         OS:
@@ -51,6 +51,6 @@ body:
     attributes:
       label: Additional Context
       description: |
-        Add any other context about the problem here.
+        Let us know any other information which might be helpful in solving this bug.
     validations:
       required: false

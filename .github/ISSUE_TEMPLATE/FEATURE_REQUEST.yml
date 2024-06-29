@@ -8,7 +8,7 @@ body:
     attributes:
       label: Description
       description: |
-        A clear and concise description of the feature you're interested in.
+        Let us know of the feature you'd like, in a few sentences or less.
     validations:
       required: true
 
@@ -16,7 +16,7 @@ body:
     attributes:
       label: Suggested Solution
       description: |
-        Describe the solution you'd like. A clear and concise description of what you want to happen.
+        Describe the solution you'd like. 
     validations:
       required: true
 
@@ -25,7 +25,7 @@ body:
       label: Alternatives
       description: |
         Describe alternatives you've considered.
-        A clear and concise description of any alternative solutions or features you've considered.
+        Have you considered any alternatives to this feature? If so, let us know here:
     validations:
       required: false
 
@@ -33,6 +33,6 @@ body:
     attributes:
       label: Additional Context
       description: |
-        Add any other context about the problem here.
+        Do you have anything else you want to add about this feature you would hope for? Let us know here.
     validations:
       required: false
