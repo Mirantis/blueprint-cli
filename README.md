@@ -11,8 +11,6 @@ The repo for the documentation, along with Blueprint Operator, is located at [mi
 
 The documentation or examples in this repo are for development setup. These can be found in the [docs](docs) folder.
 
-
-
 ## Releases
 
 Information on creating a release can be found in the [release documentation](docs/creating-a-release.md).
