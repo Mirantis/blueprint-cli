@@ -9,7 +9,7 @@ We welcome contributions to Blueprint CLI in the form of Pull Requests or submit
 Where needed, each piece of required software will have separate instructions for Linux and MacOS.
 
 #### Setting up Linux
-TBD
+On Linux, most development tools are pre-installed. For Go development, you'll need to install Go itself (https://go.dev/doc/install).
 
 #### Setting up MacOS
 GNU command line tools are useful and should be installed on your system. This command installs the necessary packages:
