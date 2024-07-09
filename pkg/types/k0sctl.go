@@ -20,4 +20,14 @@ type K0s struct {
 	Version       string      `yaml:"version"`
 	DynamicConfig bool        `yaml:"dynamicConfig"`
 	Config        dig.Mapping `yaml:"config,omitempty"`
+	//Spec          K0sSpec     `yaml:"spec"`
 }
+
+//type K0sSpec struct {
+//	Network K0sNetwork `yaml:"network"`
+//}
+//
+//type K0sNetwork struct {
+//	Provider string `yaml:"provider"`
+//	Calico   Calico `yaml:"calico"`
+//}

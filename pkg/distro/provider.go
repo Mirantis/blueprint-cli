@@ -22,6 +22,7 @@ type Provider interface {
 	WaitForPods() error
 	NeedsUpgrade(blueprint *types.Blueprint) (bool, error)
 	ValidateProviderUpgrade(blueprint *types.Blueprint) error
+	JoinWindowsHosts(*types.Blueprint, []types.Host) error
 }
 
 // GetProvider returns a new provider

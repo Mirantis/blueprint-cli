@@ -3,6 +3,7 @@ package commands
 import (
 	"context"
 	"fmt"
+	"github.com/mirantiscontainers/boundless-cli/pkg/utils"
 
 	"github.com/mirantiscontainers/boundless-cli/pkg/components"
 	"github.com/mirantiscontainers/boundless-cli/pkg/constants"
@@ -17,6 +18,16 @@ import (
 
 // Apply installs the Boundless Operator and applies the components defined in the blueprint
 func Apply(blueprint *types.Blueprint, kubeConfig *k8s.KubeConfig, operatorUri string) error {
+	linuxHosts := utils.Filter(blueprint.Spec.Kubernetes.Infra.Hosts, func(host types.Host) bool {
+		return !(host.SSH.User == "Administrator") // TODO: add field to distinguish windows workers
+	})
+
+	windowsHosts := utils.Filter(blueprint.Spec.Kubernetes.Infra.Hosts, func(host types.Host) bool {
+		return host.SSH.User == "Administrator" // TODO: add field to distinguish windows workers
+	})
+
+	blueprint.Spec.Kubernetes.Infra.Hosts = linuxHosts
+
 	// Determine the distro
 	provider, err := distro.GetProvider(blueprint, kubeConfig)
 	if err != nil {
@@ -94,6 +105,16 @@ func Apply(blueprint *types.Blueprint, kubeConfig *k8s.KubeConfig, operatorUri s
 	}
 
 	log.Info().Msgf("Finished installing Boundless Operator")
+
+	if len(windowsHosts) > 0 {
+		log.Info().Msgf("Joining windows hosts")
+
+		err = provider.JoinWindowsHosts(blueprint, windowsHosts)
+		if err != nil {
+			return fmt.Errorf("failed to join windows hosts: %w", err)
+		}
+
+	}
 
 	return nil
 }
