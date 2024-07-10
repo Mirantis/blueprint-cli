@@ -35,11 +35,14 @@ func Apply(blueprint *types.Blueprint, kubeConfig *k8s.KubeConfig, operatorUri s
 			return fmt.Errorf("cluster %q already exists", blueprint.Metadata.Name)
 		}
 	}
-	if exists {
-		log.Info().Msgf("Cluster %q already exists", blueprint.Metadata.Name)
-	} else {
+	if !exists {
 		if err := provider.Install(); err != nil {
 			return fmt.Errorf("failed to install cluster: %w", err)
+		}
+	} else {
+		log.Info().Msgf("Cluster %q already exists", blueprint.Metadata.Name)
+		if err = provider.Refresh(); err != nil {
+			return fmt.Errorf("failed to refresh cluster: %w", err)
 		}
 	}
 

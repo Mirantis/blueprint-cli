@@ -63,6 +63,18 @@ func (k *K0s) Install() error {
 	return nil
 }
 
+// Refresh reapplies k0sctl config with the current version of blueprint
+func (k *K0s) Refresh() error {
+	kubeConfigPath := k.kubeConfig.GetConfigPath()
+	log.Debug().Msgf("Refreshing k0s cluster %q with kubeConfig at: %s", k.name, kubeConfigPath)
+
+	if err := utils.ExecCommand(fmt.Sprintf("k0sctl apply --config %s --no-wait", k.k0sConfig)); err != nil {
+		return fmt.Errorf("k0sctl apply failed: %w", err)
+	}
+
+	return nil
+}
+
 // Update updates k0s using k0sctl
 func (k *K0s) Upgrade() error {
 	if err := utils.ExecCommand(fmt.Sprintf("k0sctl apply --config %s --no-wait", k.k0sConfig)); err != nil {

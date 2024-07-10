@@ -59,6 +59,11 @@ func (k *Kind) Install() error {
 	return nil
 }
 
+func (k *Kind) Refresh() error {
+	log.Debug().Msg("Kind cluster does not support refresh; to change the cluster config, delete and recreate it")
+	return nil
+}
+
 func (k *Kind) Upgrade() error {
 	return nil
 }

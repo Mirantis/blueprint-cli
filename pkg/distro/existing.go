@@ -54,9 +54,15 @@ func (e *Existing) WaitForPods() error {
 	return nil
 }
 
-// Install installs the existing cluster
+// Install is a noop for existing cluster
 func (e *Existing) Install() error {
 	log.Debug().Msgf("Nothing done to install an unmanaged existing cluster")
+	return nil
+}
+
+// Refresh is a noop for existing cluster
+func (e *Existing) Refresh() error {
+	log.Debug().Msgf("Nothing done to refresh an unmanaged existing cluster")
 	return nil
 }
 
