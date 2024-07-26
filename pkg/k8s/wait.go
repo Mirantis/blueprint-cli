@@ -2,7 +2,6 @@ package k8s
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	"github.com/rs/zerolog/log"
@@ -32,7 +31,8 @@ func waitForPods(ctx context.Context, clientset kubernetes.Interface, namepsace 
 	return wait.PollUntilContextCancel(timeoutCtx, 5*time.Second, true, func(ctx context.Context) (bool, error) {
 		pods, err := clientset.CoreV1().Pods(namepsace).List(ctx, metav1.ListOptions{})
 		if err != nil {
-			return false, fmt.Errorf("failed to list pods: %v", err)
+			log.Warn().Msgf("failed to list pods: %s", err)
+			return false, nil
 		}
 
 		if len(pods.Items) == 0 {
@@ -69,7 +69,8 @@ func waitForNodes(ctx context.Context, clientset kubernetes.Interface) error {
 		// wait for node to be ready
 		nodes, err := clientset.CoreV1().Nodes().List(ctx, metav1.ListOptions{})
 		if err != nil {
-			return false, fmt.Errorf("failed to list nodes: %v", err)
+			log.Warn().Msgf("failed to list nodes: %s", err)
+			return false, nil
 		}
 
 		if len(nodes.Items) == 0 {
