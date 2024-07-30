@@ -9,7 +9,7 @@ import (
 )
 
 type Metadata struct {
-	Name string `yaml:"name"`
+	Name string `yaml:"name" json:"name"`
 }
 
 // Validate checks the Metadata structure and its children
@@ -57,10 +57,10 @@ func (h *Host) Validate() error {
 }
 
 type SSHHost struct {
-	Address string `yaml:"address"`
-	KeyPath string `yaml:"keyPath"`
-	Port    int    `yaml:"port"`
-	User    string `yaml:"user"`
+	Address string `yaml:"address" json:"address"`
+	KeyPath string `yaml:"keyPath" json:"key_path"`
+	Port    int    `yaml:"port" json:"port"`
+	User    string `yaml:"user" json:"user"`
 }
 
 // Validate checks the SSHHost structure and its children
