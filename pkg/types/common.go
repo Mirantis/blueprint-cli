@@ -20,10 +20,10 @@ func (m *Metadata) Validate() error {
 }
 
 type Host struct {
-	SSH          *SSHHost   `yaml:"ssh,omitempty"`
-	LocalHost    *LocalHost `yaml:"localhost,omitempty"`
-	Role         string     `yaml:"role"`
-	InstallFlags []string   `yaml:"installFlags,omitempty"`
+	SSH          *SSHHost   `yaml:"ssh,omitempty" json:"ssh,omitempty"`
+	LocalHost    *LocalHost `yaml:"localhost,omitempty" json:"localHost,omitempty"`
+	Role         string     `yaml:"role" json:"role"`
+	InstallFlags []string   `yaml:"installFlags,omitempty" json:"installFlags,omitempty"`
 }
 
 var nodeRoles = []string{"single", "controller", "worker", "controller+worker"}

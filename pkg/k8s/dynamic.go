@@ -49,6 +49,7 @@ func ApplyYaml(kc *KubeConfig, uri string) error {
 	for _, o := range others {
 		if err = createOrUpdateObject(ctx, client, dynamicClient, &o); err != nil {
 			return fmt.Errorf("failed to apply resources from manifest at %q: %w", uri, err)
+
 		}
 	}
 	return nil

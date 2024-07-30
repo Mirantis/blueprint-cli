@@ -19,10 +19,10 @@ import (
 var blueprintKinds = []string{"Blueprint"}
 
 type Blueprint struct {
-	APIVersion string        `yaml:"apiVersion"`
-	Kind       string        `yaml:"kind"`
-	Metadata   Metadata      `yaml:"metadata"`
-	Spec       BlueprintSpec `yaml:"spec"`
+	APIVersion string        `yaml:"apiVersion" json:"apiVersion"`
+	Kind       string        `yaml:"kind" json:"kind"`
+	Metadata   Metadata      `yaml:"metadata" json:"metadata"`
+	Spec       BlueprintSpec `yaml:"spec" json:"spec"`
 }
 
 // Validate checks the Blueprint structure and its children
@@ -54,9 +54,9 @@ func (b *Blueprint) Validate() error {
 }
 
 type BlueprintSpec struct {
-	Kubernetes *Kubernetes `yaml:"kubernetes,omitempty"`
-	Components Components  `yaml:"components"`
-	Resources  *Resources  `yaml:"resources,omitempty"`
+	Kubernetes *Kubernetes `yaml:"kubernetes,omitempty" json:"kubernetes,omitempty"`
+	Components Components  `yaml:"components" json:"components"`
+	Resources  *Resources  `yaml:"resources,omitempty" json:"resources,omitempty"`
 }
 
 // Validate checks the BlueprintSpec structure and its children
@@ -85,7 +85,7 @@ func (bs *BlueprintSpec) Validate() error {
 }
 
 type Infra struct {
-	Hosts []Host `yaml:"hosts"`
+	Hosts []Host `yaml:"hosts" json:"hosts"`
 }
 
 // Validate checks the Infra structure and its children
@@ -102,11 +102,11 @@ func (i *Infra) Validate() error {
 }
 
 type Kubernetes struct {
-	Provider   string      `yaml:"provider"`
-	Version    string      `yaml:"version,omitempty"`
-	Config     dig.Mapping `yaml:"config,omitempty"`
-	Infra      *Infra      `yaml:"infra,omitempty"`
-	KubeConfig string      `yaml:"kubeconfig,omitempty"`
+	Provider   string      `yaml:"provider" json:"provider"`
+	Version    string      `yaml:"version,omitempty" json:"version,omitempty"`
+	Config     dig.Mapping `yaml:"config,omitempty" json:"config,omitempty"`
+	Infra      *Infra      `yaml:"infra,omitempty" json:"infra,omitempty"`
+	KubeConfig string      `yaml:"kubeconfig,omitempty" json:"kubeConfig,omitempty"`
 }
 
 var providerKinds = []string{constants.ProviderExisting, constants.ProviderKind, constants.ProviderK0s}
@@ -149,7 +149,7 @@ func (k *Kubernetes) Validate() error {
 }
 
 type Components struct {
-	Addons []Addon `yaml:"addons,omitempty"`
+	Addons []Addon `yaml:"addons,omitempty" json:"addons,omitempty"`
 }
 
 // Validate checks the Components structure and its children
@@ -167,22 +167,22 @@ func (c *Components) Validate() error {
 }
 
 type CoreComponent struct {
-	Enabled  bool        `yaml:"enabled"`
-	Provider string      `yaml:"provider"`
-	Config   dig.Mapping `yaml:"config,omitempty"`
+	Enabled  bool        `yaml:"enabled" json:"enabled"`
+	Provider string      `yaml:"provider" json:"provider"`
+	Config   dig.Mapping `yaml:"config,omitempty" json:"config,omitempty"`
 }
 
 var addonKinds = []string{"chart", "manifest"}
 
 // Addon defines the desired state of an Addon
 type Addon struct {
-	Name      string        `yaml:"name"`
-	Kind      string        `yaml:"kind"`
-	Enabled   bool          `yaml:"enabled"`
-	DryRun    bool          `yaml:"dryRun"`
-	Namespace string        `yaml:"namespace,omitempty"`
-	Chart     *ChartInfo    `yaml:"chart,omitempty"`
-	Manifest  *ManifestInfo `yaml:"manifest,omitempty"`
+	Name      string        `yaml:"name" json:"name"`
+	Kind      string        `yaml:"kind" json:"kind"`
+	Enabled   bool          `yaml:"enabled" json:"enabled"`
+	DryRun    bool          `yaml:"dryRun" json:"dryRun"`
+	Namespace string        `yaml:"namespace,omitempty" json:"namespace,omitempty"`
+	Chart     *ChartInfo    `yaml:"chart,omitempty" json:"chart,omitempty"`
+	Manifest  *ManifestInfo `yaml:"manifest,omitempty" json:"manifest,omitempty"`
 }
 
 // Validate checks the Addon structure and its children
@@ -232,11 +232,11 @@ func (a *Addon) Validate() error {
 
 // ChartInfo defines the desired state of chart
 type ChartInfo struct {
-	Name    string                        `yaml:"name"`
-	Repo    string                        `yaml:"repo"`
-	Version string                        `yaml:"version"`
-	Set     map[string]intstr.IntOrString `yaml:"set,omitempty"`
-	Values  string                        `yaml:"values,omitempty"`
+	Name    string                        `yaml:"name" json:"name"`
+	Repo    string                        `yaml:"repo" json:"repo"`
+	Version string                        `yaml:"version" json:"version"`
+	Set     map[string]intstr.IntOrString `yaml:"set,omitempty" json:"set,omitempty"`
+	Values  string                        `yaml:"values,omitempty" json:"values,omitempty"`
 }
 
 // Validate checks the ChartInfo structure and its children
@@ -261,10 +261,10 @@ func (ci *ChartInfo) Validate() error {
 
 // ManifestInfo defines the desired state of manifest
 type ManifestInfo struct {
-	URL           string           `yaml:"url"`
-	FailurePolicy string           `yaml:"failurePolicy,omitempty"`
-	Timeout       string           `yaml:"timeout,omitempty"`
-	Values        *v1alpha1.Values `yaml:"values,omitempty"`
+	URL           string           `yaml:"url" json:"url"`
+	FailurePolicy string           `yaml:"failurePolicy,omitempty" json:"failurePolicy,omitempty"`
+	Timeout       string           `yaml:"timeout,omitempty" json:"timeout,omitempty"`
+	Values        *v1alpha1.Values `yaml:"values,omitempty" json:"values,omitempty"`
 }
 
 // Validate checks the ManifestInfo structure and its children
@@ -282,7 +282,7 @@ func (mi *ManifestInfo) Validate() error {
 
 // Resources defines the desired state of k8s resources managed by BOP
 type Resources struct {
-	CertManagement CertManagement `yaml:"certManagement,omitempty"`
+	CertManagement CertManagement `yaml:"certManagement,omitempty" json:"certManagement,omitempty"`
 }
 
 // Validate checks the Resources structure and its children
