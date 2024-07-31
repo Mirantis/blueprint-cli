@@ -13,7 +13,7 @@ type K0sCluster struct {
 
 type K0sClusterSpec struct {
 	Hosts []Host `yaml:"hosts" json:"hosts"`
-	K0S   K0s    `yaml:"k0s" json:"k0S"`
+	K0S   K0s    `yaml:"k0s" json:"k0s"`
 }
 
 type K0s struct {
