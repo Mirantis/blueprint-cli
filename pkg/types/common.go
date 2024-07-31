@@ -58,7 +58,7 @@ func (h *Host) Validate() error {
 
 type SSHHost struct {
 	Address string `yaml:"address" json:"address"`
-	KeyPath string `yaml:"keyPath" json:"key_path"`
+	KeyPath string `yaml:"keyPath" json:"keyPath"`
 	Port    int    `yaml:"port" json:"port"`
 	User    string `yaml:"user" json:"user"`
 }
