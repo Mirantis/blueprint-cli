@@ -1,18 +1,34 @@
 package commands
 
 import (
+	"bufio"
 	"fmt"
+	"os"
+
+	"github.com/fatih/color"
+	"github.com/rs/zerolog/log"
 
 	"github.com/mirantiscontainers/boundless-cli/pkg/components"
 	"github.com/mirantiscontainers/boundless-cli/pkg/distro"
 	"github.com/mirantiscontainers/boundless-cli/pkg/k8s"
 	"github.com/mirantiscontainers/boundless-cli/pkg/types"
-	"github.com/rs/zerolog/log"
 )
 
 // Reset resets the cluster
 func Reset(blueprint *types.Blueprint, kubeConfig *k8s.KubeConfig, operatorUri string, force bool) error {
 	log.Info().Msg("Resetting cluster")
+
+	if !force {
+		color.Red("This will remove all resources and completely destroy the cluster. Are you sure? (N/y)")
+		reader := bufio.NewReader(os.Stdin)
+		answer, err := reader.ReadString('\n')
+		if err != nil {
+			return fmt.Errorf("failed to read input: %w", err)
+		}
+		if answer != "y\n" {
+			return nil
+		}
+	}
 
 	// Determine the distro
 	provider, err := distro.GetProvider(blueprint, kubeConfig)
@@ -34,7 +50,7 @@ func Reset(blueprint *types.Blueprint, kubeConfig *k8s.KubeConfig, operatorUri s
 	}
 
 	// Reset the cluster
-	if err := provider.Reset(force); err != nil {
+	if err := provider.Reset(); err != nil {
 		return fmt.Errorf("failed to reset cluster: %w", err)
 	}
 

@@ -97,7 +97,7 @@ func (e *Existing) Exists() (bool, error) {
 }
 
 // Reset resets the existing cluster
-func (e *Existing) Reset(force bool) error {
+func (e *Existing) Reset() error {
 	log.Debug().Msgf("Nothing done to reset an unmanaged existing cluster")
 	return nil
 }
