@@ -2,13 +2,15 @@ package types
 
 import (
 	"fmt"
+
+	v1 "github.com/k3s-io/helm-controller/pkg/apis/helm.cattle.io/v1"
+	"sigs.k8s.io/yaml"
+
 	"github.com/k0sproject/dig"
 	"github.com/k0sproject/k0sctl/pkg/apis/k0sctl.k0sproject.io/v1beta1"
 	v1betacluster "github.com/k0sproject/k0sctl/pkg/apis/k0sctl.k0sproject.io/v1beta1/cluster"
 	"github.com/k0sproject/rig"
 	"github.com/k0sproject/version"
-	v1 "github.com/k3s-io/helm-controller/pkg/apis/helm.cattle.io/v1"
-	"sigs.k8s.io/yaml"
 )
 
 const apiVersion = "blueprint.mirantis.com/v1alpha1"
@@ -55,12 +57,12 @@ func ConvertToK0s(cluster *Blueprint) (v1beta1.Cluster, error) {
 					Port:    host.SSH.Port,
 					KeyPath: &host.SSH.KeyPath,
 				},
-				Localhost: &rig.Localhost{Enabled: host.LocalHost.Enabled},
-				OpenSSH:   nil,
-				OSVersion: nil,
 			},
 			Role:         host.Role,
 			InstallFlags: host.InstallFlags,
+		}
+		if host.LocalHost != nil {
+			k0sHost.Localhost = &rig.Localhost{Enabled: host.LocalHost.Enabled}
 		}
 		convertedK0sHosts = append(convertedK0sHosts, &k0sHost)
 	}
@@ -96,18 +98,22 @@ func ConvertToClusterWithK0s(k0s v1beta1.Cluster, components Components) Bluepri
 		boundlessHost := Host{
 			SSH: &SSHHost{
 				Address: k0sHost.SSH.Address,
-				KeyPath: *k0sHost.SSH.KeyPath,
 				Port:    k0sHost.SSH.Port,
 				User:    k0sHost.SSH.User,
 			},
-			LocalHost:    &LocalHost{Enabled: k0sHost.Localhost.Enabled},
 			Role:         k0sHost.Role,
 			InstallFlags: k0sHost.InstallFlags,
+		}
+		if k0sHost.Localhost != nil {
+			boundlessHost.LocalHost = &LocalHost{Enabled: k0sHost.Localhost.Enabled}
+		}
+		if k0sHost.SSH.KeyPath != nil {
+			boundlessHost.SSH.KeyPath = *k0sHost.SSH.KeyPath
 		}
 		boundlessHosts = append(boundlessHosts, boundlessHost)
 	}
 
-	return Blueprint{
+	bp := Blueprint{
 		APIVersion: apiVersion,
 		Kind:       "Blueprint",
 		Metadata: Metadata{
@@ -117,8 +123,6 @@ func ConvertToClusterWithK0s(k0s v1beta1.Cluster, components Components) Bluepri
 			Version: "latest",
 			Kubernetes: &Kubernetes{
 				Provider: "k0s",
-				Version:  k0s.Spec.K0s.Version.String(),
-				Config:   k0s.Spec.K0s.Config,
 				Infra: &Infra{
 					Hosts: boundlessHosts,
 				},
@@ -126,6 +130,15 @@ func ConvertToClusterWithK0s(k0s v1beta1.Cluster, components Components) Bluepri
 			Components: components,
 		},
 	}
+
+	if k0s.Spec.K0s != nil {
+		bp.Spec.Kubernetes.Config = k0s.Spec.K0s.Config
+		if k0s.Spec.K0s.Version != nil {
+			bp.Spec.Kubernetes.Version = k0s.Spec.K0s.Version.String()
+		}
+	}
+
+	return bp
 }
 
 func ConvertToClusterWithKind(name string, components Components) Blueprint {

@@ -9,7 +9,7 @@ require (
 	github.com/fatih/color v1.17.0
 	github.com/k0sproject/dig v0.2.0
 	github.com/k0sproject/k0sctl v0.17.8
-	github.com/k0sproject/rig v0.18.7
+	github.com/k0sproject/rig v0.18.4
 	github.com/k0sproject/version v0.6.0
 	github.com/k3s-io/helm-controller v0.15.4
 	github.com/mattn/go-colorable v0.1.13
@@ -22,10 +22,10 @@ require (
 	github.com/stretchr/testify v1.9.0
 	golang.org/x/crypto v0.26.0
 	gopkg.in/yaml.v2 v2.4.0
-	k8s.io/api v0.30.0
-	k8s.io/apimachinery v0.30.0
+	k8s.io/api v0.30.2
+	k8s.io/apimachinery v0.30.2
 	k8s.io/cli-runtime v0.29.0
-	k8s.io/client-go v0.30.0
+	k8s.io/client-go v0.30.2
 	sigs.k8s.io/controller-runtime v0.18.1
 	sigs.k8s.io/yaml v1.4.0
 )
