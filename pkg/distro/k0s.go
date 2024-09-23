@@ -186,7 +186,10 @@ func WriteK0sKubeConfig(k0sctlConfig string, kubeConfig *k8s.KubeConfig) error {
 
 // CreateTempK0sConfig creates a k0s config file from the blueprint in the tmp directory
 func CreateTempK0sConfig(blueprint *types.Blueprint) (string, error) {
-	k0sctlConfig := types.ConvertToK0s(blueprint)
+	k0sctlConfig, err := types.ConvertToK0s(blueprint)
+	if err != nil {
+		return "", err
+	}
 
 	data, err := yaml.Marshal(k0sctlConfig)
 	if err != nil {
