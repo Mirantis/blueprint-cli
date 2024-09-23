@@ -54,6 +54,7 @@ func (b *Blueprint) Validate() error {
 }
 
 type BlueprintSpec struct {
+	Version    string      `yaml:"version" json:"version"`
 	Kubernetes *Kubernetes `yaml:"kubernetes,omitempty" json:"kubernetes,omitempty"`
 	Components Components  `yaml:"components" json:"components"`
 	Resources  *Resources  `yaml:"resources,omitempty" json:"resources,omitempty"`
@@ -124,8 +125,7 @@ func (k *Kubernetes) Validate() error {
 	// Version checks
 	// The version can be left empty, but if it's not, it must be a valid k0s semver
 	if k.Version != "" {
-		// This regex gives us semver with an optional "+k0s.0"
-		re, _ := regexp.Compile(`^[v]?(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:\+(k[0-9a-zA-Z-]s+(?:\.[0-9a-zA-Z-]+)*))?$`)
+		re, _ := regexp.Compile(constants.K0sSemverRegex)
 		if !re.MatchString(k.Version) {
 			return fmt.Errorf("invalid kubernetes.version: %s", k.Version)
 		}

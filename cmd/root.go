@@ -24,7 +24,6 @@ const (
 var (
 	pFlags        *PersistenceFlags
 	blueprintFlag string
-	operatorUri   string
 	force         bool
 
 	blueprint  types.Blueprint
@@ -146,10 +145,6 @@ func loadKubeConfig(cmd *cobra.Command, args []string) error {
 
 func addForceFlag(flags *pflag.FlagSet) {
 	flags.BoolVarP(&force, "force", "", false, "Bypass user confirmation for a command")
-}
-
-func addOperatorUriFlag(flags *pflag.FlagSet) {
-	flags.StringVarP(&operatorUri, "operator-uri", "", constants.ManifestUrlLatest, "URL or path to the Boundless Operator manifest file")
 }
 
 func addBlueprintFileFlags(flags *pflag.FlagSet) {

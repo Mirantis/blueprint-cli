@@ -64,6 +64,7 @@ func ConvertToClusterWithK0s(k0s K0sCluster, components Components) Blueprint {
 			Name: k0s.Metadata.Name,
 		},
 		Spec: BlueprintSpec{
+			Version: "latest",
 			Kubernetes: &Kubernetes{
 				Provider: "k0s",
 				Version:  k0s.Spec.K0S.Version,
@@ -85,6 +86,7 @@ func ConvertToClusterWithKind(name string, components Components) Blueprint {
 			Name: name,
 		},
 		Spec: BlueprintSpec{
+			Version: "latest",
 			Kubernetes: &Kubernetes{
 				Provider: "kind",
 			},

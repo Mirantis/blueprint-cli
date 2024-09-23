@@ -15,7 +15,7 @@ import (
 )
 
 // Reset resets the cluster
-func Reset(blueprint *types.Blueprint, kubeConfig *k8s.KubeConfig, operatorUri string, force bool) error {
+func Reset(blueprint *types.Blueprint, kubeConfig *k8s.KubeConfig, force bool) error {
 	log.Info().Msg("Resetting cluster")
 
 	if !force {
@@ -43,9 +43,14 @@ func Reset(blueprint *types.Blueprint, kubeConfig *k8s.KubeConfig, operatorUri s
 		return fmt.Errorf("failed to reset components: %w", err)
 	}
 
+	uri, err := determineOperatorUri(blueprint.Spec.Version)
+	if err != nil {
+		return fmt.Errorf("failed to determine operator URI: %w", err)
+	}
+
 	log.Info().Msgf("Uninstalling Boundless Operator")
-	log.Trace().Msgf("Uninstalling boundless operator using manifest file: %s", operatorUri)
-	if err = k8s.DeleteYamlObjects(kubeConfig, operatorUri); err != nil {
+	log.Debug().Msgf("Uninstalling boundless operator using manifest file: %s", uri)
+	if err = k8s.DeleteYamlObjects(kubeConfig, uri); err != nil {
 		return fmt.Errorf("failed to uninstall Boundless Operator: %w", err)
 	}
 

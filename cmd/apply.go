@@ -14,12 +14,11 @@ func applyCmd() *cobra.Command {
 		PreRunE: actions(loadBlueprint, loadKubeConfig),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			log.Info().Msgf("Applying blueprint at %s", blueprintFlag)
-			return commands.Apply(&blueprint, kubeConfig, operatorUri)
+			return commands.Apply(&blueprint, kubeConfig)
 		},
 	}
 
 	flags := cmd.Flags()
-	addOperatorUriFlag(flags)
 	addBlueprintFileFlags(flags)
 	addKubeFlags(flags)
 

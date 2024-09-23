@@ -16,7 +16,7 @@ import (
 )
 
 // Apply installs the Boundless Operator and applies the components defined in the blueprint
-func Apply(blueprint *types.Blueprint, kubeConfig *k8s.KubeConfig, operatorUri string) error {
+func Apply(blueprint *types.Blueprint, kubeConfig *k8s.KubeConfig) error {
 	// Determine the distro
 	provider, err := distro.GetProvider(blueprint, kubeConfig)
 	if err != nil {
@@ -73,11 +73,16 @@ func Apply(blueprint *types.Blueprint, kubeConfig *k8s.KubeConfig, operatorUri s
 		}
 	}
 
+	uri, err := determineOperatorUri(blueprint.Spec.Version)
+	if err != nil {
+		return fmt.Errorf("failed to determine operator URI: %w", err)
+	}
+
 	// @todo: display the version of the operator
 	if installOperator {
 		log.Info().Msgf("Installing Boundless Operator")
-		log.Trace().Msgf("Installing Boundless Operator using manifest file: %s", operatorUri)
-		if err = k8s.ApplyYaml(kubeConfig, operatorUri); err != nil {
+		log.Debug().Msgf("Installing Boundless Operator using manifest file: %s", blueprint.Spec.Version)
+		if err = k8s.ApplyYaml(kubeConfig, uri); err != nil {
 			return fmt.Errorf("failed to install Boundless Operator: %w", err)
 		}
 	} else {

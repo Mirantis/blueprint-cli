@@ -24,7 +24,6 @@ func statusCmd() *cobra.Command {
 	}
 
 	flags := cmd.Flags()
-	addOperatorUriFlag(flags)
 	addBlueprintFileFlags(flags)
 	addKubeFlags(flags)
 
