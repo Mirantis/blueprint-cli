@@ -25,11 +25,17 @@ var _ = Describe("Commands", func() {
 			Expect(err).ToNot(HaveOccurred())
 			Expect(uri).To(Equal("https://github.com/MirantisContainers/blueprint/releases/download/v1.2.3/blueprint-operator.yaml"))
 		})
-		It("should be original uri", func() {
+		It("should be original remote uri", func() {
 			version := "http://github.com"
 			uri, err := determineOperatorUri(version)
 			Expect(err).ToNot(HaveOccurred())
-			Expect(uri).To(Equal("http://github.com"))
+			Expect(uri).To(Equal(version))
+		})
+		It("should be original file uri", func() {
+			version := "file://~/bob/ross.yaml"
+			uri, err := determineOperatorUri(version)
+			Expect(err).ToNot(HaveOccurred())
+			Expect(uri).To(Equal(version))
 		})
 		It("should error for an unknown value", func() {
 			version := "13241"

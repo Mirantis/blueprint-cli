@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/url"
 	"regexp"
+	"strings"
 
 	"github.com/mirantiscontainers/boundless-cli/pkg/constants"
 	"github.com/rs/zerolog/log"
@@ -28,7 +29,7 @@ func determineOperatorUri(version string) (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("failed to compile regex: %w", err)
 	}
-	
+
 	if regexWithoutV.MatchString(version) {
 		// We'll just add the v in this case and handle it with the same code as below
 		version = fmt.Sprintf("v%s", version)
@@ -42,8 +43,13 @@ func determineOperatorUri(version string) (string, error) {
 	if err == nil {
 		return uri.String(), nil
 	}
+	log.Debug().Msg("Version is not a valid URL")
 
-	log.Debug().Msg("Version is not a valid URI")
+	isFile := strings.HasPrefix(version, "file://")
+	if isFile {
+		return version, nil
+	}
+	log.Debug().Msg("Version is not a valid file URI")
 
 	return "", fmt.Errorf("version is not a valid semver version or URI")
 }
