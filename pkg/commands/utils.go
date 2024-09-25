@@ -12,12 +12,15 @@ import (
 
 var operatorReleaseUri = "https://github.com/MirantisContainers/blueprint/releases/download/%s/blueprint-operator.yaml"
 
+// Github uses a slightly different path for the latest release
+var latestOperatorReleaseUri = "https://github.com/mirantiscontainers/blueprint/releases/latest/download/blueprint-operator.yaml"
+
 // determineOperatorUri determines the URI of the operator based on the version
 // If the version is a valid URI, it will be returned as is for dev testing
 // Otherwise, it will be assumed to be a version and the URI will be constructed
 func determineOperatorUri(version string) (string, error) {
 	if version == "latest" {
-		return parseUri(version)
+		return latestOperatorReleaseUri, nil
 	}
 
 	// Check for a valid semver version

@@ -11,7 +11,7 @@ var _ = Describe("Commands", func() {
 			version := "latest"
 			uri, err := determineOperatorUri(version)
 			Expect(err).ToNot(HaveOccurred())
-			Expect(uri).To(Equal("https://github.com/MirantisContainers/blueprint/releases/download/latest/blueprint-operator.yaml"))
+			Expect(uri).To(Equal("https://github.com/mirantiscontainers/blueprint/releases/latest/download/blueprint-operator.yaml"))
 		})
 		It("should be semver with a leading v", func() {
 			version := "v1.2.3"
