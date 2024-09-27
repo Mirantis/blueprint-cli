@@ -21,6 +21,7 @@ func (m *Metadata) Validate() error {
 
 type Host struct {
 	SSH          *SSHHost   `yaml:"ssh,omitempty" json:"ssh,omitempty"`
+	WinRM        *WinRM     `yaml:"winrm,omitempty" json:"winrm,omitempty"`
 	LocalHost    *LocalHost `yaml:"localhost,omitempty" json:"localHost,omitempty"`
 	Role         string     `yaml:"role" json:"role"`
 	InstallFlags []string   `yaml:"installFlags,omitempty" json:"installFlags,omitempty"`
@@ -61,6 +62,16 @@ type SSHHost struct {
 	KeyPath string `yaml:"keyPath" json:"keyPath"`
 	Port    int    `yaml:"port" json:"port"`
 	User    string `yaml:"user" json:"user"`
+}
+
+type WinRM struct {
+	Address  string `yaml:"address" json:"address"`
+	Port     int    `yaml:"port" json:"port"`
+	Password string `yaml:"password" json:"password"`
+	User     string `yaml:"user" json:"user"`
+	UseHTTPS bool   `yaml:"useHTTPS" json:"useHTTPS"`
+	Insecure bool   `yaml:"insecure" json:"insecure"`
+	KeyPath  string `yaml:"keyPath" json:"keyPath"`
 }
 
 // Validate checks the SSHHost structure and its children
