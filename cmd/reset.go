@@ -17,7 +17,7 @@ Reset the cluster to a clean state.
 
 For a cluster with k0s, this will remove traces of k0s from all the hosts.
 For a cluster with kind, it will delete the cluster (same as 'kind delete cluster <CLUSTER NAME>').
-For a cluster with an external Kubernetes provider, this will remove Boundless Operator and all associated resources.
+For a cluster with an external Kubernetes provider, this will remove Blueprint Operator and all associated resources.
 `,
 		Args:    cobra.NoArgs,
 		PreRunE: actions(loadBlueprint, loadKubeConfig),

@@ -18,7 +18,7 @@ import (
 
 const (
 	appName      = "bctl"
-	shortAppDesc = "A tool to manage boundless operator."
+	shortAppDesc = "A tool to manage blueprint operator."
 )
 
 var (

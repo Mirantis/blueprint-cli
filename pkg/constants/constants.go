@@ -3,10 +3,10 @@ package constants
 import "time"
 
 const (
-	// ManifestUrlLatest is the URL of the latest manifest YAML for the Boundless Operator
+	// ManifestUrlLatest is the URL of the latest manifest YAML for the Blueprint Operator
 	ManifestUrlLatest = "https://raw.githubusercontent.com/mirantiscontainers/boundless/main/deploy/static/boundless-operator.yaml"
 
-	// NamespaceBlueprint is the system namespace where the Boundless Operator and its components are installed
+	// NamespaceBlueprint is the system namespace where the Blueprint Operator and its components are installed
 	NamespaceBlueprint = "blueprint-system"
 
 	// DefaultBlueprintFileName represents the default blueprint filename.

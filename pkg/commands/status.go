@@ -26,7 +26,7 @@ const (
 	kubernetesInstanceLabel      = "app.kubernetes.io/instance"
 )
 
-// Status prints the status of the boundless operator and any installed addons
+// Status prints the status of the blueprint operator and any installed addons
 func Status(kubeConfig *k8s.KubeConfig) error {
 	k8sclient, err := k8s.GetClient(kubeConfig)
 	if err != nil {
@@ -36,7 +36,7 @@ func Status(kubeConfig *k8s.KubeConfig) error {
 	operatorDeployment, err := k8sclient.AppsV1().Deployments(constants.NamespaceBlueprint).Get(context.TODO(), constants.BlueprintOperatorDeployment, metav1.GetOptions{})
 	if err != nil {
 		if errors.IsNotFound(err) {
-			fmt.Println("No boundless operator installation detected")
+			fmt.Println("No blueprint operator installation detected")
 		} else {
 			panic(err)
 		}
@@ -107,7 +107,7 @@ func AddonSpecificStatus(kubeConfig *k8s.KubeConfig, providedAddonName string) e
 	}
 	fmt.Println("-------------------------------------------------------")
 
-	// lastly show any events created by boundless
+	// lastly show any events created by blueprint
 	// kubernetes events are relatively short-lived, so we can't rely on them always being here
 
 	var eventMsgs []string
@@ -124,12 +124,12 @@ func AddonSpecificStatus(kubeConfig *k8s.KubeConfig, providedAddonName string) e
 	}
 
 	if len(eventMsgs) > 0 {
-		fmt.Println("\nBOUNDLESS SYSTEM EVENTS")
+		fmt.Println("\nBLUEPRINT SYSTEM EVENTS")
 		for _, msg := range eventMsgs {
 			fmt.Printf("%s\n", msg)
 		}
 	} else {
-		fmt.Printf("No boundless system events for addon %s\n", providedAddonName)
+		fmt.Printf("No blueprint system events for addon %s\n", providedAddonName)
 	}
 
 	return nil

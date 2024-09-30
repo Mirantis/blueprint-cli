@@ -10,7 +10,7 @@ import (
 func upgradeCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "upgrade",
-		Short:   "Upgrade boundless operator on the cluster",
+		Short:   "Upgrade blueprint operator on the cluster",
 		Args:    cobra.NoArgs,
 		PreRunE: actions(loadBlueprint, loadKubeConfig),
 		RunE: func(cmd *cobra.Command, args []string) error {

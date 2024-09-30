@@ -10,7 +10,7 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-// Update updates the Boundless Operator and applies the components defined in the blueprint
+// Update updates the Blueprint Operator and applies the components defined in the blueprint
 func Update(blueprint *types.Blueprint, kubeConfig *k8s.KubeConfig) error {
 	// Determine the distro
 	provider, err := distro.GetProvider(blueprint, kubeConfig)
@@ -34,11 +34,11 @@ func Update(blueprint *types.Blueprint, kubeConfig *k8s.KubeConfig) error {
 		}
 	}
 
-	log.Info().Msgf("Applying Boundless Operator resources")
+	log.Info().Msgf("Applying Blueprint Operator resources")
 	if err := components.ApplyBlueprint(kubeConfig, blueprint); err != nil {
 		return fmt.Errorf("failed to update components: %w", err)
 	}
 
-	log.Info().Msgf("Finished updating Boundless Operator")
+	log.Info().Msgf("Finished updating Blueprint Operator")
 	return nil
 }

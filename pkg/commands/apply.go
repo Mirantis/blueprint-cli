@@ -15,7 +15,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-// Apply installs the Boundless Operator and applies the components defined in the blueprint
+// Apply installs the Blueprint Operator and applies the components defined in the blueprint
 func Apply(blueprint *types.Blueprint, kubeConfig *k8s.KubeConfig) error {
 	// Determine the distro
 	provider, err := distro.GetProvider(blueprint, kubeConfig)
@@ -29,7 +29,7 @@ func Apply(blueprint *types.Blueprint, kubeConfig *k8s.KubeConfig) error {
 	}
 
 	// If we are working with an unsupported provider, we need to make sure it exists
-	// For other supported providers, we check whether boundless is already installed
+	// For other supported providers, we check whether blueprint is already installed
 	if provider.Type() == constants.ProviderExisting {
 		if !exists {
 			return fmt.Errorf("cluster %q already exists", blueprint.Metadata.Name)
@@ -59,13 +59,13 @@ func Apply(blueprint *types.Blueprint, kubeConfig *k8s.KubeConfig) error {
 		panic(err)
 	}
 
-	// For existing clusters, determine whether boundless is currently installed
+	// For existing clusters, determine whether blueprint is currently installed
 	installOperator := true
 	if exists {
 		_, err := k8sclient.AppsV1().Deployments(constants.NamespaceBlueprint).Get(context.TODO(), constants.BlueprintOperatorDeployment, metav1.GetOptions{})
 		if err != nil {
 			if !errors.IsNotFound(err) {
-				log.Warn().Msgf("Could not determine existing Boundless Operator installation: %s", err)
+				log.Warn().Msgf("Could not determine existing Blueprint Operator installation: %s", err)
 			}
 		} else {
 			// @todo: determine operator version
@@ -80,13 +80,13 @@ func Apply(blueprint *types.Blueprint, kubeConfig *k8s.KubeConfig) error {
 
 	// @todo: display the version of the operator
 	if installOperator {
-		log.Info().Msgf("Installing Boundless Operator")
-		log.Debug().Msgf("Installing Boundless Operator using manifest file: %s", blueprint.Spec.Version)
+		log.Info().Msgf("Installing Blueprint Operator")
+		log.Debug().Msgf("Installing Blueprint Operator using manifest file: %s", blueprint.Spec.Version)
 		if err = k8s.ApplyYaml(kubeConfig, uri); err != nil {
-			return fmt.Errorf("failed to install Boundless Operator: %w", err)
+			return fmt.Errorf("failed to install Blueprint Operator: %w", err)
 		}
 	} else {
-		log.Info().Msg("Boundless Operator already installed")
+		log.Info().Msg("Blueprint Operator already installed")
 	}
 
 	// Wait for the pods to be ready
@@ -95,13 +95,13 @@ func Apply(blueprint *types.Blueprint, kubeConfig *k8s.KubeConfig) error {
 	}
 
 	// install components
-	log.Info().Msgf("Applying Boundless Operator resource")
+	log.Info().Msgf("Applying Blueprint Operator resource")
 	err = components.ApplyBlueprint(kubeConfig, blueprint)
 	if err != nil {
 		return fmt.Errorf("failed to install components: %w", err)
 	}
 
-	log.Info().Msgf("Finished installing Boundless Operator")
+	log.Info().Msgf("Finished installing Blueprint Operator")
 
 	return nil
 }
