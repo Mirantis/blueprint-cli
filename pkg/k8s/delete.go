@@ -3,6 +3,7 @@ package k8s
 import (
 	"context"
 	"fmt"
+	"k8s.io/client-go/rest"
 
 	operatorv1alpha1 "github.com/mirantiscontainers/boundless-operator/api/v1alpha1"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -18,8 +19,8 @@ func Delete(config *KubeConfig, obj client.Object) error {
 	if err != nil {
 		return err
 	}
-
-	kubeClient, err := client.New(restConfig, client.Options{Scheme: scheme, WarningHandler: client.WarningHandlerOptions{SuppressWarnings: true}})
+	restConfig.WarningHandler = rest.NoWarnings{}
+	kubeClient, err := client.New(restConfig, client.Options{Scheme: scheme})
 	if err != nil {
 		return fmt.Errorf("failed to create kubernetes client: %v", err)
 	}
