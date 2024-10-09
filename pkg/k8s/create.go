@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"k8s.io/client-go/rest"
 
-	operatorv1alpha1 "github.com/mirantiscontainers/boundless-operator/api/v1alpha1"
+	operatorv1alpha1 "github.com/mirantiscontainers/blueprint-operator/api/v1alpha1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
@@ -14,7 +14,7 @@ import (
 func CreateOrUpdate(config *KubeConfig, obj client.Object) error {
 	// TODO (ranyodh): This is currently using in-cluster client. We should switch to:
 	// - either a dynamic client,
-	// - or generate a client in the `boundless-operator` to be used here
+	// - or generate a client in the `blueprint-operator` to be used here
 	scheme := runtime.NewScheme()
 	_ = operatorv1alpha1.AddToScheme(scheme)
 

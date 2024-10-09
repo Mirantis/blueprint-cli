@@ -11,7 +11,7 @@ require (
 	github.com/k0sproject/version v0.6.0
 	github.com/k3s-io/helm-controller v0.15.4
 	github.com/mattn/go-colorable v0.1.13
-	github.com/mirantiscontainers/boundless-operator v1.0.6
+	github.com/mirantiscontainers/blueprint-operator v1.0.15
 	github.com/onsi/ginkgo/v2 v2.20.1
 	github.com/onsi/gomega v1.34.2
 	github.com/rs/zerolog v1.31.0
@@ -93,7 +93,7 @@ require (
 	gopkg.in/evanphx/json-patch.v4 v4.12.0 // indirect
 	gopkg.in/inf.v0 v0.9.1 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
-	k8s.io/apiextensions-apiserver v0.31.0 // indirect
+	k8s.io/apiextensions-apiserver v0.31.1 // indirect
 	k8s.io/klog/v2 v2.130.1 // indirect
 	k8s.io/kube-openapi v0.0.0-20240228011516-70dd3763d340 // indirect
 	k8s.io/utils v0.0.0-20240711033017-18e509b52bc8 // indirect

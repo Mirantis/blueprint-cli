@@ -4,7 +4,7 @@ import (
 	"k8s.io/client-go/kubernetes/scheme"
 	"k8s.io/client-go/rest"
 
-	"github.com/mirantiscontainers/boundless-operator/api/v1alpha1"
+	"github.com/mirantiscontainers/blueprint-operator/api/v1alpha1"
 )
 
 // TODO: generate the client code instead or use a dynamic client

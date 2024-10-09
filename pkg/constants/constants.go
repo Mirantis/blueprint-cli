@@ -4,7 +4,7 @@ import "time"
 
 const (
 	// ManifestUrlLatest is the URL of the latest manifest YAML for the Blueprint Operator
-	ManifestUrlLatest = "https://raw.githubusercontent.com/mirantiscontainers/boundless/main/deploy/static/boundless-operator.yaml"
+	ManifestUrlLatest = "https://raw.githubusercontent.com/mirantiscontainers/boundless/main/deploy/static/blueprint-operator.yaml"
 
 	// NamespaceBlueprint is the system namespace where the Blueprint Operator and its components are installed
 	NamespaceBlueprint = "blueprint-system"

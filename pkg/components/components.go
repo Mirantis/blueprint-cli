@@ -12,7 +12,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	k8sYaml "k8s.io/apimachinery/pkg/util/yaml"
 
-	"github.com/mirantiscontainers/boundless-operator/api/v1alpha1"
+	"github.com/mirantiscontainers/blueprint-operator/api/v1alpha1"
 
 	"github.com/mirantiscontainers/boundless-cli/pkg/constants"
 	"github.com/mirantiscontainers/boundless-cli/pkg/k8s"

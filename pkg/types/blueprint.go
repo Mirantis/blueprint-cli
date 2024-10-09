@@ -10,7 +10,7 @@ import (
 	"strings"
 
 	"github.com/k0sproject/dig"
-	"github.com/mirantiscontainers/boundless-operator/api/v1alpha1"
+	"github.com/mirantiscontainers/blueprint-operator/api/v1alpha1"
 	"k8s.io/apimachinery/pkg/util/intstr"
 
 	"github.com/mirantiscontainers/boundless-cli/pkg/constants"

@@ -3,7 +3,7 @@ package types
 import (
 	"fmt"
 
-	"github.com/mirantiscontainers/boundless-operator/api/v1alpha1"
+	"github.com/mirantiscontainers/blueprint-operator/api/v1alpha1"
 )
 
 // CertManagement defines the desired state of cert-manager resources
