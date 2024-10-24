@@ -9,8 +9,10 @@ import (
 	"github.com/rs/zerolog/log"
 	yamlDecoder "gopkg.in/yaml.v2"
 	v1 "k8s.io/api/core/v1"
+	apiextensionsv1 "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	k8sYaml "k8s.io/apimachinery/pkg/util/yaml"
+	"sigs.k8s.io/yaml"
 
 	"github.com/mirantiscontainers/blueprint-operator/api/v1alpha1"
 
@@ -153,6 +155,10 @@ func Encode(blueprint types.Blueprint) error {
 	return encoder.Encode(&blueprint)
 }
 
+var valueString = `service:
+type: ClusterIP
+`
+
 var DefaultComponents = types.Components{
 	Addons: []types.Addon{
 		{
@@ -164,9 +170,7 @@ var DefaultComponents = types.Components{
 				Name:    "nginx",
 				Repo:    "https://charts.bitnami.com/bitnami",
 				Version: "15.1.1",
-				Values: `service:
-  type: ClusterIP
-`,
+				Values:  ConvertValues([]byte(valueString)),
 			},
 		},
 	},
@@ -180,4 +184,15 @@ func getResources(resources *types.Resources) v1alpha1.Resources {
 	return v1alpha1.Resources{
 		CertManagement: resources.CertManagement.CertManagement,
 	}
+}
+
+// ConvertValues converts a byte slice to a JSON object
+func ConvertValues(in []byte) *apiextensionsv1.JSON {
+	var values *apiextensionsv1.JSON
+	if in != nil {
+		v, _ := yaml.YAMLToJSON(in)
+		values = &apiextensionsv1.JSON{Raw: v}
+	}
+
+	return values
 }

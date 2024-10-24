@@ -14,6 +14,7 @@ import (
 	"k8s.io/apimachinery/pkg/util/intstr"
 
 	"github.com/mirantiscontainers/boundless-cli/pkg/constants"
+	apiextensionsv1 "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1"
 )
 
 var blueprintKinds = []string{"Blueprint"}
@@ -236,7 +237,7 @@ type ChartInfo struct {
 	Repo    string                        `yaml:"repo" json:"repo"`
 	Version string                        `yaml:"version" json:"version"`
 	Set     map[string]intstr.IntOrString `yaml:"set,omitempty" json:"set,omitempty"`
-	Values  string                        `yaml:"values,omitempty" json:"values,omitempty"`
+	Values  *apiextensionsv1.JSON         `yaml:"values,omitempty" json:"values,omitempty"`
 }
 
 // Validate checks the ChartInfo structure and its children

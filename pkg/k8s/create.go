@@ -11,6 +11,7 @@ import (
 )
 
 // CreateOrUpdate creates or updates a kubernetes object
+// Note: This only really works for Blueprint objects right now.
 func CreateOrUpdate(config *KubeConfig, obj client.Object) error {
 	// TODO (ranyodh): This is currently using in-cluster client. We should switch to:
 	// - either a dynamic client,
