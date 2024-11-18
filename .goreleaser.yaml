@@ -51,14 +51,14 @@ archives:
 
 # Used during a dev build without a git tag
 snapshot:
-  name_template: 'bctl-{{ .Version }}-{{.ShortCommit}}'
+  name_template: '{{ .Version }}-{{.ShortCommit}}'
 
 release:
   # release to the public repository
   github:
     owner: mirantiscontainers
     name: blueprint
-  name_template: "bctl-v{{.Version}}"
+  name_template: "v{{.Version}}"
 
 changelog:
   sort: asc
