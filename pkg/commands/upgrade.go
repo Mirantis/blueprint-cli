@@ -2,11 +2,12 @@ package commands
 
 import (
 	"fmt"
-	"github.com/mirantiscontainers/boundless-cli/pkg/distro"
 
+	"github.com/rs/zerolog/log"
+
+	"github.com/mirantiscontainers/boundless-cli/pkg/distro"
 	"github.com/mirantiscontainers/boundless-cli/pkg/k8s"
 	"github.com/mirantiscontainers/boundless-cli/pkg/types"
-	"github.com/rs/zerolog/log"
 )
 
 // Upgrade upgrades the Blueprint Operator
@@ -29,7 +30,7 @@ func Upgrade(blueprint *types.Blueprint, kubeConfig *k8s.KubeConfig) error {
 		return fmt.Errorf("failed to determine kubernetes provider: %w", err)
 	}
 	// Wait for the pods to be ready
-	if err := provider.WaitForPods(); err != nil {
+	if err := provider.WaitForods(); err != nil {
 		return fmt.Errorf("failed to wait for pods: %w", err)
 	}
 	return nil
