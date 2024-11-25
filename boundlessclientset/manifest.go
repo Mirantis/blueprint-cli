@@ -8,7 +8,7 @@ import (
 	"k8s.io/client-go/kubernetes/scheme"
 	"k8s.io/client-go/rest"
 
-	"github.com/mirantiscontainers/blueprint-operator/api/v1alpha1"
+	"github.com/MirantisContainers/blueprint-operator/api/v1alpha1"
 )
 
 // ManifestInterface is an interface containing the operations that can be done on Manifests

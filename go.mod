@@ -3,13 +3,13 @@ module github.com/mirantiscontainers/boundless-cli
 go 1.22.3
 
 require (
+	github.com/MirantisContainers/blueprint-operator/api v0.0.0-20241125195119-bc050fc2ef01
 	github.com/a8m/envsubst v1.4.2
 	github.com/fatih/color v1.17.0
 	github.com/k0sproject/dig v0.2.0
 	github.com/k0sproject/version v0.6.0
 	github.com/k3s-io/helm-controller v0.15.4
 	github.com/mattn/go-colorable v0.1.13
-	github.com/mirantiscontainers/blueprint-operator/api v0.0.0-00010101000000-000000000000
 	github.com/onsi/ginkgo/v2 v2.21.0
 	github.com/onsi/gomega v1.35.1
 	github.com/rs/zerolog v1.31.0
@@ -91,5 +91,3 @@ require (
 	sigs.k8s.io/kustomize/kyaml v0.17.1 // indirect
 	sigs.k8s.io/structured-merge-diff/v4 v4.4.1 // indirect
 )
-
-replace github.com/mirantiscontainers/blueprint-operator/api => /Users/raunakshah/go/src/github.com/mirantiscontainers/blueprint-operator/api
