@@ -18,7 +18,7 @@ brew install coreutils ed findutils gawk gnu-sed gnu-tar grep make jq go
 ```
 
 ### Running locally
-Build the `bctl` image by `make build`. Then you may use various `bctl` commands to run against any Kubernetes cluster with [Blueprint Operator](https://github.com/mirantiscontainers/blueprint-operator) installed.
+Build the `bctl` image by `make build`. Then you may use various `bctl` commands to run against any Kubernetes cluster with [Blueprint Operator](https://github.com/MirantisContainers/blueprint-operator) installed.
 
 ## Submission Guidelines
 Blueprint CLI follows a lightweight Pull Request process. When submitting a PR, answer a few basic questions around the type of change and steps to test, and you are well on your way to a PR approval.
