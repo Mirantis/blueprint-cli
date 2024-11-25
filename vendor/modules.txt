@@ -2,9 +2,6 @@
 ## explicit; go 1.16
 github.com/Azure/go-ansiterm
 github.com/Azure/go-ansiterm/winterm
-# github.com/MirantisContainers/blueprint-operator/api v0.0.0-20241125195119-bc050fc2ef01
-## explicit; go 1.22.3
-github.com/MirantisContainers/blueprint-operator/api/v1alpha1
 # github.com/a8m/envsubst v1.4.2
 ## explicit; go 1.17
 github.com/a8m/envsubst
@@ -140,6 +137,9 @@ github.com/mattn/go-colorable
 # github.com/mattn/go-isatty v0.0.20
 ## explicit; go 1.15
 github.com/mattn/go-isatty
+# github.com/mirantiscontainers/blueprint-operator/api v0.0.0-20241125212229-e857ff3c69bb
+## explicit; go 1.22.3
+github.com/mirantiscontainers/blueprint-operator/api/v1alpha1
 # github.com/moby/term v0.5.0
 ## explicit; go 1.18
 github.com/moby/term

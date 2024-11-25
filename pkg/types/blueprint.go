@@ -9,8 +9,8 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/MirantisContainers/blueprint-operator/api/v1alpha1"
 	"github.com/k0sproject/dig"
+	"github.com/mirantiscontainers/blueprint-operator/api/v1alpha1"
 	"k8s.io/apimachinery/pkg/util/intstr"
 
 	"github.com/mirantiscontainers/boundless-cli/pkg/constants"
