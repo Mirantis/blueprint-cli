@@ -14,7 +14,7 @@ func applyCmd() *cobra.Command {
 		PreRunE: actions(loadBlueprint, loadKubeConfig),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			log.Info().Msgf("Applying blueprint at %s", blueprintFlag)
-			return commands.Apply(&blueprint, kubeConfig, false, false)
+			return commands.Apply(&blueprint, kubeConfig, false)
 		},
 	}
 

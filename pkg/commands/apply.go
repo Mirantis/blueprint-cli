@@ -16,7 +16,7 @@ import (
 )
 
 // Apply installs the Blueprint Operator and applies the components defined in the blueprint
-func Apply(blueprint *types.Blueprint, kubeConfig *k8s.KubeConfig, providerInstallOnly bool, noRefresh bool) error {
+func Apply(blueprint *types.Blueprint, kubeConfig *k8s.KubeConfig, providerInstallOnly bool) error {
 	// Determine the distro
 	provider, err := distro.GetProvider(blueprint, kubeConfig)
 	if err != nil {
@@ -40,18 +40,15 @@ func Apply(blueprint *types.Blueprint, kubeConfig *k8s.KubeConfig, providerInsta
 			return fmt.Errorf("failed to install cluster: %w", err)
 
 		}
-		if providerInstallOnly {
-			return nil
-		}
 	} else {
 		log.Info().Msgf("Cluster %q already exists", blueprint.Metadata.Name)
-		if !noRefresh {
-			if err = provider.Refresh(); err != nil {
-				return fmt.Errorf("failed to refresh cluster: %w", err)
-			}
-		} else {
-			log.Warn().Msgf("skipping refresh")
+		if err = provider.Refresh(); err != nil {
+			return fmt.Errorf("failed to refresh cluster: %w", err)
 		}
+	}
+
+	if providerInstallOnly {
+		return nil
 	}
 
 	if err = kubeConfig.TryLoad(); err != nil {
