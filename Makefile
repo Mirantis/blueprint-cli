@@ -47,7 +47,8 @@ build-charts:
 
 .PHONY: test
 test:  ## Run tests.
-	@go test ./... -coverprofile cover.out
+	@go test ./... -coverprofile coverage.txt
+	@go tool cover -html=coverage.txt -o coverage.html
 
 .PHONY: vet
 vet: ## Run go vet against code.

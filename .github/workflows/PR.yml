@@ -19,3 +19,10 @@ jobs:
   build:
     uses: ./.github/workflows/build.yml
     secrets: inherit
+  code-coverage-report:
+    needs: [ unit-test ]
+    uses: ./.github/workflows/code-coverage.yml
+    with:
+      artifact_url: ${{ needs.unit-test.outputs.coverage_artifact_url }}
+      pr_number: ${{ github.event.pull_request.number }}
+    secrets: inherit
