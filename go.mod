@@ -1,4 +1,4 @@
-module github.com/mirantiscontainers/boundless-cli
+module github.com/mirantiscontainers/blueprint-cli
 
 go 1.22.3
 

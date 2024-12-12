@@ -16,9 +16,9 @@ import (
 
 	"github.com/mirantiscontainers/blueprint-operator/api/v1alpha1"
 
-	"github.com/mirantiscontainers/boundless-cli/pkg/constants"
-	"github.com/mirantiscontainers/boundless-cli/pkg/k8s"
-	"github.com/mirantiscontainers/boundless-cli/pkg/types"
+	"github.com/mirantiscontainers/blueprint-cli/pkg/constants"
+	"github.com/mirantiscontainers/blueprint-cli/pkg/k8s"
+	"github.com/mirantiscontainers/blueprint-cli/pkg/types"
 )
 
 // ApplyBlueprint applies a Blueprint object to the cluster

@@ -6,7 +6,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/mirantiscontainers/boundless-cli/pkg/constants"
+	"github.com/mirantiscontainers/blueprint-cli/pkg/constants"
 	"github.com/rs/zerolog/log"
 )
 

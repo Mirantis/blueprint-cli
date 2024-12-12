@@ -5,8 +5,8 @@ import (
 	"os"
 	"os/exec"
 
-	"github.com/mirantiscontainers/boundless-cli/pkg/components"
-	"github.com/mirantiscontainers/boundless-cli/pkg/types"
+	"github.com/mirantiscontainers/blueprint-cli/pkg/components"
+	"github.com/mirantiscontainers/blueprint-cli/pkg/types"
 )
 
 // Init initializes a new cluster

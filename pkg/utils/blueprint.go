@@ -2,7 +2,7 @@ package utils
 
 import (
 	"github.com/a8m/envsubst"
-	"github.com/mirantiscontainers/boundless-cli/pkg/types"
+	"github.com/mirantiscontainers/blueprint-cli/pkg/types"
 	"github.com/rs/zerolog/log"
 )
 

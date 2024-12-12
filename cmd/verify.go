@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"github.com/mirantiscontainers/boundless-cli/pkg/commands"
+	"github.com/mirantiscontainers/blueprint-cli/pkg/commands"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
 )

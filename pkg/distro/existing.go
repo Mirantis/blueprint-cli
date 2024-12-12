@@ -7,10 +7,10 @@ import (
 	"github.com/rs/zerolog/log"
 	"k8s.io/client-go/kubernetes"
 
-	"github.com/mirantiscontainers/boundless-cli/pkg/constants"
-	"github.com/mirantiscontainers/boundless-cli/pkg/k8s"
-	"github.com/mirantiscontainers/boundless-cli/pkg/types"
-	"github.com/mirantiscontainers/boundless-cli/pkg/utils"
+	"github.com/mirantiscontainers/blueprint-cli/pkg/constants"
+	"github.com/mirantiscontainers/blueprint-cli/pkg/k8s"
+	"github.com/mirantiscontainers/blueprint-cli/pkg/types"
+	"github.com/mirantiscontainers/blueprint-cli/pkg/utils"
 )
 
 // Existing is the existing provider

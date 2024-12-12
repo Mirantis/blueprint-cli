@@ -3,7 +3,7 @@ package cmd
 import (
 	"fmt"
 
-	"github.com/mirantiscontainers/boundless-cli/pkg/color"
+	"github.com/mirantiscontainers/blueprint-cli/pkg/color"
 	"github.com/spf13/cobra"
 )
 

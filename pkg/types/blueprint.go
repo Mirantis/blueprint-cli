@@ -13,7 +13,7 @@ import (
 	"github.com/mirantiscontainers/blueprint-operator/api/v1alpha1"
 	"k8s.io/apimachinery/pkg/util/intstr"
 
-	"github.com/mirantiscontainers/boundless-cli/pkg/constants"
+	"github.com/mirantiscontainers/blueprint-cli/pkg/constants"
 	apiextensionsv1 "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1"
 )
 

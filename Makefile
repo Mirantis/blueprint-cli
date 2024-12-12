@@ -10,9 +10,9 @@ COMMIT := $(shell git rev-parse HEAD)
 DATE := $(shell date -u '+%Y-%m-%d')
 LDFLAGS=-ldflags \
 				" \
-				-X github.com/mirantiscontainers/boundless-cli/cmd.version=${VERSION} \
-				-X github.com/mirantiscontainers/boundless-cli/cmd.commit=${COMMIT} \
-				-X github.com/mirantiscontainers/boundless-cli/cmd.date=${DATE} \
+				-X github.com/mirantiscontainers/blueprint-cli/cmd.version=${VERSION} \
+				-X github.com/mirantiscontainers/blueprint-cli/cmd.commit=${COMMIT} \
+				-X github.com/mirantiscontainers/blueprint-cli/cmd.date=${DATE} \
 				"
 
 .PHONY: build

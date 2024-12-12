@@ -8,10 +8,10 @@ import (
 	"github.com/fatih/color"
 	"github.com/rs/zerolog/log"
 
-	"github.com/mirantiscontainers/boundless-cli/pkg/components"
-	"github.com/mirantiscontainers/boundless-cli/pkg/distro"
-	"github.com/mirantiscontainers/boundless-cli/pkg/k8s"
-	"github.com/mirantiscontainers/boundless-cli/pkg/types"
+	"github.com/mirantiscontainers/blueprint-cli/pkg/components"
+	"github.com/mirantiscontainers/blueprint-cli/pkg/distro"
+	"github.com/mirantiscontainers/blueprint-cli/pkg/k8s"
+	"github.com/mirantiscontainers/blueprint-cli/pkg/types"
 )
 
 // Reset resets the cluster

@@ -2,9 +2,9 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/mirantiscontainers/boundless-cli/pkg/constants"
-	"github.com/mirantiscontainers/boundless-cli/pkg/distro"
-	"github.com/mirantiscontainers/boundless-cli/pkg/utils"
+	"github.com/mirantiscontainers/blueprint-cli/pkg/constants"
+	"github.com/mirantiscontainers/blueprint-cli/pkg/distro"
+	"github.com/mirantiscontainers/blueprint-cli/pkg/utils"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
 )

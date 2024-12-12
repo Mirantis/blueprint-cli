@@ -3,9 +3,9 @@ package distro
 import (
 	"fmt"
 
-	"github.com/mirantiscontainers/boundless-cli/pkg/constants"
-	"github.com/mirantiscontainers/boundless-cli/pkg/k8s"
-	"github.com/mirantiscontainers/boundless-cli/pkg/types"
+	"github.com/mirantiscontainers/blueprint-cli/pkg/constants"
+	"github.com/mirantiscontainers/blueprint-cli/pkg/k8s"
+	"github.com/mirantiscontainers/blueprint-cli/pkg/types"
 )
 
 // Provider is the interface for a distro provider

@@ -12,10 +12,10 @@ import (
 	"k8s.io/client-go/kubernetes/scheme"
 	"k8s.io/client-go/tools/clientcmd"
 
-	"github.com/mirantiscontainers/boundless-cli/boundlessclientset"
-	"github.com/mirantiscontainers/boundless-cli/pkg/constants"
-	"github.com/mirantiscontainers/boundless-cli/pkg/k8s"
-	"github.com/mirantiscontainers/boundless-cli/pkg/utils"
+	"github.com/mirantiscontainers/blueprint-cli/boundlessclientset"
+	"github.com/mirantiscontainers/blueprint-cli/pkg/constants"
+	"github.com/mirantiscontainers/blueprint-cli/pkg/k8s"
+	"github.com/mirantiscontainers/blueprint-cli/pkg/utils"
 )
 
 const (

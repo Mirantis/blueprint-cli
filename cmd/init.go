@@ -3,8 +3,8 @@ package cmd
 import (
 	"github.com/spf13/cobra"
 
-	"github.com/mirantiscontainers/boundless-cli/pkg/commands"
-	"github.com/mirantiscontainers/boundless-cli/pkg/constants"
+	"github.com/mirantiscontainers/blueprint-cli/pkg/commands"
+	"github.com/mirantiscontainers/blueprint-cli/pkg/constants"
 )
 
 func initCmd() *cobra.Command {

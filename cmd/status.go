@@ -4,7 +4,7 @@ import (
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
 
-	"github.com/mirantiscontainers/boundless-cli/pkg/commands"
+	"github.com/mirantiscontainers/blueprint-cli/pkg/commands"
 )
 
 func statusCmd() *cobra.Command {

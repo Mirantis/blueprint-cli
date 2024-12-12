@@ -9,10 +9,10 @@ import (
 
 	"k8s.io/apimachinery/pkg/api/errors"
 
-	"github.com/mirantiscontainers/boundless-cli/pkg/constants"
-	"github.com/mirantiscontainers/boundless-cli/pkg/k8s"
-	"github.com/mirantiscontainers/boundless-cli/pkg/types"
-	"github.com/mirantiscontainers/boundless-cli/pkg/utils"
+	"github.com/mirantiscontainers/blueprint-cli/pkg/constants"
+	"github.com/mirantiscontainers/blueprint-cli/pkg/k8s"
+	"github.com/mirantiscontainers/blueprint-cli/pkg/types"
+	"github.com/mirantiscontainers/blueprint-cli/pkg/utils"
 
 	"github.com/k0sproject/version"
 	"github.com/rs/zerolog/log"

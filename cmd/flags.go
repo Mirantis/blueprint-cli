@@ -1,6 +1,6 @@
 package cmd
 
-import "github.com/mirantiscontainers/boundless-cli/pkg/constants"
+import "github.com/mirantiscontainers/blueprint-cli/pkg/constants"
 
 // PersistenceFlags represents configuration pFlags.
 type PersistenceFlags struct {
