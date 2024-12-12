@@ -6,6 +6,9 @@ const (
 	// NamespaceBlueprint is the system namespace where the Blueprint Operator and its components are installed
 	NamespaceBlueprint = "blueprint-system"
 
+	// NamespaceKubeSystem is the system namespace where the networking components are installed
+	NamespaceKubeSystem = "kube-system"
+
 	// DefaultBlueprintFileName represents the default blueprint filename.
 	DefaultBlueprintFileName = "blueprint.yaml"
 

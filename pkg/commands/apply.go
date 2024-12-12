@@ -85,6 +85,11 @@ func Apply(blueprint *types.Blueprint, kubeConfig *k8s.KubeConfig, providerInsta
 
 	// @todo: display the version of the operator
 	if installOperator {
+		log.Info().Msg("Wait for networking pods to be up")
+		if err := k8s.WaitForPods(k8sclient, constants.NamespaceKubeSystem); err != nil {
+			return fmt.Errorf("failed to wait for pods in %s namespace: %w", constants.NamespaceKubeSystem, err)
+		}
+
 		log.Info().Msgf("Installing Blueprint Operator")
 		log.Debug().Msgf("Installing Blueprint Operator using manifest file: %s", blueprint.Spec.Version)
 		if err = k8s.ApplyYaml(kubeConfig, uri); err != nil {
