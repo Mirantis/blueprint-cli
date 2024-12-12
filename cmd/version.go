@@ -3,52 +3,38 @@ package cmd
 import (
 	"fmt"
 
-	"github.com/mirantiscontainers/blueprint-cli/pkg/color"
 	"github.com/spf13/cobra"
 )
 
 var (
 	version, commit, date = "", "", "" // These are always injected at build time
+
+	// verbose flag
+	verbose bool
 )
 
+// versionCmd creates the version command
 func versionCmd() *cobra.Command {
-	var short bool
-
-	command := cobra.Command{
+	cmd := cobra.Command{
 		Use:   "version",
 		Short: "Print version/build info",
 		Long:  "Print version/build information",
-		Run: func(cmd *cobra.Command, args []string) {
-			printVersion(short)
-		},
+		RunE:  runVersion,
 	}
 
-	command.PersistentFlags().BoolVarP(&short, "short", "s", false, "Prints bctl version info in short format")
+	flags := cmd.Flags()
+	flags.BoolVarP(&verbose, "verbose", "v", false, "Print more detailed version information")
 
-	return &command
+	return &cmd
 }
 
-func printVersion(short bool) {
-	const fmat = "%-20s %s\n"
-
-	var outputColor color.Paint
-
-	if short {
-		outputColor = -1
-	} else {
-		outputColor = color.Cyan
+// runVersion prints the version information
+func runVersion(cmd *cobra.Command, args []string) error {
+	fmt.Printf("Version: %s\n", version)
+	if verbose {
+		fmt.Printf("Commit: %s\n", commit)
+		fmt.Printf("Date: %s\n", date)
 	}
-	printTuple(fmat, "Version", version, outputColor)
-	printTuple(fmat, "Commit", commit, outputColor)
-	printTuple(fmat, "Date", date, outputColor)
-}
 
-func printTuple(fmat, section, value string, outputColor color.Paint) {
-	if value != "" {
-		if outputColor != -1 {
-			fmt.Fprintf(out, fmat, color.Colorize(section+":", outputColor), value)
-			return
-		}
-		fmt.Fprintf(out, fmat, section, value)
-	}
+	return nil
 }

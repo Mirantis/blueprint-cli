@@ -1,3 +1,4 @@
+include build/makefiles/vars.mk
 
 .PHONY: default
 default:  build
@@ -5,9 +6,6 @@ default:  build
 BIN_DIR := $(shell pwd)/bin
 
 # LDFLAGS
-VERSION := $(shell git tag --sort=committerdate | tail -1)
-COMMIT := $(shell git rev-parse HEAD)
-DATE := $(shell date -u '+%Y-%m-%d')
 LDFLAGS=-ldflags \
 				" \
 				-X github.com/mirantiscontainers/blueprint-cli/cmd.version=${VERSION} \
