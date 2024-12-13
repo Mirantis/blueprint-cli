@@ -3,6 +3,9 @@ package commands
 import (
 	"context"
 	"fmt"
+	"k8s.io/client-go/rest"
+	"net"
+	"time"
 
 	"github.com/mirantiscontainers/blueprint-cli/pkg/components"
 	"github.com/mirantiscontainers/blueprint-cli/pkg/constants"
@@ -90,6 +93,11 @@ func Apply(blueprint *types.Blueprint, kubeConfig *k8s.KubeConfig, providerInsta
 			return fmt.Errorf("failed to wait for pods in %s namespace: %w", constants.NamespaceKubeSystem, err)
 		}
 
+		// Check network connectivity
+		if err := testClusterConnectivity(kubeConfig); err != nil {
+			return fmt.Errorf("failed to test cluster connectivity: %w", err)
+		}
+
 		log.Info().Msgf("Installing Blueprint Operator")
 		log.Debug().Msgf("Installing Blueprint Operator using manifest file: %s", blueprint.Spec.Version)
 		if err = k8s.ApplyYaml(kubeConfig, uri); err != nil {
@@ -113,5 +121,39 @@ func Apply(blueprint *types.Blueprint, kubeConfig *k8s.KubeConfig, providerInsta
 
 	log.Info().Msgf("Finished installing Blueprint Operator")
 
+	return nil
+}
+
+func testClusterConnectivity(kubeConfig *k8s.KubeConfig) error {
+
+	// Extract the rest.Config from the clientset
+	cfg, err := kubeConfig.RESTConfig()
+	if err != nil {
+		return fmt.Errorf("unable to get REST config for dynaminc kube client: %v", err)
+	}
+
+	config := rest.CopyConfig(cfg)
+
+	apiServer := config.Host
+	if apiServer == "" {
+		return fmt.Errorf("kubernetes API server address is not defined in config")
+	}
+
+	log.Info().Msgf("Testing connectivity to the Kubernetes API server at %s\n", apiServer)
+
+	// Extract the hostname and port from the API server URL
+	host, port, err := net.SplitHostPort(apiServer[8:]) // Remove "https://"
+	if err != nil {
+		return fmt.Errorf("failed to parse API server address: %v", err)
+	}
+
+	// Attempt to connect to the API server
+	conn, err := net.DialTimeout("tcp", net.JoinHostPort(host, port), 5*time.Second)
+	if err != nil {
+		return fmt.Errorf("failed to connect to Kubernetes API server: %v", err)
+	}
+	defer conn.Close()
+
+	log.Info().Msgf("Successfully connected to the Kubernetes API server.")
 	return nil
 }
