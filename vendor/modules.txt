@@ -137,7 +137,7 @@ github.com/mattn/go-colorable
 # github.com/mattn/go-isatty v0.0.20
 ## explicit; go 1.15
 github.com/mattn/go-isatty
-# github.com/mirantiscontainers/blueprint-operator/api v0.0.0-20241125212229-e857ff3c69bb
+# github.com/mirantiscontainers/blueprint-operator/api v0.0.0-20241217173635-af331b13f9b1
 ## explicit; go 1.22.3
 github.com/mirantiscontainers/blueprint-operator/api/v1alpha1
 # github.com/moby/term v0.5.0
