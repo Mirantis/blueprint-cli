@@ -3,7 +3,6 @@ package commands
 import (
 	"context"
 	"fmt"
-	"k8s.io/client-go/rest"
 	"net"
 	"time"
 
@@ -16,6 +15,9 @@ import (
 	"github.com/rs/zerolog/log"
 	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/client-go/dynamic"
+	"k8s.io/client-go/kubernetes"
+	"k8s.io/client-go/rest"
 )
 
 // Apply installs the Blueprint Operator and applies the components defined in the blueprint
@@ -100,7 +102,18 @@ func Apply(blueprint *types.Blueprint, kubeConfig *k8s.KubeConfig, providerInsta
 
 		log.Info().Msgf("Installing Blueprint Operator")
 		log.Debug().Msgf("Installing Blueprint Operator using manifest file: %s", blueprint.Spec.Version)
-		if err = k8s.ApplyYaml(kubeConfig, uri); err != nil {
+
+		var client kubernetes.Interface
+		var dynamicClient dynamic.Interface
+
+		if client, err = k8s.GetClient(kubeConfig); err != nil {
+			return fmt.Errorf("failed to get kubernetes client: %q", err)
+		}
+		if dynamicClient, err = k8s.GetDynamicClient(kubeConfig); err != nil {
+			return fmt.Errorf("failed to get kubernetes dynamic client: %q", err)
+		}
+
+		if err = k8s.ApplyYaml(client, dynamicClient, uri); err != nil {
 			return fmt.Errorf("failed to install Blueprint Operator: %w", err)
 		}
 	} else {

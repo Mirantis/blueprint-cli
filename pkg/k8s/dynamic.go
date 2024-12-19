@@ -3,7 +3,6 @@ package k8s
 import (
 	"context"
 	"fmt"
-
 	"github.com/rs/zerolog/log"
 	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -15,18 +14,9 @@ import (
 
 // ApplyYaml applies a yaml manifest to the cluster from the URI. The URI can be a file path or a URL
 // It creates CRDs first and then other objects
-// @TODO: Make this function testable by passing a "uri reader" and kubernetes clients
-func ApplyYaml(kc *KubeConfig, uri string) error {
+// @TODO: Make this function testable by passing a "uri reader"
+func ApplyYaml(client kubernetes.Interface, dynamicClient dynamic.Interface, uri string) error {
 	var err error
-	var client kubernetes.Interface
-	var dynamicClient dynamic.Interface
-
-	if client, err = GetClient(kc); err != nil {
-		return fmt.Errorf("failed to get kubernetes client: %q", err)
-	}
-	if dynamicClient, err = GetDynamicClient(kc); err != nil {
-		return fmt.Errorf("failed to get kubernetes dynamic client: %q", err)
-	}
 
 	objs, err := readYamlManifest(uri)
 	if err != nil {

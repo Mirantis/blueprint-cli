@@ -4,6 +4,8 @@ import (
 	"fmt"
 
 	"github.com/rs/zerolog/log"
+	"k8s.io/client-go/dynamic"
+	"k8s.io/client-go/kubernetes"
 
 	"github.com/mirantiscontainers/blueprint-cli/pkg/distro"
 	"github.com/mirantiscontainers/blueprint-cli/pkg/k8s"
@@ -17,8 +19,18 @@ func Upgrade(blueprint *types.Blueprint, kubeConfig *k8s.KubeConfig) error {
 		return fmt.Errorf("failed to determine operator URI: %w", err)
 	}
 
+	var client kubernetes.Interface
+	var dynamicClient dynamic.Interface
+
+	if client, err = k8s.GetClient(kubeConfig); err != nil {
+		return fmt.Errorf("failed to get kubernetes client: %q", err)
+	}
+	if dynamicClient, err = k8s.GetDynamicClient(kubeConfig); err != nil {
+		return fmt.Errorf("failed to get kubernetes dynamic client: %q", err)
+	}
+
 	log.Info().Msgf("Upgrading Blueprint Operator using manifest file %q", uri)
-	if err := k8s.ApplyYaml(kubeConfig, uri); err != nil {
+	if err := k8s.ApplyYaml(client, dynamicClient, uri); err != nil {
 		return fmt.Errorf("failed to upgrade blueprint operator: %w", err)
 	}
 
