@@ -1,4 +1,4 @@
-# Blueprint Controller
+# Blueprint Controller [![cov](https://github.com/Mirantis/blueprint-cli/wiki/coverage.svg)](https://github.com/Mirantis/blueprint-cli/wiki/coverage.svg)
 
 ## The Repository
 This is the repository for the Blueprint Controller. The Blueprint Controller is a CLI tool that allows you to manage your Blueprint clusters. This repo contains the actual source code for compiling the Blueprint Controller (`bctl`) binary. This source code is available to everyone under the [Apache License 2.0](./LICENSE).
