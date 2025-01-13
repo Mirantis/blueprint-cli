@@ -18,7 +18,7 @@ jobs:
           tag_name: dev
           github_token: ${{ secrets.PAT_CI_BOUNDLESS }}
           delete_release: true
-          repo: mirantiscontainers/blueprint-cli
+          repo: mirantis/blueprint-cli
 
       - name: Check out code into the Go module directory
         uses: actions/checkout@v3
@@ -51,7 +51,7 @@ jobs:
           make_latest: false
           body: "This is the dev build that always represents the latest commit on the main branch. These binaries change frequiently and are not meant for production use."
           token: ${{ secrets.PAT_CI_BOUNDLESS }}
-          repository: mirantiscontainers/blueprint-cli
+          repository: mirantis/blueprint-cli
           files: |
             **/*.tar.gz
             **/*.zip
