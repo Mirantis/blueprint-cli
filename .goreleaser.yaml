@@ -56,7 +56,7 @@ snapshot:
 release:
   # release to the public repository
   github:
-    owner: mirantiscontainers
+    owner: mirantis
     name: blueprint
   name_template: "v{{.Version}}"
 
