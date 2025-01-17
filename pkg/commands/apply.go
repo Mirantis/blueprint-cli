@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 	"net"
+	"os"
+	"strings"
 	"time"
 
 	"github.com/mirantiscontainers/blueprint-cli/pkg/components"
@@ -21,7 +23,7 @@ import (
 )
 
 // Apply installs the Blueprint Operator and applies the components defined in the blueprint
-func Apply(blueprint *types.Blueprint, kubeConfig *k8s.KubeConfig, providerInstallOnly bool) error {
+func Apply(blueprint *types.Blueprint, kubeConfig *k8s.KubeConfig, providerInstallOnly bool, imageRegistry string) error {
 	// Determine the distro
 	provider, err := distro.GetProvider(blueprint, kubeConfig)
 	if err != nil {
@@ -83,13 +85,22 @@ func Apply(blueprint *types.Blueprint, kubeConfig *k8s.KubeConfig, providerInsta
 		}
 	}
 
-	uri, err := determineOperatorUri(blueprint.Spec.Version)
-	if err != nil {
-		return fmt.Errorf("failed to determine operator URI: %w", err)
-	}
-
 	// @todo: display the version of the operator
 	if installOperator {
+		uri, err := determineOperatorUri(blueprint.Spec.Version)
+		if err != nil {
+			return fmt.Errorf("failed to determine operator URI: %w", err)
+		}
+
+		var needCleanup bool
+		uri, needCleanup, err = setImageRegistry(uri, imageRegistry)
+		if err != nil {
+			return fmt.Errorf("failed to set image registry in BOP manifest: %w", err)
+		}
+		if needCleanup {
+			defer os.Remove(strings.TrimPrefix(uri, "file://"))
+		}
+
 		log.Info().Msg("Wait for networking pods to be up")
 		if err := k8s.WaitForPods(k8sclient, constants.NamespaceKubeSystem); err != nil {
 			return fmt.Errorf("failed to wait for pods in %s namespace: %w", constants.NamespaceKubeSystem, err)

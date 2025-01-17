@@ -2,6 +2,8 @@ package commands
 
 import (
 	"fmt"
+	"os"
+	"strings"
 
 	"github.com/rs/zerolog/log"
 	"k8s.io/client-go/dynamic"
@@ -13,10 +15,19 @@ import (
 )
 
 // Upgrade upgrades the Blueprint Operator
-func Upgrade(blueprint *types.Blueprint, kubeConfig *k8s.KubeConfig) error {
+func Upgrade(blueprint *types.Blueprint, kubeConfig *k8s.KubeConfig, imageRegistry string) error {
 	uri, err := determineOperatorUri(blueprint.Spec.Version)
 	if err != nil {
 		return fmt.Errorf("failed to determine operator URI: %w", err)
+	}
+
+	var needCleanup bool
+	uri, needCleanup, err = setImageRegistry(uri, imageRegistry)
+	if err != nil {
+		return fmt.Errorf("failed to set image registry in BOP manifest: %w", err)
+	}
+	if needCleanup {
+		defer os.Remove(strings.TrimPrefix(uri, "file://"))
 	}
 
 	var client kubernetes.Interface

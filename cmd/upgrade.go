@@ -15,13 +15,14 @@ func upgradeCmd() *cobra.Command {
 		PreRunE: actions(loadBlueprint, loadKubeConfig),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			log.Info().Msgf("Upgrading blueprint at %s", blueprintFlag)
-			return commands.Upgrade(&blueprint, kubeConfig)
+			return commands.Upgrade(&blueprint, kubeConfig, imageRegistry)
 		},
 	}
 
 	flags := cmd.Flags()
 	addBlueprintFileFlags(flags)
 	addKubeFlags(flags)
+	addImageRegistryFlag(flags)
 
 	return cmd
 }

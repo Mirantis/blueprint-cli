@@ -25,6 +25,7 @@ var (
 	pFlags        *PersistenceFlags
 	blueprintFlag string
 	force         bool
+	imageRegistry string
 
 	blueprint  types.Blueprint
 	kubeConfig *k8s.KubeConfig
@@ -149,6 +150,10 @@ func addForceFlag(flags *pflag.FlagSet) {
 
 func addBlueprintFileFlags(flags *pflag.FlagSet) {
 	flags.StringVarP(&blueprintFlag, "file", "f", constants.DefaultBlueprintFileName, "Path to the blueprint file")
+}
+
+func addImageRegistryFlag(flags *pflag.FlagSet) {
+	flags.StringVarP(&imageRegistry, "image-registry", "", constants.MirantisImageRegistry, "Image registry to pull BOP images from")
 }
 
 func addKubeFlags(flags *pflag.FlagSet) {
