@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net"
 	"os"
+	"regexp"
 	"strings"
 	"time"
 
@@ -15,6 +16,7 @@ import (
 	"github.com/mirantiscontainers/blueprint-cli/pkg/types"
 
 	"github.com/rs/zerolog/log"
+	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/dynamic"
@@ -74,7 +76,7 @@ func Apply(blueprint *types.Blueprint, kubeConfig *k8s.KubeConfig, providerInsta
 	// For existing clusters, determine whether blueprint is currently installed
 	installOperator := true
 	if exists {
-		_, err := k8sclient.AppsV1().Deployments(constants.NamespaceBlueprint).Get(context.TODO(), constants.BlueprintOperatorDeployment, metav1.GetOptions{})
+		bopDeployment, err := k8sclient.AppsV1().Deployments(constants.NamespaceBlueprint).Get(context.TODO(), constants.BlueprintOperatorDeployment, metav1.GetOptions{})
 		if err != nil {
 			if !errors.IsNotFound(err) {
 				log.Warn().Msgf("Could not determine existing Blueprint Operator installation: %s", err)
@@ -82,6 +84,18 @@ func Apply(blueprint *types.Blueprint, kubeConfig *k8s.KubeConfig, providerInsta
 		} else {
 			// @todo: determine operator version
 			installOperator = false
+			deployedRegistry, err := detectDeployedRegistry(bopDeployment.Spec.Template.Spec.Containers)
+			if err != nil {
+				return fmt.Errorf("failed to detect image registry of the deployed bluepint operator: %w", err)
+			}
+			if imageRegistry == "" {
+				imageRegistry = deployedRegistry
+			} else if imageRegistry != deployedRegistry {
+				log.Warn().Msgf(
+					"The image registry of the deployed Blueprint Operator (%s) does not match the provided one (%s); "+
+						"the new registry will override the old one", deployedRegistry, imageRegistry,
+				)
+			}
 		}
 	}
 
@@ -180,4 +194,20 @@ func testClusterConnectivity(kubeConfig *k8s.KubeConfig) error {
 
 	log.Info().Msgf("Successfully connected to the Kubernetes API server.")
 	return nil
+}
+
+var bopImageRegex = regexp.MustCompile("(.*)/blueprint-operator:(.*)")
+
+func detectDeployedRegistry(containers []corev1.Container) (string, error) {
+	for _, container := range containers {
+		if bopImageRegex.MatchString(container.Image) {
+			matches := bopImageRegex.FindStringSubmatch(container.Image)
+			if len(matches) < 2 {
+				return "", fmt.Errorf("failed to extract registry from image %s", container.Image)
+			}
+			return matches[1], nil
+		}
+	}
+
+	return "", fmt.Errorf("unable to find Blueprint Operator container in the provided containers")
 }

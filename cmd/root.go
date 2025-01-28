@@ -153,7 +153,7 @@ func addBlueprintFileFlags(flags *pflag.FlagSet) {
 }
 
 func addImageRegistryFlag(flags *pflag.FlagSet) {
-	flags.StringVarP(&imageRegistry, "image-registry", "", constants.MirantisImageRegistry, "Image registry to pull BOP images from")
+	flags.StringVarP(&imageRegistry, "image-registry", "", "", "Image registry to pull BOP images from")
 }
 
 func addKubeFlags(flags *pflag.FlagSet) {
