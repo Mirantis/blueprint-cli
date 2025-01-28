@@ -2,6 +2,7 @@ package commands
 
 import (
 	"fmt"
+	corev1 "k8s.io/api/core/v1"
 	"os"
 	"strings"
 
@@ -129,5 +130,18 @@ var _ = Describe("Commands", func() {
 			Entry("with remote URI", remoteKey),
 			Entry("with local URI", localKey),
 		)
+	})
+
+	It("detect image registry", func() {
+		detected, err := detectDeployedRegistry([]corev1.Container{
+			{
+				Image: "ghcr.io/mirantiscontainers/kube-rbac-proxy:v1.0.0",
+			},
+			{
+				Image: "ghcr.io/mirantiscontainers/blueprint-operator:v1.0.0",
+			},
+		})
+		Expect(err).ToNot(HaveOccurred())
+		Expect(detected).To(Equal("ghcr.io/mirantiscontainers"))
 	})
 })
